@@ -21,7 +21,7 @@ import org.hibernate.annotations.SQLRestriction;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "UPDATE portfolio SET is_deleted = true WHERE portfolio_id = ?")
+@SQLDelete(sql = "UPDATE portfolio SET is_deleted = true WHERE id = ?")
 @SQLRestriction("is_deleted = false")
 @Table(name = "portfolio")
 public class Portfolio {
@@ -58,5 +58,9 @@ public class Portfolio {
 
     @Column(nullable = false)
     private Boolean isDeleted;
+
+    public void delete(){
+        this.isDeleted = true;
+    }
 
 }
