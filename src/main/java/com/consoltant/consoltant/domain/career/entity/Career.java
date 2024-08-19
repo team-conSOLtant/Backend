@@ -1,5 +1,6 @@
 package com.consoltant.consoltant.domain.career.entity;
 
+import com.consoltant.consoltant.domain.career.dto.CareerRequestDto;
 import com.consoltant.consoltant.domain.portfolio.entity.Portfolio;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -57,6 +58,13 @@ public class Career {
 
     public void setPortfolio(Portfolio portfolio){
         this.portfolio = portfolio;
+    }
+
+    public void update(CareerRequestDto careerRequestDto){
+        this.company = careerRequestDto.getCompany();
+        this.positionLevel = careerRequestDto.getPositionLevel();
+        this.startDate = careerRequestDto.getStartDate();
+        this.endDate = careerRequestDto.getEndDate();
     }
 
 }

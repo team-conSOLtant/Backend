@@ -28,8 +28,8 @@ public class CareerModuleService {
     }
 
     //portfolio 삭제
-    public void delete(Career career) {
-        career.delete();
+    public void delete(Long id) {
+        careerRepository.deleteById(id);
     }
 
 }
