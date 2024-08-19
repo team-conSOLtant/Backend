@@ -78,4 +78,7 @@ public class User {
     @Column(nullable = false)
     private Boolean isDeleted;
 
+    public void changeOf(User user){
+
+    }
 }
