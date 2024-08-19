@@ -1,2 +1,8 @@
-package com.consoltant.consoltant.domain.main.service;public class MainService {
+package com.consoltant.consoltant.domain.main.service;
+
+import org.springframework.stereotype.Service;
+
+@Service
+public class MainService {
+
 }
