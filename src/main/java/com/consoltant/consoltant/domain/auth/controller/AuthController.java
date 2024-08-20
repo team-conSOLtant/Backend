@@ -1,8 +1,8 @@
 package com.consoltant.consoltant.domain.auth.controller;
 
 import com.consoltant.consoltant.domain.auth.dto.LoginRequestDto;
-import com.consoltant.consoltant.domain.auth.mapper.AuthMapper;
-import com.consoltant.consoltant.domain.auth.service.AuthService;
+//import com.consoltant.consoltant.domain.auth.mapper.AuthMapper;
+//import com.consoltant.consoltant.domain.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
-    private final AuthService authService;
-    private final AuthMapper authMapper;
+    //private final AuthService authService;
+    //private final AuthMapper authMapper;
 
     //로그인 API
     @PostMapping
@@ -34,21 +34,21 @@ public class AuthController {
         return null;
     }
 
-    //1원 송금 API
-    @PostMapping
-    public ResponseEntity<?> openAccountAuth(@RequestBody LoginRequestDto loginRequestDto) {
+//    //1원 송금 API
+//    @PostMapping
+//    public ResponseEntity<?> openAccountAuth(@RequestBody LoginRequestDto loginRequestDto) {
+//
+//        log.info("1원 송금 API: {}", loginRequestDto);
+//
+//        return null;
+//    }
 
-        log.info("1원 송금 API: {}", loginRequestDto);
-
-        return null;
-    }
-
-    //1원 송금 인증 API
-    @PostMapping
-    public ResponseEntity<?> checkAuthCode(@RequestBody LoginRequestDto loginRequestDto) {
-
-        log.info("1원 송금 인증 API: {}", loginRequestDto);
-
-        return null;
-    }
+//    //1원 송금 인증 API
+//    @PostMapping
+//    public ResponseEntity<?> checkAuthCode(@RequestBody LoginRequestDto loginRequestDto) {
+//
+//        log.info("1원 송금 인증 API: {}", loginRequestDto);
+//
+//        return null;
+//    }
 }

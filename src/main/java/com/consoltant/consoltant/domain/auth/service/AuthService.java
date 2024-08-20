@@ -14,17 +14,17 @@ import java.net.URI;
 import java.net.URLEncoder;
 
 @RequiredArgsConstructor
-@Service
+//@Service
 public class AuthService {
-    private final UserRepository userRepository;
+    //private final UserRepository userRepository;
 
     public Long login(User user){
-        userRepository.login();
+//        userRepository.login();
         return null;
     }
 
     public Long logout(User user){
-        userRepository.logout();
+//        userRepository.logout();
         return null;
     }
 
