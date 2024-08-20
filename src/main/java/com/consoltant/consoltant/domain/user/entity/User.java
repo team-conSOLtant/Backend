@@ -1,6 +1,7 @@
 package com.consoltant.consoltant.domain.user.entity;
 
 import com.consoltant.consoltant.domain.university.entity.University;
+import com.consoltant.consoltant.domain.user.dto.CreateUserRequestDto;
 import com.consoltant.consoltant.util.constant.JourneyType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,18 +14,19 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "UPDATE user SET is_deleted = true WHERE user_id = ?")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@SQLDelete(sql = "UPDATE user SET is_deleted = true WHERE id = ?")
 @SQLRestriction("is_deleted = false")
 @Table(name = "user")
+@ToString
 public class User {
 
     @Id
@@ -32,7 +34,7 @@ public class User {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "university_id", nullable = false)
+    @JoinColumn(name = "university_id")
     private University university;
 
     @Column(nullable = false, length = 100)
@@ -55,7 +57,7 @@ public class User {
     @Column(length = 100)
     private String birthDate;
 
-    @Column(nullable = false, length = 100)
+    @Column(length = 100)
     private String major;
 
     private Double totalGpa;
@@ -65,7 +67,8 @@ public class User {
     private Integer totalSumGpa;
 
     @Column(nullable = false)
-    private Boolean isEmployed;
+    @Builder.Default
+    private Boolean isEmployed = false;
 
     @Column(length = 100)
     private String accountNo;
@@ -76,9 +79,25 @@ public class User {
     private JourneyType currentJourneyType; // Custom enum for 여정중 현재인 것 조회용
 
     @Column(nullable = false)
-    private Boolean isDeleted;
+    @Builder.Default
+    private Boolean isDeleted = false;
 
-    public void changeOf(User user){
 
+    public void addAccountInfo(){
+
+    }
+
+    public void addAcademyInfo(User user){
+        this.university = user.getUniversity();
+    }
+
+    //사용자 키 추가
+    public void addUserKey(String userKey){
+        this.userKey = userKey;
+    }
+
+    //제휴 대학 추가
+    public void addUniversity(University university){
+        this.university = university;
     }
 }

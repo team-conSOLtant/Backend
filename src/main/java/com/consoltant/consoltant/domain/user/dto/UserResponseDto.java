@@ -2,7 +2,11 @@ package com.consoltant.consoltant.domain.user.dto;
 
 import com.consoltant.consoltant.domain.university.entity.University;
 import com.consoltant.consoltant.util.constant.JourneyType;
+import lombok.Builder;
+import lombok.Getter;
 
+@Builder
+@Getter
 public class UserResponseDto {
     private Long id;
 

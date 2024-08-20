@@ -1,7 +1,8 @@
 package com.consoltant.consoltant.domain.user.controller;
 
 import com.consoltant.consoltant.domain.user.dto.CreateUserRequestDto;
-import com.consoltant.consoltant.domain.user.dto.UpdateUserRequestDto;
+import com.consoltant.consoltant.domain.user.dto.CreateUserAcademyRequestDto;
+import com.consoltant.consoltant.domain.user.dto.CreateUserAccountRequestDto;
 import com.consoltant.consoltant.domain.user.mapper.UserMapper;
 import com.consoltant.consoltant.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
+@RequestMapping("/user")
 public class UserController {
     private final UserService userService;
     private final UserMapper userMapper;
@@ -25,14 +27,20 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<?> createUser(@RequestBody CreateUserRequestDto createUserRequestDto) {
-        log.info("사용자 생성 API");
+        log.info("사용자 생성 API -> {}", createUserRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(userMapper.toUser(createUserRequestDto)));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> modifyUser(@PathVariable Long id, @RequestBody UpdateUserRequestDto updateUserRequestDto) {
-        log.info("사용자 수정 API {}", id);
-        return ResponseEntity.ok(userService.updateUser(id, userMapper.toUser(updateUserRequestDto)));
+    @PostMapping("/{id}/academy")
+    public ResponseEntity<?> createUserAcademy(@PathVariable Long id, @RequestBody CreateUserAcademyRequestDto createUserAcademyRequestDto) {
+        log.info("사용자 학력 추가 API {}", id);
+        return ResponseEntity.ok(userService.createUserAcademy(id, userMapper.toUser(createUserAcademyRequestDto)));
+    }
+
+    @PostMapping("/{id}/account")
+    public ResponseEntity<?> createUserAccount(@PathVariable Long id, @RequestBody CreateUserAccountRequestDto createUserAccountRequestDto) {
+        log.info("사용자 계좌 추가 API {}", id);
+        return ResponseEntity.ok(userService.createUserAccount(id, userMapper.toUser(createUserAccountRequestDto)));
     }
 
     @DeleteMapping("/{id}")

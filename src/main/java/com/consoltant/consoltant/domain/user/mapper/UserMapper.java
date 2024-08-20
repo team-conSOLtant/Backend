@@ -8,7 +8,7 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface UserMapper {
     User toUser(CreateUserRequestDto createUserRequestDto);
-    User toUser(UpdateUserRequestDto updateUserRequestDto);
+    User toUser(CreateUserAccountRequestDto createUserAccountRequestDto);
+    User toUser(CreateUserAcademyRequestDto createUserAcademyRequestDto);
     UserResponseDto toUserResponseDto(User user);
-
 }

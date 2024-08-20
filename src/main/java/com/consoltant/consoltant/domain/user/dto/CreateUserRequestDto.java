@@ -1,10 +1,11 @@
 package com.consoltant.consoltant.domain.user.dto;
 
-import com.consoltant.consoltant.domain.university.entity.University;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class CreateUserRequestDto {
-    private University university;
-
     private String email;
 
     private String password;
@@ -17,5 +18,4 @@ public class CreateUserRequestDto {
 
     private String birthDate;
 
-    private String major;
 }
