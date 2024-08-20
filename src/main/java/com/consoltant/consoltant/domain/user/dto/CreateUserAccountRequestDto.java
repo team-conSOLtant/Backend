@@ -3,7 +3,7 @@ package com.consoltant.consoltant.domain.user.dto;
 import com.consoltant.consoltant.domain.university.entity.University;
 import com.consoltant.consoltant.util.constant.JourneyType;
 
-public class UpdateUserResponseDto {
+public class UpdateUserAccountRequestDto {
     private Long id;
 
     private University university;
