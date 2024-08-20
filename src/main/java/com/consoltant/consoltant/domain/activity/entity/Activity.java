@@ -1,5 +1,6 @@
 package com.consoltant.consoltant.domain.activity.entity;
 
+import com.consoltant.consoltant.domain.activity.dto.ActivityRequestDto;
 import com.consoltant.consoltant.domain.portfolio.entity.Portfolio;
 import com.consoltant.consoltant.util.constant.ActivityType;
 import jakarta.persistence.Column;
@@ -13,7 +14,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
-import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
@@ -21,8 +23,10 @@ import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "UPDATE activity SET is_deleted = true WHERE activity_id = ?")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@SQLDelete(sql = "UPDATE activity SET is_deleted = true WHERE id = ?")
 @SQLRestriction("is_deleted = false")
 @Table(name = "activity")
 public class Activity {
@@ -52,6 +56,19 @@ public class Activity {
     private LocalDate endDate;
 
     @Column(nullable = false)
-    private Boolean isDeleted;
+    @Builder.Default
+    private Boolean isDeleted = false;
+
+    public void setPortfolio(Portfolio portfolio){
+        this.portfolio = portfolio;
+    }
+
+    public void update(ActivityRequestDto activityRequestDto){
+        this.title = activityRequestDto.getTitle();
+        this.content = activityRequestDto.getContent();
+        this.startDate = activityRequestDto.getStartDate();
+        this.endDate = activityRequestDto.getEndDate();
+        this.activityType= activityRequestDto.getActivityType();
+    }
 
 }
