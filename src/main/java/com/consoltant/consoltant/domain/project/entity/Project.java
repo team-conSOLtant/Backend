@@ -1,6 +1,7 @@
 package com.consoltant.consoltant.domain.project.entity;
 
 import com.consoltant.consoltant.domain.portfolio.entity.Portfolio;
+import com.consoltant.consoltant.domain.project.dto.ProjectRequestDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,7 +11,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
-import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
@@ -18,8 +20,10 @@ import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "UPDATE project SET is_deleted = true WHERE project_id = ?")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@SQLDelete(sql = "UPDATE project SET is_deleted = true WHERE id = ?")
 @SQLRestriction("is_deleted = false")
 @Table(name = "project")
 public class Project {
@@ -50,5 +54,19 @@ public class Project {
     private String projectUrl;
 
     @Column(nullable = false)
-    private Boolean isDeleted;
+    @Builder.Default
+    private Boolean isDeleted = false;
+
+    public void setPortfolio(Portfolio portfolio){
+        this.portfolio = portfolio;
+    }
+
+    public void update(ProjectRequestDto projectRequestDto){
+        this.title = projectRequestDto.getTitle();
+        this.language = projectRequestDto.getLanguage();
+        this.description = projectRequestDto.getDescription();
+        this.projectUrl = projectRequestDto.getProjectUrl();
+        this.startDate = projectRequestDto.getStartDate();
+        this.endDate = projectRequestDto.getEndDate();
+    }
 }

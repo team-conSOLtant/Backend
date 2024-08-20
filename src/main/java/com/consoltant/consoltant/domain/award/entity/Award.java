@@ -1,5 +1,6 @@
 package com.consoltant.consoltant.domain.award.entity;
 
+import com.consoltant.consoltant.domain.award.dto.AwardRequestDto;
 import com.consoltant.consoltant.domain.portfolio.entity.Portfolio;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,7 +11,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
-import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
@@ -18,8 +20,10 @@ import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "UPDATE award SET is_deleted = true WHERE award_id = ?")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@SQLDelete(sql = "UPDATE award SET is_deleted = true WHERE id = ?")
 @SQLRestriction("is_deleted = false")
 @Table(name = "award")
 public class Award {
@@ -48,6 +52,19 @@ public class Award {
     private String content;
 
     @Column(nullable = false)
-    private Boolean isDeleted;
+    @Builder.Default
+    private Boolean isDeleted = false;
+
+    public void setPortfolio(Portfolio portfolio){
+        this.portfolio = portfolio;
+    }
+
+    public void update(AwardRequestDto awardRequestDto){
+        this.title = awardRequestDto.getTitle();
+        this.acquisitionDate = awardRequestDto.getAcquisitionDate();
+        this.awardOrganization = awardRequestDto.getAwardOrganization();
+        this.awardGrade = awardRequestDto.getAwardGrade();
+        this.content = awardRequestDto.getContent();
+    }
 
 }

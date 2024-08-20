@@ -1,5 +1,6 @@
 package com.consoltant.consoltant.domain.portfolio.entity;
 
+import com.consoltant.consoltant.domain.portfolio.dto.PortfolioRequestDto;
 import com.consoltant.consoltant.domain.user.entity.User;
 import com.consoltant.consoltant.util.constant.FinanceKeyword;
 import jakarta.persistence.Column;
@@ -12,7 +13,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
@@ -20,8 +22,10 @@ import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "UPDATE portfolio SET is_deleted = true WHERE portfolio_id = ?")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@SQLDelete(sql = "UPDATE portfolio SET is_deleted = true WHERE id = ?")
 @SQLRestriction("is_deleted = false")
 @Table(name = "portfolio")
 public class Portfolio {
@@ -57,6 +61,22 @@ public class Portfolio {
     private String backgroundColor;
 
     @Column(nullable = false)
-    private Boolean isDeleted;
+    @Builder.Default
+    private Boolean isDeleted = false;
+
+    public void setUser(User user){
+        this.user = user;
+    }
+
+    public void update(PortfolioRequestDto portfolioRequestDto){
+        this.totalGpa = portfolioRequestDto.getTotalGpa();
+        this.majorGpa = portfolioRequestDto.getMajorGpa();
+        this.financeKeyword = portfolioRequestDto.getFinanceKeyword();
+        this.myKeyword = portfolioRequestDto.getMyKeyword();
+        this.job = portfolioRequestDto.getJob();
+        this.imageUrl = portfolioRequestDto.getImageUrl();
+        this.description = portfolioRequestDto.getDescription();
+        this.backgroundColor = portfolioRequestDto.getBackgroundColor();
+    }
 
 }
