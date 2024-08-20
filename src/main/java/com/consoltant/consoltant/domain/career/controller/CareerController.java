@@ -3,6 +3,7 @@ package com.consoltant.consoltant.domain.career.controller;
 import com.consoltant.consoltant.domain.career.dto.CareerRequestDto;
 import com.consoltant.consoltant.domain.career.dto.CareerResponseDto;
 import com.consoltant.consoltant.domain.career.service.CareerService;
+import com.consoltant.consoltant.util.base.BaseSuccessResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,31 +27,32 @@ public class CareerController {
 
     //단일 조회
     @GetMapping("/{id}")
-    public CareerResponseDto findById(@PathVariable Long id) {
-        return careerService.findById(id);
+    public BaseSuccessResponse<CareerResponseDto> findById(@PathVariable Long id) {
+        return new BaseSuccessResponse<>(careerService.findById(id));
     }
 
     //포폴 아이디로 경력 리스트 조회
     @GetMapping
-    public List<CareerResponseDto> findAllByPortfolioId(@RequestParam Long portfolioId){
-        return careerService.findAllByPortfolioId(portfolioId);
+    public BaseSuccessResponse<List<CareerResponseDto>> findAllByPortfolioId(@RequestParam Long portfolioId){
+        return new BaseSuccessResponse<>(careerService.findAllByPortfolioId(portfolioId));
     }
 
     //경력 등록
     @PostMapping
-    public CareerResponseDto save(@RequestBody CareerRequestDto careerRequestDto) {
-        return careerService.save(careerRequestDto);
+    public BaseSuccessResponse<CareerResponseDto> save(@RequestBody CareerRequestDto careerRequestDto) {
+        return new BaseSuccessResponse<>(careerService.save(careerRequestDto));
     }
 
     //경력 수정
     @PutMapping("/{id}")
-    public CareerResponseDto update(@PathVariable Long id, @RequestBody CareerRequestDto careerRequestDto){
-        return careerService.update(id, careerRequestDto);
+    public BaseSuccessResponse<CareerResponseDto> update(@PathVariable Long id, @RequestBody CareerRequestDto careerRequestDto){
+        return new BaseSuccessResponse<>(careerService.update(id, careerRequestDto));
     }
 
     //경력 삭제
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id){
+    public BaseSuccessResponse<Void> delete(@PathVariable Long id){
         careerService.delete(id);
+        return new BaseSuccessResponse<>(null);
     }
 }

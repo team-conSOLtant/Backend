@@ -19,7 +19,7 @@ public class CareerModuleService {
 
     //portfolioId로 career 전부 조회
     public List<Career> findAllByPortfolioId(Long portfolioId) {
-        return careerRepository.findByPortfolioId(portfolioId);
+        return careerRepository.findAllByPortfolioId(portfolioId);
     }
 
     //Portfolio 저장

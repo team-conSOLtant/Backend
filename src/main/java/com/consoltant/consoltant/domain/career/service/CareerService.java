@@ -28,7 +28,7 @@ public class CareerService {
     public List<CareerResponseDto> findAllByPortfolioId(Long portfolioId){
         return careerModuleService.findAllByPortfolioId(portfolioId).stream()
             .sorted(Comparator.comparing(Career::getStartDate))
-            .map(career -> careerMapper.toCareerResponseDto(career))
+            .map(careerMapper::toCareerResponseDto)
             .toList();
     }
 
@@ -37,14 +37,14 @@ public class CareerService {
         Portfolio portfolio = portfolioModuleService.findById(careerRequestDto.getPortfolioId());
         Career career = careerMapper.toCareer(careerRequestDto);
         career.setPortfolio(portfolio);
-        careerModuleService.save(career);
-        return careerMapper.toCareerResponseDto(career);
+        return careerMapper.toCareerResponseDto(careerModuleService.save(career));
     }
 
     //수정
     public CareerResponseDto update(Long id, CareerRequestDto careerRequestDto){
         Career career = careerModuleService.findById(id);
         career.update(careerRequestDto);
+        careerModuleService.save(career);
         return careerMapper.toCareerResponseDto(career);
     }
 
