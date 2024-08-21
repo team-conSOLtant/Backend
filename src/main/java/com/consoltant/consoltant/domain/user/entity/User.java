@@ -83,7 +83,7 @@ public class User {
     private Boolean isDeleted = false;
 
 
-    public void addAccountInfo(){
+    public void addAccountInfo(String accountNo){
 
     }
 

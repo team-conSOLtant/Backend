@@ -1,11 +1,7 @@
-package com.consoltant.consoltant.util.api.dto;
+package com.consoltant.consoltant.util.api.dto.createmember;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
-
-import java.time.LocalDate;
 
 @Setter
 @Getter
