@@ -1,5 +1,6 @@
 package com.consoltant.consoltant.domain.user.service;
 
+import com.consoltant.consoltant.domain.auth.dto.RegisterRequestDto;
 import com.consoltant.consoltant.domain.university.entity.University;
 import com.consoltant.consoltant.domain.university.repository.UniversityRepository;
 import com.consoltant.consoltant.domain.user.dto.UserResponseDto;
@@ -38,7 +39,7 @@ public class UserService{
         user.addUniversity(university);
 
         //userKey 생성하기
-        user.addUserKey(restTemplateUtil.createMember(user.getEmail()));
+//        user.addUserKey(restTemplateUtil.createMember(user.getEmail()));
 
         log.info("사용자 Entity -> {}",user);
         userRepository.save(user);
@@ -75,5 +76,4 @@ public class UserService{
 
         return id;
     }
-
 }

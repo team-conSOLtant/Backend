@@ -22,7 +22,8 @@ public class PortfolioService {
     }
 
     public PortfolioResponseDto save(PortfolioRequestDto portfolioRequestDto) {
-        Portfolio portfolio = portfolioMapper.toPortfolio(portfolioRequestDto);
+        Portfolio portfolio
+                = portfolioMapper.toPortfolio(portfolioRequestDto);
         User user = userRepository.findById(portfolioRequestDto.getUserId()).orElseThrow();
         portfolio.setUser(user);
         return portfolioMapper.toPortfolioResponseDto(portfolioModuleService.save(portfolio));
