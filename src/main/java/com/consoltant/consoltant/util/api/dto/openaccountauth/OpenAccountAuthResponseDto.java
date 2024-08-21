@@ -6,6 +6,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class OpenAccountAuthResponseDto {
-    private String transactionUniqueId;
+    private String transactionUniqueNo;
     private String accountNo;
 }

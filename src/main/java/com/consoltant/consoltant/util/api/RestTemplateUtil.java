@@ -2,6 +2,8 @@ package com.consoltant.consoltant.util.api;
 
 
 import com.consoltant.consoltant.global.exception.BadRequestException;
+import com.consoltant.consoltant.util.api.dto.checkauthcode.CheckAuthCodeResponseDto;
+import com.consoltant.consoltant.util.api.dto.inquiretransactionhistory.InquireTransactionHistoryResponseDto;
 import com.consoltant.consoltant.util.api.dto.openaccountauth.OpenAccountAuthResponseDto;
 import com.consoltant.consoltant.util.api.global.response.RECResponse;
 import com.consoltant.consoltant.util.api.dto.createdemanddepositaccount.CreateDemandDepositAccountResponseDto;
@@ -20,6 +22,7 @@ import org.springframework.web.client.RestTemplate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Component
 @Slf4j
@@ -34,12 +37,26 @@ public class RestTemplateUtil {
     private String fintechAppNo;
     @Value("${api.key}")
     private String apiKey;
+//    @Value("${institution.transaction.unique.no}")
+//    private String institutionTransactionUniqueNo;
 
-    private RequestHeader requestHeader(String name, String userKey, String institutionTransactionUniqueNo){
+    public static String generateNumericUUID() {
+        UUID uuid = UUID.randomUUID();
+        return uuid.toString().replaceAll("[^0-9]", "");
+    }
+
+    private RequestHeader requestHeader(String name, String userKey){
         LocalDateTime today = LocalDateTime.now();
 
         String date = today.toString().split("T")[0].replace("-","");
         String time = today.toString().split("T")[1].substring(0,8).replace(":","");
+
+        //시퀀스 or UUID or 사용자 아아디 추가
+        String numericUUID = generateNumericUUID();
+
+        String institutionTransactionUniqueNo = date + time + numericUUID.substring(0,(Math.min(numericUUID.length(), 6)));
+
+        log.info("기관거래고유번호 -> {}",institutionTransactionUniqueNo);
 
         return RequestHeader.builder()
                 .apiName(name)
@@ -54,12 +71,8 @@ public class RestTemplateUtil {
                 .build();
     }
 
-    //선택
-    @Value("${institution.transaction.unique.no}")
-    private String institutionTransactionUniqueNo;
-
-    // POST 요청
-    public OpenAccountAuthResponseDto openAccountAuth(String accountNo, String userKey) {
+    //1원 송금
+    public OpenAccountAuthResponseDto openAccountAuth(String userKey, String accountNo) {
         log.info("1원 송금 API");
 
         String uri = "edu/accountAuth/openAccountAuth";
@@ -68,7 +81,7 @@ public class RestTemplateUtil {
 
         Map<String,Object> requestBody = new HashMap<>();
 
-        RequestHeader headers = requestHeader(name,userKey,institutionTransactionUniqueNo);
+        RequestHeader headers = requestHeader(name,userKey);
 
         requestBody.put("Header",headers);
         requestBody.put("accountNo",accountNo);
@@ -86,6 +99,39 @@ public class RestTemplateUtil {
             throw new BadRequestException("API 요청 중 오류가 발생했습니다.");
         }
         log.info("AccountNo -> {}", response.getBody().getREC().getAccountNo());
+
+        return response.getBody().getREC();
+    }
+
+    // 1원 송금 인증
+    public CheckAuthCodeResponseDto checkAuthCode(String userKey, String accountNo, String authText, String authCode) {
+        log.info("1원 송금 인증 API");
+
+        String uri = "edu/accountAuth/checkAuthCode";
+
+        String name = "checkAuthCode";
+
+        Map<String,Object> requestBody = new HashMap<>();
+
+        RequestHeader headers = requestHeader(name,userKey);
+
+        requestBody.put("Header",headers);
+        requestBody.put("accountNo",accountNo);
+        requestBody.put("authText",authText);
+        requestBody.put("authCode",authCode);
+
+        HttpEntity<Object> entity = new HttpEntity<>(requestBody);
+
+        ResponseEntity<RECResponse<CheckAuthCodeResponseDto>> response
+                = restTemplate.exchange(
+                url + uri, HttpMethod.POST, entity,
+                new ParameterizedTypeReference<>(){}
+        );
+
+        if(response.getBody() == null){
+            throw new BadRequestException("API 요청 중 오류가 발생했습니다.");
+        }
+        log.info("Status -> {}", response.getBody().getREC().getStatus());
 
         return response.getBody().getREC();
     }
@@ -121,7 +167,7 @@ public class RestTemplateUtil {
 
         Map<String,Object>requestBody = new HashMap<>();
 
-        RequestHeader headers = requestHeader(name, userKey, institutionTransactionUniqueNo);
+        RequestHeader headers = requestHeader(name, userKey);
 
         log.info("요청 헤더 -> {}",headers);
 
@@ -142,6 +188,37 @@ public class RestTemplateUtil {
         }
         log.info("Account No -> {}", response.getBody().getHeader().toString());
         log.info("Account No -> {}", response.getBody().getREC().toString());
+
+        return response.getBody().getREC();
+    }
+    
+    //계좌 거래 내역 단건 조회
+    public InquireTransactionHistoryResponseDto inquireTransactionHistoryResponseDto(String userKey, String accountNo, String transactionUniqueNo){
+
+        final String name = "inquireTransactionHistory";
+        log.info("금융 API 계좌 거래 내역 단건 조회");
+
+        String uri = "edu/demandDeposit/inquireTransactionHistory";
+
+        Map<String,Object>requestBody = new HashMap<>();
+
+        RequestHeader headers = requestHeader(name, userKey);
+
+        requestBody.put("Header",headers);
+        requestBody.put("accountNo",accountNo);
+        requestBody.put("transactionUniqueNo",transactionUniqueNo);
+
+        HttpEntity<Object> entity = new HttpEntity<>(requestBody);
+
+        ResponseEntity<RECResponse<InquireTransactionHistoryResponseDto>> response =
+                restTemplate.exchange(
+                        url + uri,HttpMethod.POST ,entity,
+                        new ParameterizedTypeReference<>(){}
+                );
+
+        if(response.getBody() == null){
+            throw new BadRequestException("API 요청 중 오류가 발생했습니다.");
+        }
 
         return response.getBody().getREC();
     }
