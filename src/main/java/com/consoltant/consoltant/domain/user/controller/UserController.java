@@ -1,51 +1,68 @@
 package com.consoltant.consoltant.domain.user.controller;
 
-import com.consoltant.consoltant.domain.user.dto.CreateUserRequestDto;
-import com.consoltant.consoltant.domain.user.dto.CreateUserAcademyRequestDto;
-import com.consoltant.consoltant.domain.user.dto.CreateUserAccountRequestDto;
+import com.consoltant.consoltant.domain.user.dto.*;
 import com.consoltant.consoltant.domain.user.mapper.UserMapper;
 import com.consoltant.consoltant.domain.user.service.UserService;
+import com.consoltant.consoltant.util.base.BaseSuccessResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/user")
+@RequestMapping("/users")
 public class UserController {
     private final UserService userService;
     private final UserMapper userMapper;
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getUserById(@PathVariable Long id) {
+    public BaseSuccessResponse<UserResponseDto> getUserById(@PathVariable Long id) {
         log.info("사용자 조회 API {}", id);
-        return ResponseEntity.ok(userService.getUser(id));
+        return new BaseSuccessResponse<>(userService.getUser(id));
     }
 
     @PostMapping
-    public ResponseEntity<?> createUser(@RequestBody CreateUserRequestDto createUserRequestDto) {
+    public BaseSuccessResponse<UserResponseDto> createUser(@RequestBody CreateUserRequestDto createUserRequestDto) {
         log.info("사용자 생성 API -> {}", createUserRequestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(userMapper.toUser(createUserRequestDto)));
+        return new BaseSuccessResponse<>(userService.createUser(userMapper.toUser(createUserRequestDto)));
     }
 
     @PostMapping("/{id}/academy")
-    public ResponseEntity<?> createUserAcademy(@PathVariable Long id, @RequestBody CreateUserAcademyRequestDto createUserAcademyRequestDto) {
+    public BaseSuccessResponse<UserResponseDto> createUserAcademy(@PathVariable Long id, @RequestBody CreateUserAcademyRequestDto createUserAcademyRequestDto) {
         log.info("사용자 학력 추가 API {}", id);
-        return ResponseEntity.ok(userService.createUserAcademy(id, userMapper.toUser(createUserAcademyRequestDto)));
+        return new BaseSuccessResponse<>(userService.createUserAcademy(id, userMapper.toUser(createUserAcademyRequestDto)));
+    }
+
+    @PostMapping("/{id}/create/account")
+    public BaseSuccessResponse<CreateAccountResponseDto> createAccount(@PathVariable Long id, @RequestBody CreateAccountRequestDto createAccountRequestDto) {
+        log.info("계좌 생성 API -> {} {}", id, createAccountRequestDto.getAccountTypeUniqueNo());
+        return new BaseSuccessResponse<>(userService.createAccount(id, createAccountRequestDto.getAccountTypeUniqueNo()));
     }
 
     @PostMapping("/{id}/account")
-    public ResponseEntity<?> createUserAccount(@PathVariable Long id, @RequestBody CreateUserAccountRequestDto createUserAccountRequestDto) {
+    public BaseSuccessResponse<UserResponseDto> createUserAccount(@PathVariable Long id, @RequestBody CreateUserAccountRequestDto createUserAccountRequestDto) {
         log.info("사용자 계좌 추가 API {}", id);
-        return ResponseEntity.ok(userService.createUserAccount(id, userMapper.toUser(createUserAccountRequestDto)));
+        return new BaseSuccessResponse<>(userService.createUserAccount(id, userMapper.toUser(createUserAccountRequestDto)));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+    public BaseSuccessResponse<Long> deleteUser(@PathVariable Long id) {
         log.info("사용자 삭제 API {}", id);
-        return ResponseEntity.ok(userService.deleteUser(id));
+        return new BaseSuccessResponse<>(userService.deleteUser(id));
+    }
+
+    @PostMapping("/{id}/issue")
+    public BaseSuccessResponse<IssueAccountResponseDto> issueAccount(@PathVariable Long id, @RequestBody IssueAccountRequestDto issueAccountRequestDto){
+        log.info("1원 송금 API ");
+
+        return new BaseSuccessResponse<>(userService.issueAccount(id,issueAccountRequestDto.getAccountNo()));
+    }
+
+    @PostMapping("/{id}/check")
+    public BaseSuccessResponse<CheckAccontResponseDto> checkAccount(@PathVariable Long id, @RequestBody CheckAccountRequestDto checkAccountRequestDto){
+        log.info("1원 송금 확인 API");
+
+        return null;
     }
 }
