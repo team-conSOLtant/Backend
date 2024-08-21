@@ -4,6 +4,8 @@ import com.consoltant.consoltant.domain.portfolio.dto.PortfolioRequestDto;
 import com.consoltant.consoltant.domain.portfolio.dto.PortfolioResponseDto;
 import com.consoltant.consoltant.domain.portfolio.entity.Portfolio;
 import com.consoltant.consoltant.domain.portfolio.mapper.PortfolioMapper;
+import com.consoltant.consoltant.domain.user.entity.User;
+import com.consoltant.consoltant.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +15,7 @@ public class PortfolioService {
 
     private final PortfolioModuleService portfolioModuleService;
     private final PortfolioMapper portfolioMapper;
+    private final UserRepository userRepository;
 
     public PortfolioResponseDto findById(Long id) {
         return portfolioMapper.toPortfolioResponseDto(portfolioModuleService.findById(id));
@@ -20,6 +23,8 @@ public class PortfolioService {
 
     public PortfolioResponseDto save(PortfolioRequestDto portfolioRequestDto) {
         Portfolio portfolio = portfolioMapper.toPortfolio(portfolioRequestDto);
+        User user = userRepository.findById(portfolioRequestDto.getUserId()).orElseThrow();
+        portfolio.setUser(user);
         return portfolioMapper.toPortfolioResponseDto(portfolioModuleService.save(portfolio));
     }
 
