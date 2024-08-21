@@ -25,11 +25,11 @@ public class AuthController {
     }
 
     //로그인 API
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequestDto loginRequestDto) {
-        log.info("login API: {}", loginRequestDto);
-        return ResponseEntity.ok(authService.login(loginRequestDto));
-    }
+//    @PostMapping("/login")
+//    public ResponseEntity<?> login(@RequestBody LoginRequestDto loginRequestDto) {
+//        log.info("login API: {}", loginRequestDto);
+//        return ResponseEntity.ok(authService.login(loginRequestDto));
+//    }
 
     //로그아웃 API
     @PostMapping("/logout")

@@ -8,6 +8,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PortfolioElasticRepository extends ElasticsearchRepository<PortfolioDocument, String> {
-
     Page<PortfolioDocument> findAllByAllContentContaining(String keyword, Pageable pageable);
 }
