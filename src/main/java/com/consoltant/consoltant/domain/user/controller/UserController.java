@@ -52,17 +52,29 @@ public class UserController {
         return new BaseSuccessResponse<>(userService.deleteUser(id));
     }
 
-    @PostMapping("/{id}/issue")
+    @PostMapping("/{id}/issue/account")
     public BaseSuccessResponse<IssueAccountResponseDto> issueAccount(@PathVariable Long id, @RequestBody IssueAccountRequestDto issueAccountRequestDto){
         log.info("1원 송금 API ");
 
         return new BaseSuccessResponse<>(userService.issueAccount(id,issueAccountRequestDto.getAccountNo()));
     }
 
-    @PostMapping("/{id}/check")
-    public BaseSuccessResponse<CheckAccontResponseDto> checkAccount(@PathVariable Long id, @RequestBody CheckAccountRequestDto checkAccountRequestDto){
+    @PostMapping("/{id}/check/account")
+    public BaseSuccessResponse<CheckAccountResponseDto> checkAccount(@PathVariable Long id, @RequestBody CheckAccountRequestDto checkAccountRequestDto){
         log.info("1원 송금 확인 API");
-
-        return null;
+        String accountNo = checkAccountRequestDto.getAccountNo();
+        String authText = checkAccountRequestDto.getAuthText();
+        String authCode = checkAccountRequestDto.getAuthCode();
+        return new BaseSuccessResponse<>(userService.checkAccount(id, accountNo, authText, authCode));
     }
+
+    @PostMapping("/{id}/check/message")
+    public BaseSuccessResponse<CheckTransactionMessageResponseDto> checkTransactionMessage(@PathVariable Long id, @RequestBody CheckTransactionMessageRequestDto checkTransactionMessageRequestDto){
+        log.info("1원 송금 메세지 확인 API");
+        String accountNo = checkTransactionMessageRequestDto.getAccountNo();
+        String transactionUniqueNo = checkTransactionMessageRequestDto.getTransactionUniqueNo();
+
+        return new BaseSuccessResponse<>(userService.checkMessage(id, accountNo, transactionUniqueNo));
+    }
+
 }

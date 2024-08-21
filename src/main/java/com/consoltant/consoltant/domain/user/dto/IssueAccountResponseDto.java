@@ -6,6 +6,6 @@ import lombok.Getter;
 @Builder
 @Getter
 public class IssueAccountResponseDto {
+    private String transactionUniqueNo;
     private String accountNo;
-    private String transactionUniqueId;
 }

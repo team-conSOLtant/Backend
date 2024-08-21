@@ -1,19 +1,14 @@
 package com.consoltant.consoltant.domain.user.service;
 
-import com.consoltant.consoltant.domain.auth.dto.OpenAccountAuthResponseDto;
 import com.consoltant.consoltant.domain.university.entity.University;
 import com.consoltant.consoltant.domain.university.repository.UniversityRepository;
-import com.consoltant.consoltant.domain.user.dto.CreateAccountResponseDto;
-import com.consoltant.consoltant.domain.user.dto.IssueAccountResponseDto;
-import com.consoltant.consoltant.domain.user.dto.UserResponseDto;
+import com.consoltant.consoltant.domain.user.dto.*;
 import com.consoltant.consoltant.domain.user.entity.User;
 import com.consoltant.consoltant.domain.user.mapper.UserMapper;
 import com.consoltant.consoltant.domain.user.repository.UserModuleRepository;
 import com.consoltant.consoltant.domain.user.repository.UserRepository;
 import com.consoltant.consoltant.global.exception.BadRequestException;
 import com.consoltant.consoltant.util.api.RestTemplateUtil;
-import com.consoltant.consoltant.util.api.global.response.RECResponse;
-import com.consoltant.consoltant.util.api.dto.createdemanddepositaccount.CreateDemandDepositAccountResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -96,7 +91,7 @@ public class UserService{
 
     //1원 송금
     public IssueAccountResponseDto issueAccount(Long id, String accountNo){
-        User entity = userModuleRepository.findById(id).orElseThrow();
+        User entity = userModuleRepository.findById(id).orElseThrow(()->new BadRequestException("존재하지 않는 사용자입니다."));
 
         String userKey = entity.getUserKey();
 
@@ -104,4 +99,20 @@ public class UserService{
     }
 
     //1원 송금 인증
+    public CheckAccountResponseDto checkAccount(Long id, String accountNo, String authText, String authCode){
+        User entity = userModuleRepository.findById(id).orElseThrow(()->new BadRequestException("존재하지 않는 사용자입니다."));
+
+        String userKey = entity.getUserKey();
+
+        return userMapper.toCheckAccountResponseDto(restTemplateUtil.checkAuthCode(userKey,accountNo, authText,authCode));
+    }
+
+    //1원 송금 메세지 확인
+    public CheckTransactionMessageResponseDto checkMessage(Long id, String accountNo, String transactionUniqueNo){
+        User entity = userModuleRepository.findById(id).orElseThrow(()->new BadRequestException("존재하지 않는 사용자입니다."));
+
+        String userKey = entity.getUserKey();
+
+        return userMapper.toCheckTransactionResponseDto(restTemplateUtil.inquireTransactionHistoryResponseDto(userKey,accountNo, transactionUniqueNo));
+    }
 }
