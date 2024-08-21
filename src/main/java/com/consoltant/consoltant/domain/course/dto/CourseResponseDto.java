@@ -5,9 +5,12 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CourseRequestDto {
+public class CourseResponseDto {
+
+    private Long id;
     private Long userId;
     private Long subjectId;
     private Boolean isSelected;
+    private Boolean isDeleted;
 
 }

@@ -1,5 +1,6 @@
 package com.consoltant.consoltant.domain.course.entity;
 
+import com.consoltant.consoltant.domain.course.dto.CourseRequestDto;
 import com.consoltant.consoltant.domain.subject.entity.Subject;
 import com.consoltant.consoltant.domain.user.entity.User;
 import jakarta.persistence.Column;
@@ -40,10 +41,15 @@ public class Course {
     private Subject subject;
 
     @Column(nullable = false)
-    private Boolean isSelected;
+    @Builder.Default
+    private Boolean isSelected = false;
 
     @Column(nullable = false)
     @Builder.Default
     private Boolean isDeleted = false;
+
+    public void update(CourseRequestDto courseRequestDto){
+        this.isSelected = courseRequestDto.getIsSelected();
+    }
 
 }
