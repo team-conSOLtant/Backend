@@ -1,7 +1,9 @@
 package com.consoltant.consoltant.domain.project.dto;
 
 
+import com.consoltant.consoltant.domain.projectuser.dto.ProjectUserRequestDto;
 import java.time.LocalDate;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,5 +18,6 @@ public class ProjectRequestDto {
     private String description;
     private LocalDate startDate;
     private LocalDate endDate;
+    private List<ProjectUserRequestDto> projectUsers;
 
 }
