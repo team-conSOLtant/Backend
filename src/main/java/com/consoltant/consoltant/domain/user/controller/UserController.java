@@ -7,6 +7,9 @@ import com.consoltant.consoltant.util.base.BaseSuccessResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.multipart.MultipartFile;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -16,22 +19,12 @@ public class UserController {
     private final UserService userService;
     private final UserMapper userMapper;
 
-    @GetMapping("/{id}")
-    public BaseSuccessResponse<UserResponseDto> getUserById(@PathVariable Long id) {
+    @GetMapping("")
+    public BaseSuccessResponse<UserResponseDto> getUserById() {
+        Long id = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
+
         log.info("사용자 조회 API {}", id);
         return new BaseSuccessResponse<>(userService.getUser(id));
-    }
-
-    @PostMapping
-    public BaseSuccessResponse<UserResponseDto> createUser(@RequestBody CreateUserRequestDto createUserRequestDto) {
-        log.info("사용자 생성 API -> {}", createUserRequestDto);
-        return new BaseSuccessResponse<>(userService.createUser(userMapper.toUser(createUserRequestDto)));
-    }
-
-    @PostMapping("/{id}/academy")
-    public BaseSuccessResponse<UserResponseDto> createUserAcademy(@PathVariable Long id, @RequestBody CreateUserAcademyRequestDto createUserAcademyRequestDto) {
-        log.info("사용자 학력 추가 API {}", id);
-        return new BaseSuccessResponse<>(userService.createUserAcademy(id, userMapper.toUser(createUserAcademyRequestDto)));
     }
 
     @PostMapping("/{id}/create/account")
@@ -40,10 +33,15 @@ public class UserController {
         return new BaseSuccessResponse<>(userService.createAccount(id, createAccountRequestDto.getAccountTypeUniqueNo()));
     }
 
+    @PostMapping("/{id}/academy")
+    public BaseSuccessResponse<UserResponseDto> createUserAcademy(@RequestPart("subject") MultipartFile subject){
+        return null;
+    }
+
     @PostMapping("/{id}/account")
     public BaseSuccessResponse<UserResponseDto> createUserAccount(@PathVariable Long id, @RequestBody CreateUserAccountRequestDto createUserAccountRequestDto) {
         log.info("사용자 계좌 추가 API {}", id);
-        return new BaseSuccessResponse<>(userService.createUserAccount(id, userMapper.toUser(createUserAccountRequestDto)));
+        return new BaseSuccessResponse<>(userService.createUserAccount(id, createUserAccountRequestDto));
     }
 
     @DeleteMapping("/{id}")
@@ -52,17 +50,29 @@ public class UserController {
         return new BaseSuccessResponse<>(userService.deleteUser(id));
     }
 
-    @PostMapping("/{id}/issue")
+    @PostMapping("/{id}/issue/account")
     public BaseSuccessResponse<IssueAccountResponseDto> issueAccount(@PathVariable Long id, @RequestBody IssueAccountRequestDto issueAccountRequestDto){
         log.info("1원 송금 API ");
 
         return new BaseSuccessResponse<>(userService.issueAccount(id,issueAccountRequestDto.getAccountNo()));
     }
 
-    @PostMapping("/{id}/check")
-    public BaseSuccessResponse<CheckAccontResponseDto> checkAccount(@PathVariable Long id, @RequestBody CheckAccountRequestDto checkAccountRequestDto){
+    @PostMapping("/{id}/check/account")
+    public BaseSuccessResponse<CheckAccountResponseDto> checkAccount(@PathVariable Long id, @RequestBody CheckAccountRequestDto checkAccountRequestDto){
         log.info("1원 송금 확인 API");
-
-        return null;
+        String accountNo = checkAccountRequestDto.getAccountNo();
+        String authText = checkAccountRequestDto.getAuthText();
+        String authCode = checkAccountRequestDto.getAuthCode();
+        return new BaseSuccessResponse<>(userService.checkAccount(id, accountNo, authText, authCode));
     }
+
+    @PostMapping("/{id}/check/message")
+    public BaseSuccessResponse<CheckTransactionMessageResponseDto> checkTransactionMessage(@PathVariable Long id, @RequestBody CheckTransactionMessageRequestDto checkTransactionMessageRequestDto){
+        log.info("1원 송금 메세지 확인 API");
+        String accountNo = checkTransactionMessageRequestDto.getAccountNo();
+        Long transactionUniqueNo = checkTransactionMessageRequestDto.getTransactionUniqueNo();
+
+        return new BaseSuccessResponse<>(userService.checkMessage(id, accountNo, transactionUniqueNo));
+    }
+
 }
