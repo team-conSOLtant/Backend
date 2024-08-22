@@ -43,8 +43,8 @@ public class User {
     @Column(nullable = false, length = 255)
     private String password;
 
-    @Column(nullable = false, length = 100)
-    private String userKey;
+//    @Column(nullable = false, length = 100)
+//    private String userKey;
 
     @Column(nullable = false, length = 100)
     private String name;
@@ -92,9 +92,9 @@ public class User {
     }
 
     //사용자 키 추가
-    public void addUserKey(String userKey){
-        this.userKey = userKey;
-    }
+//    public void addUserKey(String userKey){
+//        this.userKey = userKey;
+//    }
 
     //제휴 대학 추가
     public void addUniversity(University university){
