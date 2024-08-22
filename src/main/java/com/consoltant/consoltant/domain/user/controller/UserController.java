@@ -7,6 +7,8 @@ import com.consoltant.consoltant.util.base.BaseSuccessResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -16,8 +18,10 @@ public class UserController {
     private final UserService userService;
     private final UserMapper userMapper;
 
-    @GetMapping("/{id}")
-    public BaseSuccessResponse<UserResponseDto> getUserById(@PathVariable Long id) {
+    @GetMapping("")
+    public BaseSuccessResponse<UserResponseDto> getUserById() {
+        Long id = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
+
         log.info("사용자 조회 API {}", id);
         return new BaseSuccessResponse<>(userService.getUser(id));
     }
