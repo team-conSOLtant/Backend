@@ -10,7 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class CreateUserAcademyRequestDto {
     private Long id;
 
-    private String university;
+    private University university;
 
     private String major;
 

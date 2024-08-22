@@ -1,0 +1,75 @@
+package com.consoltant.consoltant.domain.product.service;
+
+import com.consoltant.consoltant.domain.journey.entity.Journey;
+import com.consoltant.consoltant.domain.journey.service.JourneyModuleService;
+import com.consoltant.consoltant.domain.product.dto.ProductRequestDto;
+import com.consoltant.consoltant.domain.product.dto.ProductResponseDto;
+import com.consoltant.consoltant.domain.product.entity.Product;
+import com.consoltant.consoltant.domain.product.mapper.ProductMapper;
+import com.consoltant.consoltant.domain.user.entity.User;
+import com.consoltant.consoltant.domain.user.repository.UserRepository;
+import com.consoltant.consoltant.util.constant.JourneyType;
+import com.consoltant.consoltant.util.constant.ProductType;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class ProductService {
+
+    private final ProductModuleService productModuleService;
+    private final UserRepository userRepository;
+    private final JourneyModuleService journeyModuleService;
+    private final ProductMapper productMapper;
+
+    // 단일 조회
+    public ProductResponseDto findById(Long id) {
+        ProductResponseDto productResponseDto = productMapper.toProductResponseDto(
+            productModuleService.findById(id));
+        //TODO: product의 타입과 계좌번호로 금융 API 호출 (리턴 타입도 바꿔야할듯)
+        return productResponseDto;
+    }
+
+    // 사용자 ID로 금융상품 리스트 조회
+    public List<ProductResponseDto> findAllByUserId(Long userId){
+        List<ProductResponseDto> productList = productModuleService.findAllByUserId(userId).stream()
+            .map(productMapper::toProductResponseDto)
+            .toList();
+        //TODO: 금융상품 리스트 돌면서 금융 API 호출
+        return productList;
+    }
+
+    //사용자 여정에 해당하는 금융상품 리스트 조회
+    public List<ProductResponseDto> findProductsByUserIdAndJourneyStartDate(Long userId, JourneyType journeyType){
+        Journey journey = journeyModuleService.findByUserIdAndJourneyType(userId,
+            journeyType);
+        return productModuleService.findProductsByUserIdAndJourneyStartDate(userId, journey.getStartDate()).stream()
+            .map(productMapper::toProductResponseDto)
+            .toList();
+    }
+
+    //상품 타입에 따른 금융상품 리스트 조회
+    public List<ProductResponseDto> findProductsByUserIdAndProductType(Long userId, ProductType productType){
+        List<ProductResponseDto> productList = productModuleService.findProductsByUserIdAndProductType(
+                userId, productType).stream()
+            .map(productMapper::toProductResponseDto)
+            .toList();
+        //TODO: 조회한 productList들 금융 API에서 조회하여 리턴
+        return productList;
+    }
+
+    // 등록
+    public ProductResponseDto save(ProductRequestDto productRequestDto) {
+        //TODO: 금융 API 호출하여 등록해주는 로직
+        User user = userRepository.findById(productRequestDto.getUserId()).orElseThrow();
+        Product product = productMapper.toProduct(productRequestDto);
+        product.setUser(user);
+        return productMapper.toProductResponseDto(productModuleService.save(product));
+    }
+
+    // 삭제
+    public void delete(Long id){
+        productModuleService.delete(id);
+    }
+}

@@ -1,6 +1,7 @@
 package com.consoltant.consoltant.domain.auth.dto;
 
 import com.consoltant.consoltant.domain.university.entity.University;
+
 import com.consoltant.consoltant.domain.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

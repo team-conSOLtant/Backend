@@ -11,6 +11,7 @@ import com.consoltant.consoltant.util.api.RestTemplateUtil;
 import lombok.RequiredArgsConstructor;
 import com.consoltant.consoltant.domain.university.entity.University;
 
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,11 +25,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthService {
     private final RestTemplateUtil restTemplateUtil;
+
     private final UserRepository userRepository;
     private final JwtUtil jwtTokenUtil;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final UniversityRepository universityRepository;
+
 
     public String registerUser(RegisterRequestDto request) {
         userRepository.findByEmail(request.getEmail())
@@ -41,6 +44,11 @@ public class AuthService {
         University university =universityRepository.findById(1L).orElseThrow(()->new BadRequestException("SQL Error"));
 
         return userRepository.save(request.createUser(encodePassword,userKey,university)).getEmail();
+    }
+
+    public Long logout(User user){
+//        userRepository.logout();
+        return null;
     }
 
     public Long openAccountAuth(User user) {
