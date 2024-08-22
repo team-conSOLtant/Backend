@@ -10,7 +10,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
@@ -18,8 +19,10 @@ import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "UPDATE follow SET is_deleted = true WHERE follow_id = ?")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@SQLDelete(sql = "UPDATE follow SET is_deleted = true WHERE id = ?")
 @SQLRestriction("is_deleted = false")
 @Table(name = "follow")
 public class Follow {
@@ -37,5 +40,14 @@ public class Follow {
     private Portfolio portfolio;
 
     @Column(nullable = false)
-    private Boolean isDeleted;
+    @Builder.Default
+    private Boolean isDeleted = false;
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setPortfolio(Portfolio portfolio) {
+        this.portfolio = portfolio;
+    }
 }

@@ -1,14 +1,20 @@
 package com.consoltant.consoltant.domain.user.service;
 
 import com.consoltant.consoltant.domain.auth.dto.RegisterRequestDto;
+import com.consoltant.consoltant.domain.auth.dto.OpenAccountAuthResponseDto;
 import com.consoltant.consoltant.domain.university.entity.University;
 import com.consoltant.consoltant.domain.university.repository.UniversityRepository;
+import com.consoltant.consoltant.domain.user.dto.CreateAccountResponseDto;
+import com.consoltant.consoltant.domain.user.dto.IssueAccountResponseDto;
 import com.consoltant.consoltant.domain.user.dto.UserResponseDto;
 import com.consoltant.consoltant.domain.user.entity.User;
 import com.consoltant.consoltant.domain.user.mapper.UserMapper;
+import com.consoltant.consoltant.domain.user.repository.UserModuleRepository;
 import com.consoltant.consoltant.domain.user.repository.UserRepository;
 import com.consoltant.consoltant.global.exception.BadRequestException;
 import com.consoltant.consoltant.util.api.RestTemplateUtil;
+import com.consoltant.consoltant.util.api.global.response.RECResponse;
+import com.consoltant.consoltant.util.api.dto.createdemanddepositaccount.CreateDemandDepositAccountResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,13 +25,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class UserService{
     private final UserRepository userRepository;
+    private final UserModuleRepository userModuleRepository;
     private final UniversityRepository universityRepository;
     private final UserMapper userMapper;
     private final RestTemplateUtil restTemplateUtil;
 
     public UserResponseDto getUser(Long id)  {
         return userMapper.toUserResponseDto(
-                userRepository.findById(id)
+                userModuleRepository.findById(id)
                 .orElseThrow(()->new BadRequestException("존재하지 않는 사용자입니다."))
         );
     }
@@ -51,7 +58,7 @@ public class UserService{
     @Transactional
     public UserResponseDto createUserAcademy(Long id, User user){
         //TODO 사용자 학력 정보 업데이트 + CSV
-        User entity = userRepository.findById(id)
+        User entity = userModuleRepository.findById(id)
                 .orElseThrow(()->new BadRequestException("존재하지 않는 사용자입니다.")) ;
 
         entity.addAcademyInfo(user);
@@ -59,21 +66,43 @@ public class UserService{
         return userMapper.toUserResponseDto(entity);
     }
 
+    //사용자 계좌 정보 추가
+    @Transactional
+    public CreateAccountResponseDto createAccount(Long id, String accountTypeUniqueNo){
+        User entity = userModuleRepository.findById(id)
+                .orElseThrow(()->new BadRequestException("존재하지 않는 사용자입니다.")) ;
+
+        String userKey = entity.getUserKey();
+        
+        //계좌 정보는 인증 후에 저장
+        return userMapper.toCreateAccountResponseDto(restTemplateUtil.createDemandDepositAccount(userKey, accountTypeUniqueNo));
+    }
+
     //사용자 계좌 정보 업데이트
     @Transactional
     public UserResponseDto createUserAccount(Long id, User user){
         //TODO 사용자 계좌 인증 작업 진행
-        User entity = userRepository.findById(id)
+        User entity = userModuleRepository.findById(id)
                 .orElseThrow(()->new BadRequestException("존재하지 않는 사용자입니다.")) ;
-
-        entity.addAccountInfo();
 
         return userMapper.toUserResponseDto(entity);
     }
 
+    //사용자 제거
     public Long deleteUser(Long id){
-        userRepository.deleteById(id);
+        userModuleRepository.deleteById(id);
 
         return id;
     }
+
+    //1원 송금
+    public IssueAccountResponseDto issueAccount(Long id, String accountNo){
+        User entity = userModuleRepository.findById(id).orElseThrow();
+
+        String userKey = entity.getUserKey();
+
+        return userMapper.toIssueResponseDto(restTemplateUtil.openAccountAuth(userKey,accountNo));
+    }
+
+    //1원 송금 인증
 }
