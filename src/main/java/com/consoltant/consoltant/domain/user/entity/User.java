@@ -1,6 +1,7 @@
 package com.consoltant.consoltant.domain.user.entity;
 
 import com.consoltant.consoltant.domain.university.entity.University;
+import com.consoltant.consoltant.domain.user.dto.CreateUserAccountRequestDto;
 import com.consoltant.consoltant.domain.user.dto.CreateUserRequestDto;
 import com.consoltant.consoltant.util.constant.JourneyType;
 import jakarta.persistence.Column;
@@ -82,9 +83,10 @@ public class User {
     @Builder.Default
     private Boolean isDeleted = false;
 
-
-    public void addAccountInfo(String accountNo){
-
+    //사용자 계좌 정보 추가
+    public void addAccountInfo(CreateUserAccountRequestDto createUserAccountRequestDto){
+        this.accountNo = createUserAccountRequestDto.getAccountNo();
+        this.isEmployed = createUserAccountRequestDto.getIsEmployed();
     }
 
     public void addAcademyInfo(User user){

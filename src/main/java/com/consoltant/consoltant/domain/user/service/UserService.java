@@ -81,12 +81,14 @@ public class UserService{
 
     //사용자 계좌 정보 업데이트
     @Transactional
-    public UserResponseDto createUserAccount(Long id, User user){
-        //TODO 사용자 계좌 인증 작업 진행
+    public UserResponseDto createUserAccount(Long id, CreateUserAccountRequestDto createUserAccountRequestDto){
         User entity = userModuleRepository.findById(id)
                 .orElseThrow(()->new BadRequestException("존재하지 않는 사용자입니다.")) ;
 
-        return userMapper.toUserResponseDto(entity);
+        entity.addAccountInfo(createUserAccountRequestDto);
+        User saveEntity = userModuleRepository.save(entity);
+
+        return userMapper.toUserResponseDto(saveEntity);
     }
 
     //사용자 제거

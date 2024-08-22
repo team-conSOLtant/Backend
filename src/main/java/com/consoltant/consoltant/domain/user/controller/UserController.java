@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @RestController
@@ -32,10 +33,15 @@ public class UserController {
         return new BaseSuccessResponse<>(userService.createAccount(id, createAccountRequestDto.getAccountTypeUniqueNo()));
     }
 
+    @PostMapping("/{id}/academy")
+    public BaseSuccessResponse<UserResponseDto> createUserAcademy(@RequestPart("subject") MultipartFile subject){
+        return null;
+    }
+
     @PostMapping("/{id}/account")
     public BaseSuccessResponse<UserResponseDto> createUserAccount(@PathVariable Long id, @RequestBody CreateUserAccountRequestDto createUserAccountRequestDto) {
         log.info("사용자 계좌 추가 API {}", id);
-        return new BaseSuccessResponse<>(userService.createUserAccount(id, userMapper.toUser(createUserAccountRequestDto)));
+        return new BaseSuccessResponse<>(userService.createUserAccount(id, createUserAccountRequestDto));
     }
 
     @DeleteMapping("/{id}")

@@ -12,9 +12,4 @@ public class CreateUserAccountRequestDto {
     private Boolean isEmployed;
 
     private String accountNo;
-
-    private Integer salary;
-
-    private JourneyType currentJourneyType; // Custom enum for 여정중 현재인 것 조회용
-
 }
