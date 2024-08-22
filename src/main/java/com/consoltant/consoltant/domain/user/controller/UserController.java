@@ -72,7 +72,7 @@ public class UserController {
     public BaseSuccessResponse<CheckTransactionMessageResponseDto> checkTransactionMessage(@PathVariable Long id, @RequestBody CheckTransactionMessageRequestDto checkTransactionMessageRequestDto){
         log.info("1원 송금 메세지 확인 API");
         String accountNo = checkTransactionMessageRequestDto.getAccountNo();
-        String transactionUniqueNo = checkTransactionMessageRequestDto.getTransactionUniqueNo();
+        Long transactionUniqueNo = checkTransactionMessageRequestDto.getTransactionUniqueNo();
 
         return new BaseSuccessResponse<>(userService.checkMessage(id, accountNo, transactionUniqueNo));
     }

@@ -108,11 +108,11 @@ public class UserService{
     }
 
     //1원 송금 메세지 확인
-    public CheckTransactionMessageResponseDto checkMessage(Long id, String accountNo, String transactionUniqueNo){
+    public CheckTransactionMessageResponseDto checkMessage(Long id, String accountNo, Long transactionUniqueNo){
         User entity = userModuleRepository.findById(id).orElseThrow(()->new BadRequestException("존재하지 않는 사용자입니다."));
 
         String userKey = entity.getUserKey();
 
-        return userMapper.toCheckTransactionResponseDto(restTemplateUtil.inquireTransactionHistoryResponseDto(userKey,accountNo, transactionUniqueNo));
+        return userMapper.toCheckTransactionResponseDto(restTemplateUtil.inquireTransactionHistory(userKey,accountNo, transactionUniqueNo));
     }
 }

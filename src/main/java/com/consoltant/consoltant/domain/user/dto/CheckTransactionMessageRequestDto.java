@@ -7,5 +7,5 @@ import lombok.Setter;
 @Setter
 public class CheckTransactionMessageRequestDto {
     private String accountNo;
-    private String transactionUniqueNo;
+    private Long transactionUniqueNo;
 }
