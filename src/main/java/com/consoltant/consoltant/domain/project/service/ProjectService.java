@@ -12,6 +12,7 @@ import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +37,7 @@ public class ProjectService {
     }
 
     // 등록
+    @Transactional
     public ProjectResponseDto save(ProjectRequestDto projectRequestDto) {
         Portfolio portfolio = portfolioModuleService.findById(projectRequestDto.getPortfolioId());
         Project project = projectMapper.toProject(projectRequestDto);
@@ -50,6 +52,7 @@ public class ProjectService {
     }
 
     // 수정
+    @Transactional
     public ProjectResponseDto update(Long id, ProjectRequestDto projectRequestDto){
         Project project = projectModuleService.findById(id);
         project.update(projectRequestDto);
