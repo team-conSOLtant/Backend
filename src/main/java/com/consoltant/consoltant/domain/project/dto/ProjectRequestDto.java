@@ -1,6 +1,7 @@
 package com.consoltant.consoltant.domain.project.dto;
 
 
+import com.consoltant.consoltant.domain.portfolio.entity.Portfolio;
 import com.consoltant.consoltant.domain.projectuser.dto.ProjectUserRequestDto;
 import java.time.LocalDate;
 import java.util.List;
@@ -16,7 +17,7 @@ public class ProjectRequestDto {
     private String language;
     private String projectUrl;
     private String description;
-    private String contents;
+    private List<String> contents;
     private LocalDate startDate;
     private LocalDate endDate;
     private List<ProjectUserRequestDto> projectUsers;

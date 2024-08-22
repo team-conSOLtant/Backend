@@ -10,9 +10,10 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ProjectMapper {
 
+    @Mapping(target = "contents", expression = "java(projectRequestDto.getContents().stream().collect(java.util.stream.Collectors.joining(\"\\n\")))")
     Project toProject(ProjectRequestDto projectRequestDto);
 
-    @Mapping(target = "contents", expression = "java(project.getContents() != null ? java.util.Arrays.asList(project.getContents().split(\"\\\\n\")) : new java.util.ArrayList<>())")
+    @Mapping(target = "contents", expression = "java(java.util.Arrays.asList(project.getContents().split(\"\\n\")))")
     ProjectResponseDto toProjectResponseDto(Project project);
 
 }
