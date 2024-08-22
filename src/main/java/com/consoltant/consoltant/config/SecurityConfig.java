@@ -1,5 +1,7 @@
 package com.consoltant.consoltant.config;
 
+import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
+
 import com.consoltant.consoltant.global.security.JwtUtil;
 import com.consoltant.consoltant.global.security.LoginFilter;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +16,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
 @EnableWebSecurity
@@ -40,7 +40,7 @@ public class SecurityConfig{
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/users/**").permitAll()
+                        .requestMatchers("/auth/**", "/users/**", "/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
