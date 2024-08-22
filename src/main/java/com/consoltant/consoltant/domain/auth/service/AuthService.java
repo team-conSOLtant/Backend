@@ -43,11 +43,6 @@ public class AuthService {
         return userRepository.save(request.createUser(encodePassword,userKey,university)).getEmail();
     }
 
-    public Long logout(User user){
-//        userRepository.logout();
-        return null;
-    }
-
     public Long openAccountAuth(User user) {
         return null;
     }
