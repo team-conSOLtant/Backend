@@ -1,26 +1,46 @@
 package com.consoltant.consoltant.domain.auth.service;
 
+import com.consoltant.consoltant.domain.auth.dto.LoginRequestDto;
+import com.consoltant.consoltant.domain.auth.dto.RegisterRequestDto;
+import com.consoltant.consoltant.domain.university.repository.UniversityRepository;
 import com.consoltant.consoltant.domain.user.entity.User;
 import com.consoltant.consoltant.domain.user.repository.UserRepository;
+import com.consoltant.consoltant.global.exception.BadRequestException;
+import com.consoltant.consoltant.global.security.JwtUtil;
+import com.consoltant.consoltant.util.api.RestTemplateUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
+import com.consoltant.consoltant.domain.university.entity.University;
 
-import java.net.URI;
-import java.net.URLEncoder;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
-//@Service
+@Service
 public class AuthService {
-    //private final UserRepository userRepository;
+    private final RestTemplateUtil restTemplateUtil;
+    private final UserRepository userRepository;
+    private final JwtUtil jwtTokenUtil;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final UniversityRepository universityRepository;
 
-    public Long login(User user){
-//        userRepository.login();
-        return null;
+    public String registerUser(RegisterRequestDto request) {
+        userRepository.findByEmail(request.getEmail())
+                .ifPresent(user -> {
+                    throw new BadRequestException("이미 존재하는 이메일 입니다.");
+                });
+
+        String encodePassword = passwordEncoder.encode(request.getPassword());
+        String userKey = restTemplateUtil.createMember(request.getEmail());
+        University university =universityRepository.findById(1L).orElseThrow(()->new BadRequestException("SQL Error"));
+
+        return userRepository.save(request.createUser(encodePassword,userKey,university)).getEmail();
     }
 
     public Long logout(User user){
@@ -28,12 +48,12 @@ public class AuthService {
         return null;
     }
 
-    public Long openAccountAuth(User user){
-
+    public Long openAccountAuth(User user) {
         return null;
     }
 
     public Long checkAuthCode(User user){
         return null;
     }
+
 }

@@ -22,18 +22,6 @@ public class UserController {
         return new BaseSuccessResponse<>(userService.getUser(id));
     }
 
-    @PostMapping
-    public BaseSuccessResponse<UserResponseDto> createUser(@RequestBody CreateUserRequestDto createUserRequestDto) {
-        log.info("사용자 생성 API -> {}", createUserRequestDto);
-        return new BaseSuccessResponse<>(userService.createUser(userMapper.toUser(createUserRequestDto)));
-    }
-
-    @PostMapping("/{id}/academy")
-    public BaseSuccessResponse<UserResponseDto> createUserAcademy(@PathVariable Long id, @RequestBody CreateUserAcademyRequestDto createUserAcademyRequestDto) {
-        log.info("사용자 학력 추가 API {}", id);
-        return new BaseSuccessResponse<>(userService.createUserAcademy(id, userMapper.toUser(createUserAcademyRequestDto)));
-    }
-
     @PostMapping("/{id}/create/account")
     public BaseSuccessResponse<CreateAccountResponseDto> createAccount(@PathVariable Long id, @RequestBody CreateAccountRequestDto createAccountRequestDto) {
         log.info("계좌 생성 API -> {} {}", id, createAccountRequestDto.getAccountTypeUniqueNo());
