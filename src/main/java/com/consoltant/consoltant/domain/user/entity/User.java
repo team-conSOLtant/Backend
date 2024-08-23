@@ -102,7 +102,7 @@ public class User {
     }
 
     //사용자 키 추가
-//    public void addUserKey(String userKey){
+//    public void addUserKey(String userKeZ y){
 //        this.userKey = userKey;
 //    }
 

@@ -21,7 +21,7 @@ public class UserController {
     private final UserMapper userMapper;
 
     @GetMapping("/test")
-    public ResponseEntity<?> getUsesr(){
+    public ResponseEntity<?> getUser(){
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
         System.out.println(userId);
         return ResponseEntity.ok("USER 입니다.");
