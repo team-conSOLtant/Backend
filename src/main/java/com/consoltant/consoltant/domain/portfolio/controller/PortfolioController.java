@@ -45,8 +45,8 @@ public class PortfolioController {
         return new BaseSuccessResponse<>(null);
     }
 
-    @GetMapping("/test")
-    public BaseSuccessResponse<PortfolioResponseDto> test(@RequestParam Long userId){
+    @GetMapping("/matching")
+    public BaseSuccessResponse<PortfolioResponseDto> matchingTest(@RequestParam Long userId){
         return new BaseSuccessResponse<>(portfolioService.getMatchingSeniorPortfolio(userId));
     }
 }
