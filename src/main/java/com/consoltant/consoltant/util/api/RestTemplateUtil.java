@@ -340,9 +340,9 @@ public class RestTemplateUtil {
     }
 
     // 수시입출금 계좌 단건 조회
-    public List<InquireDemandDepositAccountResponseDto> inquireDemandDepositAccount(String userKey){
+    public InquireDemandDepositAccountResponseDto inquireDemandDepositAccount(String userKey, String accountNo){
 
-        final String name = "inquireTransactionHistory";
+        final String name = "inquireDemandDepositAccount";
         log.info("금융 API 수시입출금 계좌 단건 조회");
 
         String uri = "edu/demandDeposit/inquireDemandDepositAccount";
@@ -352,10 +352,11 @@ public class RestTemplateUtil {
         RequestHeader headers = requestHeader(name, userKey);
 
         requestBody.put("Header",headers);
+        requestBody.put("accountNo",accountNo);
 
         HttpEntity<Object> entity = new HttpEntity<>(requestBody);
 
-        ResponseEntity<RECListResponse<InquireDemandDepositAccountResponseDto>> response =
+        ResponseEntity<RECResponse<InquireDemandDepositAccountResponseDto>> response =
                 restTemplate.exchange(
                         url + uri,HttpMethod.POST ,entity,
                         new ParameterizedTypeReference<>(){}

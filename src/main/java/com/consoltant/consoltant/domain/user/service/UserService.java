@@ -32,6 +32,10 @@ public class UserService{
         return userRepository.findByEmail(email).orElseThrow(()->new BadRequestException(("존재하지 않는 사용자입니다."))).getId();
     }
 
+    public String getUserKey(Long userId){
+        return userRepository.findById(userId).orElseThrow(()->new BadRequestException(("존재하지 않는 사용자입니다."))).getUserKey();
+    }
+
     public UserResponseDto getUser(Long id)  {
         return userMapper.toUserResponseDto(
                 userModuleRepository.findById(id)
