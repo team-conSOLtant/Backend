@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,6 +20,12 @@ public class UserController {
     private final UserService userService;
     private final UserMapper userMapper;
 
+    @GetMapping("/test")
+    public ResponseEntity<?> getUsesr(){
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        System.out.println(userId);
+        return ResponseEntity.ok("USER 입니다.");
+    }
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserById(@PathVariable Long id) {
         log.info("사용자 조회 API {}", id);

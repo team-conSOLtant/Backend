@@ -27,6 +27,7 @@ public class RegisterRequestDto {
         return User.builder()
                 .email(email)
                 .password(password)
+                .role("USER")
                 .name(name)
                 .phoneNumber(phoneNumber)
                 .birthDate(birthDate)

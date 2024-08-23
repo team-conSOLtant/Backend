@@ -21,9 +21,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthService {
     private final UserRepository userRepository;
-    private final JwtUtil jwtTokenUtil;
     private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
 
     public String registerUser(RegisterRequestDto request) {
         userRepository.findByEmail(request.getEmail())
