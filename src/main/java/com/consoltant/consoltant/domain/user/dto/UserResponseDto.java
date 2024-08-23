@@ -14,10 +14,6 @@ public class UserResponseDto {
 
     private String email;
 
-    private String password;
-
-    private String userKey;
-
     private String name;
 
     private Integer age;
@@ -41,6 +37,4 @@ public class UserResponseDto {
     private Integer salary;
 
     private JourneyType currentJourneyType; // Custom enum for 여정중 현재인 것 조회용
-
-    private Boolean isDeleted;
 }

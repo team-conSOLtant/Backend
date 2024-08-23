@@ -1,5 +1,7 @@
 package com.consoltant.consoltant.domain.auth.dto;
 
+import com.consoltant.consoltant.domain.university.entity.University;
+
 import com.consoltant.consoltant.domain.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,14 +25,16 @@ public class RegisterRequestDto {
     @NotNull
     private String birthDate;
 
-    public User createUser(String password) {
+    public User createUser(String password, String userKey, University university) {
         return User.builder()
                 .email(email)
                 .password(password)
                 .role("USER")
                 .name(name)
+                .university(university)
                 .phoneNumber(phoneNumber)
                 .birthDate(birthDate)
+                .userKey(userKey)
                 .build();
     }
 
