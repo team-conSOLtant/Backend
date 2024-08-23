@@ -22,6 +22,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final JwtUtil jwtUtil;
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response){
+        System.out.println("request : " + request);
         String username = obtainUsername(request);
         String password = obtainPassword(request);
 

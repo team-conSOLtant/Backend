@@ -79,14 +79,28 @@ public class User {
     @Enumerated(EnumType.STRING)
     private JourneyType currentJourneyType; // Custom enum for 여정중 현재인 것 조회용
 
+    private String role;
+
     @Column(nullable = false)
     @Builder.Default
     private Boolean isDeleted = false;
 
+<<<<<<< HEAD
+    public User(String username, String password, String role) {
+        this.password = password;
+        this.name = username;
+        this.role = role;
+    }
+
+
+    public void addAccountInfo(){
+
+=======
     //사용자 계좌 정보 추가
     public void addAccountInfo(CreateUserAccountRequestDto createUserAccountRequestDto){
         this.accountNo = createUserAccountRequestDto.getAccountNo();
         this.isEmployed = createUserAccountRequestDto.getIsEmployed();
+>>>>>>> 1ba4729826b890b04b844195b8388dab3e250483
     }
 
     public void addAcademyInfo(User user){

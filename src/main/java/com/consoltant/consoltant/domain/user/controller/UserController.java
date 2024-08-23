@@ -8,8 +8,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.context.SecurityContextHolder;
+<<<<<<< HEAD
+=======
 import org.springframework.web.multipart.MultipartFile;
 
+>>>>>>> 1ba4729826b890b04b844195b8388dab3e250483
 
 @RestController
 @RequiredArgsConstructor
@@ -19,10 +22,21 @@ public class UserController {
     private final UserService userService;
     private final UserMapper userMapper;
 
+<<<<<<< HEAD
+    @GetMapping("/test")
+    public ResponseEntity<?> getUsesr(){
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        System.out.println(userId);
+        return ResponseEntity.ok("USER 입니다.");
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getUserById(@PathVariable Long id) {
+=======
     @GetMapping("")
     public BaseSuccessResponse<UserResponseDto> getUserById() {
         Long id = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
 
+>>>>>>> 1ba4729826b890b04b844195b8388dab3e250483
         log.info("사용자 조회 API {}", id);
         return new BaseSuccessResponse<>(userService.getUser(id));
     }

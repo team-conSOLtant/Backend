@@ -27,11 +27,13 @@ public class AuthService {
     private final RestTemplateUtil restTemplateUtil;
 
     private final UserRepository userRepository;
-    private final JwtUtil jwtTokenUtil;
     private final PasswordEncoder passwordEncoder;
+<<<<<<< HEAD
+=======
     private final AuthenticationManager authenticationManager;
     private final UniversityRepository universityRepository;
 
+>>>>>>> 1ba4729826b890b04b844195b8388dab3e250483
 
     public String registerUser(RegisterRequestDto request) {
         userRepository.findByEmail(request.getEmail())
