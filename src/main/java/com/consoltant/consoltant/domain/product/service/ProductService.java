@@ -4,13 +4,23 @@ import com.consoltant.consoltant.domain.journey.entity.Journey;
 import com.consoltant.consoltant.domain.journey.service.JourneyModuleService;
 import com.consoltant.consoltant.domain.product.dto.ProductRequestDto;
 import com.consoltant.consoltant.domain.product.dto.ProductResponseDto;
+import com.consoltant.consoltant.domain.product.dto.ProductStatsResponseDto;
 import com.consoltant.consoltant.domain.product.entity.Product;
 import com.consoltant.consoltant.domain.product.mapper.ProductMapper;
 import com.consoltant.consoltant.domain.user.entity.User;
 import com.consoltant.consoltant.domain.user.repository.UserRepository;
+import com.consoltant.consoltant.domain.user.service.UserService;
+import com.consoltant.consoltant.global.exception.BadRequestException;
+import com.consoltant.consoltant.util.api.RestTemplateUtil;
+import com.consoltant.consoltant.util.api.dto.inquiredemanddepositaccount.InquireDemandDepositAccountResponseDto;
+import com.consoltant.consoltant.util.api.dto.inquireloanaccount.InquireLoanAccountResponseDto;
+import com.consoltant.consoltant.util.api.dto.inquiremycreditrating.InquireMyCreditRatingResponseDto;
+import com.consoltant.consoltant.util.api.dto.inquiresavinginfo.InquireSavingInfoResponseDto;
 import com.consoltant.consoltant.util.constant.JourneyType;
 import com.consoltant.consoltant.util.constant.ProductType;
 import java.util.List;
+import java.util.function.LongToDoubleFunction;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +32,8 @@ public class ProductService {
     private final UserRepository userRepository;
     private final JourneyModuleService journeyModuleService;
     private final ProductMapper productMapper;
+    private final RestTemplateUtil restTemplateUtil;
+    private final UserService userService;
 
     // 단일 조회
     public ProductResponseDto findById(Long id) {
@@ -31,6 +43,44 @@ public class ProductService {
         return productResponseDto;
     }
 
+    // 사용자 ID로 금융상품 통계 조회
+    public ProductStatsResponseDto findStatsByUserId(Long userId){
+
+        User user= userRepository.findById(userId).orElseThrow(()->new BadRequestException("존재하지 않는 사용자입니다."));
+        String userKey = user.getUserKey();
+        String accountNo = user.getAccountNo();
+
+        //사용자 총 자산
+        InquireMyCreditRatingResponseDto inquireMyCreditRatingResponseDto = restTemplateUtil.inquireMyCreditRating(userKey);
+
+        Long totalAssetValue = inquireMyCreditRatingResponseDto.getTotalAssetValue();
+        Long demandDepositAssetValue = inquireMyCreditRatingResponseDto.getDemandDepositAssetValue();
+
+        Long savingAssetValue = restTemplateUtil.inquireSavingInfoList(userKey).stream()
+                .mapToLong(InquireSavingInfoResponseDto::getDepositBalance)
+                .sum();
+        Long depositAssetValue = inquireMyCreditRatingResponseDto.getDepositSavingsAssetValue() - savingAssetValue;
+
+        Long loanAssetValue = restTemplateUtil.inquireLoanAccountList(userKey).stream()
+                .mapToLong(InquireLoanAccountResponseDto::getLoanBalance)
+                .sum();
+
+        InquireDemandDepositAccountResponseDto inquireDemandDepositAccountResponseDto = restTemplateUtil.inquireDemandDepositAccount(userKey,accountNo);
+        String accountName = inquireDemandDepositAccountResponseDto.getAccountName();
+        String accountType = inquireDemandDepositAccountResponseDto.getAccountTypeName();
+
+        return ProductStatsResponseDto.builder()
+                .accountNo(user.getAccountNo())
+                .accountType(accountType)
+                .accountName(accountName)
+                .loan(loanAssetValue.doubleValue() / totalAssetValue.doubleValue() * 100)
+                .totalAssetValue(totalAssetValue)
+                .demandDeposit(demandDepositAssetValue.doubleValue() / totalAssetValue.doubleValue() * 100)
+                .deposit(depositAssetValue.doubleValue() / totalAssetValue.doubleValue() * 100)
+                .savings(savingAssetValue.doubleValue() / totalAssetValue.doubleValue() * 100)
+                .build();
+    }
+    
     // 사용자 ID로 금융상품 리스트 조회
     public List<ProductResponseDto> findAllByUserId(Long userId){
         List<ProductResponseDto> productList = productModuleService.findAllByUserId(userId).stream()

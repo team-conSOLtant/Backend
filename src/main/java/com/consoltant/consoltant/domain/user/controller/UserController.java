@@ -6,13 +6,11 @@ import com.consoltant.consoltant.domain.user.service.UserService;
 import com.consoltant.consoltant.util.base.BaseSuccessResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.context.SecurityContextHolder;
-<<<<<<< HEAD
-=======
 import org.springframework.web.multipart.MultipartFile;
 
->>>>>>> 1ba4729826b890b04b844195b8388dab3e250483
 
 @RestController
 @RequiredArgsConstructor
@@ -22,22 +20,20 @@ public class UserController {
     private final UserService userService;
     private final UserMapper userMapper;
 
-<<<<<<< HEAD
     @GetMapping("/test")
     public ResponseEntity<?> getUsesr(){
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
         System.out.println(userId);
         return ResponseEntity.ok("USER 입니다.");
     }
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getUserById(@PathVariable Long id) {
-=======
-    @GetMapping("")
+
+    @GetMapping
     public BaseSuccessResponse<UserResponseDto> getUserById() {
+        log.info("사용자 조회 API");
         Long id = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
 
->>>>>>> 1ba4729826b890b04b844195b8388dab3e250483
         log.info("사용자 조회 API {}", id);
+        log.info("사용자 id -> {}", id);
         return new BaseSuccessResponse<>(userService.getUser(id));
     }
 
@@ -47,9 +43,16 @@ public class UserController {
         return new BaseSuccessResponse<>(userService.createAccount(id, createAccountRequestDto.getAccountTypeUniqueNo()));
     }
 
+    @PostMapping
+    public BaseSuccessResponse<UserResponseDto> createUser(@RequestBody CreateUserRequestDto createUserRequestDto) {
+        log.info("사용자 생성 API -> {}", createUserRequestDto);
+        return new BaseSuccessResponse<>(userService.createUser(userMapper.toUser(createUserRequestDto)));
+    }
+
     @PostMapping("/{id}/academy")
-    public BaseSuccessResponse<UserResponseDto> createUserAcademy(@RequestPart("subject") MultipartFile subject){
-        return null;
+    public BaseSuccessResponse<UserResponseDto> createUserAcademy(@PathVariable Long id, @RequestBody CreateUserAcademyRequestDto createUserAcademyRequestDto) {
+        log.info("사용자 학력 추가 API {}", id);
+        return new BaseSuccessResponse<>(userService.createUserAcademy(id, userMapper.toUser(createUserAcademyRequestDto)));
     }
 
     @PostMapping("/{id}/account")

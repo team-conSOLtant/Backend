@@ -3,11 +3,15 @@ package com.consoltant.consoltant.domain.product.controller;
 import com.consoltant.consoltant.domain.journey.dto.JourneyRequestDto;
 import com.consoltant.consoltant.domain.product.dto.ProductRequestDto;
 import com.consoltant.consoltant.domain.product.dto.ProductResponseDto;
+import com.consoltant.consoltant.domain.product.dto.ProductStatsResponseDto;
 import com.consoltant.consoltant.domain.product.service.ProductService;
+import com.consoltant.consoltant.domain.user.dto.UserResponseDto;
+import com.consoltant.consoltant.domain.user.service.UserService;
 import com.consoltant.consoltant.util.base.BaseSuccessResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProductController {
 
     private final ProductService productService;
+    private final UserService userService;
 
     // 단일 조회
     @GetMapping("/{id}")
@@ -31,9 +36,20 @@ public class ProductController {
         return new BaseSuccessResponse<>(productService.findById(id));
     }
 
+    // 사용자 ID로 금융상품 통계 보기
+    @GetMapping("/{id}/stats")
+    public BaseSuccessResponse<ProductStatsResponseDto> findStatsByUserId(){
+        log.info("금융상품 통계 API");
+        Long userId = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
+
+        return new BaseSuccessResponse<>(productService.findStatsByUserId(userId));
+    }
+    
     // 사용자 ID로 금융상품 리스트 조회
     @GetMapping
-    public BaseSuccessResponse<List<ProductResponseDto>> findAllByUserId(@RequestParam Long userId){
+    public BaseSuccessResponse<List<ProductResponseDto>> findAllByUserId(){
+        log.info("금융상품 리스트 조회 API");
+        Long userId = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
         return new BaseSuccessResponse<>(productService.findAllByUserId(userId));
     }
 
