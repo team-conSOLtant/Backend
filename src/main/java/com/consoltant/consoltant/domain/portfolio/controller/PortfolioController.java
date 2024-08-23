@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -42,5 +43,10 @@ public class PortfolioController {
     public BaseSuccessResponse<Void> delete(@PathVariable Long id){
         portfolioService.delete(id);
         return new BaseSuccessResponse<>(null);
+    }
+
+    @GetMapping("/test")
+    public BaseSuccessResponse<PortfolioResponseDto> test(@RequestParam Long userId){
+        return new BaseSuccessResponse<>(portfolioService.getMatchingSeniorPortfolio(userId));
     }
 }
