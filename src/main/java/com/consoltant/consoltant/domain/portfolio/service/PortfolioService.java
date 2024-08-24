@@ -3,14 +3,17 @@ package com.consoltant.consoltant.domain.portfolio.service;
 import com.consoltant.consoltant.domain.course.entity.Course;
 import com.consoltant.consoltant.domain.course.service.CourseModuleService;
 import com.consoltant.consoltant.domain.matching.entity.Matching;
-import com.consoltant.consoltant.domain.matching.mapper.MatchingMapper;
 import com.consoltant.consoltant.domain.matching.service.MatchingModuleService;
+import com.consoltant.consoltant.domain.notification.entity.Notification;
+import com.consoltant.consoltant.domain.notification.mapper.NotificationMapper;
+import com.consoltant.consoltant.domain.notification.service.NotificationModuleService;
 import com.consoltant.consoltant.domain.portfolio.dto.PortfolioRequestDto;
 import com.consoltant.consoltant.domain.portfolio.dto.PortfolioResponseDto;
 import com.consoltant.consoltant.domain.portfolio.entity.Portfolio;
 import com.consoltant.consoltant.domain.portfolio.mapper.PortfolioMapper;
 import com.consoltant.consoltant.domain.user.entity.User;
 import com.consoltant.consoltant.domain.user.repository.UserRepository;
+import com.consoltant.consoltant.util.constant.NotificationType;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +28,8 @@ public class PortfolioService {
     private final MatchingModuleService matchingModuleService;
     private final CourseModuleService courseModuleService;
     private final PortfolioMapper portfolioMapper;
-    private final MatchingMapper matchingMapper;
+    private final NotificationModuleService notificationModuleService;
+    private final NotificationMapper notificationMapper;
     private final UserRepository userRepository;
 
     public PortfolioResponseDto findById(Long id) {
@@ -105,11 +109,20 @@ public class PortfolioService {
                 return portfolioMapper.toPortfolioResponseDto(portfolioModuleService.findById(id));
             }
         }
-        Matching matching = new Matching();
-        matching.setUser(user);
-        matching.setPortfolio(bestPortfolio);
 
-        matchingModuleService.save(matching);   //매칭 기록 저장
+        //매칭 기록 저장
+        matchingModuleService.save(Matching.builder()
+            .user(user)
+            .portfolio(bestPortfolio)
+            .build());
+
+        //알림 저장
+        notificationModuleService.save(Notification.builder()
+            .user(user)
+            .notificationType(NotificationType.PORTFOLIO_MATCHING)
+            .content(bestPortfolio.getUser().getCorporateName())
+            .build());
+
         return portfolioMapper.toPortfolioResponseDto(bestPortfolio);
     }
     
