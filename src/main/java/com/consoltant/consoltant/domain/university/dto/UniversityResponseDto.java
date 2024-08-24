@@ -1,29 +1,19 @@
-package com.consoltant.consoltant.domain.university.entity;
+package com.consoltant.consoltant.domain.university.dto;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
-@Table(name = "university")
-@Entity
 @Getter
-public class University {
+@Setter
+public class UniversityResponseDto {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 100)
     private String name;
 
-    @Column(length = 100)
     private String universityCode;
 
-    @Column(nullable = false)
     private Boolean isDeleted;
 
 }
