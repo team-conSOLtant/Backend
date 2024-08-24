@@ -5,7 +5,6 @@ import com.consoltant.consoltant.domain.course.service.CourseModuleService;
 import com.consoltant.consoltant.domain.matching.entity.Matching;
 import com.consoltant.consoltant.domain.matching.service.MatchingModuleService;
 import com.consoltant.consoltant.domain.notification.entity.Notification;
-import com.consoltant.consoltant.domain.notification.mapper.NotificationMapper;
 import com.consoltant.consoltant.domain.notification.service.NotificationModuleService;
 import com.consoltant.consoltant.domain.portfolio.dto.PortfolioRequestDto;
 import com.consoltant.consoltant.domain.portfolio.dto.PortfolioResponseDto;
@@ -17,9 +16,12 @@ import com.consoltant.consoltant.util.constant.NotificationType;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PortfolioService {
@@ -29,7 +31,6 @@ public class PortfolioService {
     private final CourseModuleService courseModuleService;
     private final PortfolioMapper portfolioMapper;
     private final NotificationModuleService notificationModuleService;
-    private final NotificationMapper notificationMapper;
     private final UserRepository userRepository;
 
     public PortfolioResponseDto findById(Long id) {
@@ -125,7 +126,17 @@ public class PortfolioService {
 
         return portfolioMapper.toPortfolioResponseDto(bestPortfolio);
     }
-    
-    
-    
+
+    @Scheduled(cron = "0 0 0 * * ?", zone = "Asia/Seoul")
+    public void processUsersAtMidnight() {
+        userRepository.findAll().forEach(user -> {
+            try {
+                getMatchingSeniorPortfolio(user.getId());
+            } catch (Exception e) {
+                // 예외가 발생하면 해당 사용자 작업스킵 로그 남기기
+                log.info("Error getMatchingSeniorPortfolio User ID: " + user.getId());
+            }
+        });
+    }
+
 }
