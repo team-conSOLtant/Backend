@@ -1,7 +1,5 @@
 package com.consoltant.consoltant.domain.user.service;
 
-import com.consoltant.consoltant.domain.auth.dto.RegisterRequestDto;
-import com.consoltant.consoltant.domain.auth.dto.OpenAccountAuthResponseDto;
 import com.consoltant.consoltant.domain.university.entity.University;
 import com.consoltant.consoltant.domain.university.repository.UniversityRepository;
 import com.consoltant.consoltant.domain.user.dto.*;
@@ -11,12 +9,11 @@ import com.consoltant.consoltant.domain.user.repository.UserModuleRepository;
 import com.consoltant.consoltant.domain.user.repository.UserRepository;
 import com.consoltant.consoltant.global.exception.BadRequestException;
 import com.consoltant.consoltant.util.api.RestTemplateUtil;
-import com.consoltant.consoltant.util.api.global.response.RECResponse;
-import com.consoltant.consoltant.util.api.dto.createdemanddepositaccount.CreateDemandDepositAccountResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @Service
@@ -43,33 +40,20 @@ public class UserService{
         );
     }
 
-    //사용자 생성
-    public UserResponseDto createUser(User user){
-        log.info("사용자 생성 Service -> {}",user.getEmail());
-
-        //제휴 대학 연결
-        University university = universityRepository.findById(1L).orElseThrow(()->new BadRequestException("SQL Error"));
-        user.addUniversity(university);
-
-        //userKey 생성하기
-//        user.addUserKey(restTemplateUtil.createMember(user.getEmail()));
-
-        log.info("사용자 Entity -> {}",user);
-        userRepository.save(user);
-
-        return userMapper.toUserResponseDto(user);
-    }
-
     //사용자 학력 정보 업데이트
     @Transactional
-    public UserResponseDto createUserAcademy(Long id, User user){
-        //TODO 사용자 학력 정보 업데이트 + CSV
-        User entity = userModuleRepository.findById(id)
+    public UserResponseDto createUserAcademy(Long id, CreateUserAcademyRequestDto createUserAcademyRequestDto, MultipartFile subject){
+        //TODO CSV
+        User user = userModuleRepository.findById(id)
                 .orElseThrow(()->new BadRequestException("존재하지 않는 사용자입니다.")) ;
 
-        entity.addAcademyInfo(user);
+        University university = universityRepository.findByName(createUserAcademyRequestDto.getUniversity());
+        Double totalGpa = 4.1;
+        Double majorGpa = 4.2;
+        Integer totalSumGpa = 140;
+        user.addAcademyInfo(university,createUserAcademyRequestDto, totalGpa, majorGpa, totalSumGpa);
 
-        return userMapper.toUserResponseDto(entity);
+        return userMapper.toUserResponseDto(user);
     }
 
     //사용자 계좌 정보 추가
@@ -101,32 +85,5 @@ public class UserService{
         userModuleRepository.deleteById(id);
 
         return id;
-    }
-
-    //1원 송금
-    public IssueAccountResponseDto issueAccount(Long id, String accountNo){
-        User entity = userModuleRepository.findById(id).orElseThrow(()->new BadRequestException("존재하지 않는 사용자입니다."));
-
-        String userKey = entity.getUserKey();
-
-        return userMapper.toIssueResponseDto(restTemplateUtil.openAccountAuth(userKey,accountNo));
-    }
-
-    //1원 송금 인증
-    public CheckAccountResponseDto checkAccount(Long id, String accountNo, String authText, String authCode){
-        User entity = userModuleRepository.findById(id).orElseThrow(()->new BadRequestException("존재하지 않는 사용자입니다."));
-
-        String userKey = entity.getUserKey();
-
-        return userMapper.toCheckAccountResponseDto(restTemplateUtil.checkAuthCode(userKey,accountNo, authText,authCode));
-    }
-
-    //1원 송금 메세지 확인
-    public CheckTransactionMessageResponseDto checkMessage(Long id, String accountNo, Long transactionUniqueNo){
-        User entity = userModuleRepository.findById(id).orElseThrow(()->new BadRequestException("존재하지 않는 사용자입니다."));
-
-        String userKey = entity.getUserKey();
-
-        return userMapper.toCheckTransactionResponseDto(restTemplateUtil.inquireTransactionHistory(userKey,accountNo, transactionUniqueNo));
     }
 }

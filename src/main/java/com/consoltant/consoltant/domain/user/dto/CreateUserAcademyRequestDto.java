@@ -8,17 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Getter
 @Setter
 public class CreateUserAcademyRequestDto {
-    private Long id;
-
-    private University university;
+    private String university;
 
     private String major;
-
-//    private Double totalGpa;
-//
-//    private Double majorGpa;
-//
-//    private Integer totalSumGpa;
-
-    private MultipartFile subject;
 }

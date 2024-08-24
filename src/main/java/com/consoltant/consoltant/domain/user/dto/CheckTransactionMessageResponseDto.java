@@ -5,7 +5,8 @@ import lombok.Getter;
 
 @Builder
 @Getter
-public class CheckTransactionMessageResponseDto {
+public class
+CheckTransactionMessageResponseDto {
     private String transactionUniqueNo;
     private String transactionDate;
     private String transactionTime;
