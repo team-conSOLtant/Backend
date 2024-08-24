@@ -7,9 +7,11 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CreateUserAccountRequestDto {
-    private Long id;
-
     private Boolean isEmployed;
 
+    private Integer salary;
+
     private String accountNo;
+
+    private String corporateName;
 }

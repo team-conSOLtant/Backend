@@ -19,6 +19,8 @@ public class RegisterRequestDto {
     @NotNull
     private String password;
     @NotNull
+    private Integer age;
+    @NotNull
     private String name;
     @NotNull
     private String phoneNumber;
@@ -31,6 +33,7 @@ public class RegisterRequestDto {
                 .password(password)
                 .role("USER")
                 .name(name)
+                .age(age)
                 .university(university)
                 .phoneNumber(phoneNumber)
                 .birthDate(birthDate)

@@ -1,5 +1,6 @@
 package com.consoltant.consoltant.domain.user.dto;
 
+import com.consoltant.consoltant.domain.university.dto.UniversityResponseDto;
 import com.consoltant.consoltant.domain.university.entity.University;
 import com.consoltant.consoltant.util.constant.JourneyType;
 import lombok.Builder;
@@ -10,7 +11,7 @@ import lombok.Getter;
 public class UserResponseDto {
     private Long id;
 
-    private University university;
+    private UniversityResponseDto university;
 
     private String email;
 
@@ -31,6 +32,8 @@ public class UserResponseDto {
     private Integer totalSumGpa;
 
     private Boolean isEmployed;
+
+    private String corporateName;
 
     private String accountNo;
 

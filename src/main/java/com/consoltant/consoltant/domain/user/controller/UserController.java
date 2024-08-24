@@ -18,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
-    private final UserMapper userMapper;
 
     @GetMapping("/test")
     public ResponseEntity<?> getUser(){
@@ -37,59 +36,37 @@ public class UserController {
         return new BaseSuccessResponse<>(userService.getUser(id));
     }
 
-    @PostMapping("/{id}/create/account")
-    public BaseSuccessResponse<CreateAccountResponseDto> createAccount(@PathVariable Long id, @RequestBody CreateAccountRequestDto createAccountRequestDto) {
+    @PostMapping("/create/account")
+    public BaseSuccessResponse<CreateAccountResponseDto> createAccount(@RequestBody CreateAccountRequestDto createAccountRequestDto) {
+        Long id = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
         log.info("계좌 생성 API -> {} {}", id, createAccountRequestDto.getAccountTypeUniqueNo());
+
         return new BaseSuccessResponse<>(userService.createAccount(id, createAccountRequestDto.getAccountTypeUniqueNo()));
     }
 
-    @PostMapping
-    public BaseSuccessResponse<UserResponseDto> createUser(@RequestBody CreateUserRequestDto createUserRequestDto) {
-        log.info("사용자 생성 API -> {}", createUserRequestDto);
-        return new BaseSuccessResponse<>(userService.createUser(userMapper.toUser(createUserRequestDto)));
-    }
-
-    @PostMapping("/{id}/academy")
-    public BaseSuccessResponse<UserResponseDto> createUserAcademy(@PathVariable Long id, @RequestBody CreateUserAcademyRequestDto createUserAcademyRequestDto) {
+    @PostMapping("/academy")
+    public BaseSuccessResponse<UserResponseDto> createUserAcademy(
+            @RequestPart("subject") MultipartFile subject,
+            @RequestPart("data") CreateUserAcademyRequestDto createUserAcademyRequestDto) {
+        Long id = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
         log.info("사용자 학력 추가 API {}", id);
-        return new BaseSuccessResponse<>(userService.createUserAcademy(id, userMapper.toUser(createUserAcademyRequestDto)));
+        return new BaseSuccessResponse<>(userService.createUserAcademy(id, createUserAcademyRequestDto, subject));
     }
 
-    @PostMapping("/{id}/account")
-    public BaseSuccessResponse<UserResponseDto> createUserAccount(@PathVariable Long id, @RequestBody CreateUserAccountRequestDto createUserAccountRequestDto) {
+    @PostMapping("/account")
+    public BaseSuccessResponse<UserResponseDto> createUserAccount(@RequestBody CreateUserAccountRequestDto createUserAccountRequestDto) {
+        Long id = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
         log.info("사용자 계좌 추가 API {}", id);
         return new BaseSuccessResponse<>(userService.createUserAccount(id, createUserAccountRequestDto));
     }
 
-    @DeleteMapping("/{id}")
-    public BaseSuccessResponse<Long> deleteUser(@PathVariable Long id) {
+    @DeleteMapping
+    public BaseSuccessResponse<Long> deleteUser() {
+        Long id = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
         log.info("사용자 삭제 API {}", id);
         return new BaseSuccessResponse<>(userService.deleteUser(id));
     }
 
-    @PostMapping("/{id}/issue/account")
-    public BaseSuccessResponse<IssueAccountResponseDto> issueAccount(@PathVariable Long id, @RequestBody IssueAccountRequestDto issueAccountRequestDto){
-        log.info("1원 송금 API ");
 
-        return new BaseSuccessResponse<>(userService.issueAccount(id,issueAccountRequestDto.getAccountNo()));
-    }
-
-    @PostMapping("/{id}/check/account")
-    public BaseSuccessResponse<CheckAccountResponseDto> checkAccount(@PathVariable Long id, @RequestBody CheckAccountRequestDto checkAccountRequestDto){
-        log.info("1원 송금 확인 API");
-        String accountNo = checkAccountRequestDto.getAccountNo();
-        String authText = checkAccountRequestDto.getAuthText();
-        String authCode = checkAccountRequestDto.getAuthCode();
-        return new BaseSuccessResponse<>(userService.checkAccount(id, accountNo, authText, authCode));
-    }
-
-    @PostMapping("/{id}/check/message")
-    public BaseSuccessResponse<CheckTransactionMessageResponseDto> checkTransactionMessage(@PathVariable Long id, @RequestBody CheckTransactionMessageRequestDto checkTransactionMessageRequestDto){
-        log.info("1원 송금 메세지 확인 API");
-        String accountNo = checkTransactionMessageRequestDto.getAccountNo();
-        Long transactionUniqueNo = checkTransactionMessageRequestDto.getTransactionUniqueNo();
-
-        return new BaseSuccessResponse<>(userService.checkMessage(id, accountNo, transactionUniqueNo));
-    }
 
 }

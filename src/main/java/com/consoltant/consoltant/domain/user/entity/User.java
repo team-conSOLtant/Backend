@@ -1,6 +1,7 @@
 package com.consoltant.consoltant.domain.user.entity;
 
 import com.consoltant.consoltant.domain.university.entity.University;
+import com.consoltant.consoltant.domain.user.dto.CreateUserAcademyRequestDto;
 import com.consoltant.consoltant.domain.user.dto.CreateUserAccountRequestDto;
 import com.consoltant.consoltant.domain.user.dto.CreateUserRequestDto;
 import com.consoltant.consoltant.util.constant.JourneyType;
@@ -71,6 +72,8 @@ public class User {
     @Builder.Default
     private Boolean isEmployed = false;
 
+    private String corporateName;
+
     @Column(length = 100)
     private String accountNo;
 
@@ -95,10 +98,16 @@ public class User {
     public void addAccountInfo(CreateUserAccountRequestDto createUserAccountRequestDto){
         this.accountNo = createUserAccountRequestDto.getAccountNo();
         this.isEmployed = createUserAccountRequestDto.getIsEmployed();
+        this.salary = createUserAccountRequestDto.getSalary();
+        this.corporateName = createUserAccountRequestDto.getCorporateName();
     }
 
-    public void addAcademyInfo(User user){
-        this.university = user.getUniversity();
+    public void addAcademyInfo(University university,CreateUserAcademyRequestDto createUserAcademyRequestDto, Double totalGpa, Double majorGpa, Integer totalSumGpa){
+        this.university = university;
+        this.major = createUserAcademyRequestDto.getMajor();
+        this.totalGpa = totalGpa;
+        this.majorGpa = majorGpa;
+        this.totalSumGpa = totalSumGpa;
     }
 
     //사용자 키 추가

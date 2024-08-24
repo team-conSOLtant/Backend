@@ -1,23 +1,21 @@
 package com.consoltant.consoltant.domain.auth.service;
 
-import com.consoltant.consoltant.domain.auth.dto.LoginRequestDto;
 import com.consoltant.consoltant.domain.auth.dto.RegisterRequestDto;
+import com.consoltant.consoltant.domain.auth.dto.RegisterResponseDto;
+import com.consoltant.consoltant.domain.auth.mapper.AuthMapper;
+import com.consoltant.consoltant.domain.university.entity.University;
 import com.consoltant.consoltant.domain.university.repository.UniversityRepository;
+import com.consoltant.consoltant.domain.user.dto.CheckAccountResponseDto;
+import com.consoltant.consoltant.domain.user.dto.CheckTransactionMessageResponseDto;
+import com.consoltant.consoltant.domain.user.dto.IssueAccountResponseDto;
 import com.consoltant.consoltant.domain.user.entity.User;
+import com.consoltant.consoltant.domain.user.mapper.UserMapper;
+import com.consoltant.consoltant.domain.user.repository.UserModuleRepository;
 import com.consoltant.consoltant.domain.user.repository.UserRepository;
 import com.consoltant.consoltant.global.exception.BadRequestException;
-import com.consoltant.consoltant.global.security.JwtUtil;
 import com.consoltant.consoltant.util.api.RestTemplateUtil;
 import lombok.RequiredArgsConstructor;
-import com.consoltant.consoltant.domain.university.entity.University;
-
-
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +30,11 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final UniversityRepository universityRepository;
 
-    public String registerUser(RegisterRequestDto request) {
+    private final UserModuleRepository userModuleRepository;
+    private final UserMapper userMapper;
+    private final AuthMapper authMapper;
+
+    public RegisterResponseDto registerUser(RegisterRequestDto request) {
         userRepository.findByEmail(request.getEmail())
                 .ifPresent(user -> {
                     throw new BadRequestException("이미 존재하는 이메일 입니다.");
@@ -42,20 +44,34 @@ public class AuthService {
         String userKey = restTemplateUtil.createMember(request.getEmail());
         University university =universityRepository.findById(1L).orElseThrow(()->new BadRequestException("SQL Error"));
 
-        return userRepository.save(request.createUser(encodePassword,userKey,university)).getEmail();
+        return authMapper.toRegisterResponseDto(userRepository.save(request.createUser(encodePassword,userKey,university)));
     }
 
-    public Long logout(User user){
-//        userRepository.logout();
-        return null;
+    //1원 송금
+    public IssueAccountResponseDto issueAccount(Long id, String accountNo){
+        User entity = userModuleRepository.findById(id).orElseThrow(()->new BadRequestException("존재하지 않는 사용자입니다."));
+
+        String userKey = entity.getUserKey();
+
+        return userMapper.toIssueResponseDto(restTemplateUtil.openAccountAuth(userKey,accountNo));
     }
 
-    public Long openAccountAuth(User user) {
-        return null;
+    //1원 송금 인증
+    public CheckAccountResponseDto checkAccount(Long id, String accountNo, String authText, String authCode){
+        User entity = userModuleRepository.findById(id).orElseThrow(()->new BadRequestException("존재하지 않는 사용자입니다."));
+
+        String userKey = entity.getUserKey();
+
+        return userMapper.toCheckAccountResponseDto(restTemplateUtil.checkAuthCode(userKey,accountNo, authText,authCode));
     }
 
-    public Long checkAuthCode(User user){
-        return null;
+    //1원 송금 메세지 확인
+    public CheckTransactionMessageResponseDto checkMessage(Long id, String accountNo, Long transactionUniqueNo){
+        User entity = userModuleRepository.findById(id).orElseThrow(()->new BadRequestException("존재하지 않는 사용자입니다."));
+
+        String userKey = entity.getUserKey();
+
+        return userMapper.toCheckTransactionResponseDto(restTemplateUtil.inquireTransactionHistory(userKey,accountNo, transactionUniqueNo));
     }
 
 }
