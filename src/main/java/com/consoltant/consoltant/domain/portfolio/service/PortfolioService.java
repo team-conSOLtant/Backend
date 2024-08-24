@@ -3,20 +3,25 @@ package com.consoltant.consoltant.domain.portfolio.service;
 import com.consoltant.consoltant.domain.course.entity.Course;
 import com.consoltant.consoltant.domain.course.service.CourseModuleService;
 import com.consoltant.consoltant.domain.matching.entity.Matching;
-import com.consoltant.consoltant.domain.matching.mapper.MatchingMapper;
 import com.consoltant.consoltant.domain.matching.service.MatchingModuleService;
+import com.consoltant.consoltant.domain.notification.entity.Notification;
+import com.consoltant.consoltant.domain.notification.service.NotificationModuleService;
 import com.consoltant.consoltant.domain.portfolio.dto.PortfolioRequestDto;
 import com.consoltant.consoltant.domain.portfolio.dto.PortfolioResponseDto;
 import com.consoltant.consoltant.domain.portfolio.entity.Portfolio;
 import com.consoltant.consoltant.domain.portfolio.mapper.PortfolioMapper;
 import com.consoltant.consoltant.domain.user.entity.User;
 import com.consoltant.consoltant.domain.user.repository.UserRepository;
+import com.consoltant.consoltant.util.constant.NotificationType;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PortfolioService {
@@ -25,7 +30,7 @@ public class PortfolioService {
     private final MatchingModuleService matchingModuleService;
     private final CourseModuleService courseModuleService;
     private final PortfolioMapper portfolioMapper;
-    private final MatchingMapper matchingMapper;
+    private final NotificationModuleService notificationModuleService;
     private final UserRepository userRepository;
 
     public PortfolioResponseDto findById(Long id) {
@@ -105,14 +110,33 @@ public class PortfolioService {
                 return portfolioMapper.toPortfolioResponseDto(portfolioModuleService.findById(id));
             }
         }
-        Matching matching = new Matching();
-        matching.setUser(user);
-        matching.setPortfolio(bestPortfolio);
 
-        matchingModuleService.save(matching);   //매칭 기록 저장
+        //매칭 기록 저장
+        matchingModuleService.save(Matching.builder()
+            .user(user)
+            .portfolio(bestPortfolio)
+            .build());
+
+        //알림 저장
+        notificationModuleService.save(Notification.builder()
+            .user(user)
+            .notificationType(NotificationType.PORTFOLIO_MATCHING)
+            .content(bestPortfolio.getUser().getCorporateName())
+            .build());
+
         return portfolioMapper.toPortfolioResponseDto(bestPortfolio);
     }
-    
-    
-    
+
+    @Scheduled(cron = "0 0 0 * * ?", zone = "Asia/Seoul")
+    public void processUsersAtMidnight() {
+        userRepository.findAll().forEach(user -> {
+            try {
+                getMatchingSeniorPortfolio(user.getId());
+            } catch (Exception e) {
+                // 예외가 발생하면 해당 사용자 작업스킵 로그 남기기
+                log.info("Error getMatchingSeniorPortfolio User ID: " + user.getId());
+            }
+        });
+    }
+
 }

@@ -2,6 +2,8 @@ package com.consoltant.consoltant.domain.follow.service;
 
 import com.consoltant.consoltant.domain.follow.entity.Follow;
 import com.consoltant.consoltant.domain.follow.repository.FollowRepository;
+import com.consoltant.consoltant.domain.portfolio.entity.Portfolio;
+import com.consoltant.consoltant.domain.user.entity.User;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,10 @@ public class FollowModuleService {
     // 포폴 ID로 모든 팔로워 조회
     public List<Follow> findAllByPortfolioId(Long portfolioId) {
         return followRepository.findAllByPortfolioId(portfolioId);
+    }
+
+    public Boolean isAlreadyFollowing(User user, Portfolio portfolio) {
+        return followRepository.existsByUserAndPortfolio(user, portfolio);
     }
 
     // Follow 저장
