@@ -9,5 +9,6 @@ import java.util.List;
 
 @Repository
 public interface RecommendRepository extends JpaRepository<Recommend,Long> {
-    List<Recommend> findAllByIdAndJourneyType(Long Id, JourneyType journeyType);
+    List<Recommend> findAllByUserIdAndJourneyType(Long UserId, JourneyType journeyType);
+    List<Recommend> findAllByUserId(Long UserId);
 }

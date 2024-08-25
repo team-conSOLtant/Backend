@@ -56,4 +56,8 @@ public class Recommend {
     @Column(nullable = false)
     private Boolean isDeleted;
 
+    public void setUser(User user){
+        this.user = user;
+    }
+
 }
