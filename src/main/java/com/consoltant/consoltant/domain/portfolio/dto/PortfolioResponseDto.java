@@ -13,6 +13,7 @@ public class PortfolioResponseDto {
     private Double majorGpa;
     private FinanceKeyword financeKeyword;
     private String myKeyword;
+    private String email;
     private String job;
     private String imageUrl;
     private String description;
