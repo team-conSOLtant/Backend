@@ -2,6 +2,8 @@ package com.consoltant.consoltant.domain.journey.dto;
 
 import com.consoltant.consoltant.util.constant.JourneyType;
 import java.time.LocalDate;
+
+import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,6 +17,7 @@ public class JourneyResponseDto {
     private Long balance;
     private LocalDate startDate;
     private LocalDate endDate;
+    private int age;
     private Boolean isDeleted;
 
 }

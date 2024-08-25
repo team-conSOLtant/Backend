@@ -14,5 +14,6 @@ public class JourneyRequestDto {
     private Long balance;
     private LocalDate startDate;
     private LocalDate endDate;
+    private int age;
 
 }

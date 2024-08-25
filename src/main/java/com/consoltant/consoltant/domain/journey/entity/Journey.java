@@ -51,6 +51,9 @@ public class Journey {
     private Long balance;
 
     @Column(nullable = false)
+    private int age;
+
+    @Column(nullable = false)
     @Builder.Default
     private Boolean isDeleted = false;
 
