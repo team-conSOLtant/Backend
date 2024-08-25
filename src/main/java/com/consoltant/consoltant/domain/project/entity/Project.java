@@ -3,11 +3,18 @@ package com.consoltant.consoltant.domain.project.entity;
 import com.consoltant.consoltant.domain.portfolio.entity.Portfolio;
 import com.consoltant.consoltant.domain.project.dto.ProjectRequestDto;
 import com.consoltant.consoltant.domain.projectuser.entity.ProjectUser;
-import jakarta.persistence.*;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -53,9 +60,9 @@ public class Project {
     @Column(length = 1000)
     private String projectUrl;
 
-//    @ManyToOne
-//    @JoinColumn(name = "project_user_id", nullable = false)
-//    private ProjectUser members;
+    @OneToMany(mappedBy = "project")
+    @Builder.Default
+    private final List<ProjectUser> projectUsers = new ArrayList<>();
 
     @Column(nullable = false)
     @Builder.Default
