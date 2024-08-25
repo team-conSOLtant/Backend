@@ -37,7 +37,7 @@ public class ProductController {
     }
 
     // 사용자 ID로 금융상품 통계 보기
-    @GetMapping("/{id}/stats")
+    @GetMapping("/stats")
     public BaseSuccessResponse<ProductStatsResponseDto> findStatsByUserId(){
         log.info("금융상품 통계 API");
         Long userId = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
@@ -50,6 +50,7 @@ public class ProductController {
     public BaseSuccessResponse<List<ProductResponseDto>> findAllByUserId(){
         log.info("금융상품 리스트 조회 API");
         Long userId = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
+        String userKey = userService.getUserKey(userId);
         return new BaseSuccessResponse<>(productService.findAllByUserId(userId));
     }
 
