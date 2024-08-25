@@ -2,6 +2,7 @@ package com.consoltant.consoltant.domain.product.service;
 
 import com.consoltant.consoltant.domain.journey.entity.Journey;
 import com.consoltant.consoltant.domain.journey.service.JourneyModuleService;
+import com.consoltant.consoltant.domain.product.dto.ProductInfoResponseDto;
 import com.consoltant.consoltant.domain.product.dto.ProductRequestDto;
 import com.consoltant.consoltant.domain.product.dto.ProductResponseDto;
 import com.consoltant.consoltant.domain.product.dto.ProductStatsResponseDto;
@@ -12,14 +13,15 @@ import com.consoltant.consoltant.domain.user.repository.UserRepository;
 import com.consoltant.consoltant.domain.user.service.UserService;
 import com.consoltant.consoltant.global.exception.BadRequestException;
 import com.consoltant.consoltant.util.api.RestTemplateUtil;
-import com.consoltant.consoltant.util.api.dto.inquiredemanddepositaccount.InquireDemandDepositAccountResponseDto;
-import com.consoltant.consoltant.util.api.dto.inquireloanaccount.InquireLoanAccountResponseDto;
-import com.consoltant.consoltant.util.api.dto.inquiremycreditrating.InquireMyCreditRatingResponseDto;
-import com.consoltant.consoltant.util.api.dto.inquiresavinginfo.InquireSavingInfoResponseDto;
+import com.consoltant.consoltant.util.api.dto.demanddeposit.inquiredemanddepositaccount.InquireDemandDepositAccountResponseDto;
+import com.consoltant.consoltant.util.api.dto.loan.inquireloanaccount.InquireLoanAccountResponseDto;
+import com.consoltant.consoltant.util.api.dto.loan.inquiremycreditrating.InquireMyCreditRatingResponseDto;
+import com.consoltant.consoltant.util.api.dto.saving.inquiresavinginfo.InquireSavingInfoResponseDto;
 import com.consoltant.consoltant.util.constant.JourneyType;
 import com.consoltant.consoltant.util.constant.ProductType;
+
+import java.util.ArrayList;
 import java.util.List;
-import java.util.function.LongToDoubleFunction;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -83,10 +85,11 @@ public class ProductService {
     
     // 사용자 ID로 금융상품 리스트 조회
     public List<ProductResponseDto> findAllByUserId(Long userId){
-        List<ProductResponseDto> productList = productModuleService.findAllByUserId(userId).stream()
-            .map(productMapper::toProductResponseDto)
-            .toList();
+        List<ProductInfoResponseDto> productList = new ArrayList<>();
         //TODO: 금융상품 리스트 돌면서 금융 API 호출
+        for(Product product: productModuleService.findAllByUserId(userId)){
+            productList.add(restTemplateUtil.inquireDemandDepositAccount())
+        }
         return productList;
     }
 
