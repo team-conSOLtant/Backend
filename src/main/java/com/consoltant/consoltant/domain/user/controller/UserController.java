@@ -88,17 +88,17 @@ public class UserController {
 
     // 학력 정보 입력 확인 API
     @GetMapping("/check/academy")
-    public BaseSuccessResponse<Long> checkAcademy() {
+    public BaseSuccessResponse<Boolean> checkAcademy() {
         Long id = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
         log.info("학력 정보 입력 확인 API {}", id);
-        return new BaseSuccessResponse<>(userService.deleteUser(id));
+        return new BaseSuccessResponse<>(userService.checkAcademy(id));
     }
 
     // 계좌 정보 입력 확인 API
     @GetMapping("/check/account")
-    public BaseSuccessResponse<Long> checkAccount() {
+    public BaseSuccessResponse<Boolean> checkAccount() {
         Long id = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
         log.info("계좌 정보 입력 확인 API {}", id);
-        return new BaseSuccessResponse<>(userService.deleteUser(id));
+        return new BaseSuccessResponse<>(userService.checkAccount(id));
     }
 }

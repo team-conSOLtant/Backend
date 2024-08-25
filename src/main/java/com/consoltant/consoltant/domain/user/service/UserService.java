@@ -86,4 +86,18 @@ public class UserService{
 
         return id;
     }
+
+    //학력 정보 확인
+    public Boolean checkAcademy(Long id){
+        User user = userRepository.findById(id).orElseThrow(()->new BadRequestException("존재하지 않는 사용자입니다."));
+
+        return user.getUniversity() != null;
+    }
+
+    //계좌 정보 확인
+    public Boolean checkAccount(Long id){
+        User user = userRepository.findById(id).orElseThrow(()->new BadRequestException("존재하지 않는 사용자입니다."));
+
+        return user.getAccountNo() != null;
+    }
 }
