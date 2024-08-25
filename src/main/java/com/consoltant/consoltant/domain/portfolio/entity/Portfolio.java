@@ -51,6 +51,8 @@ public class Portfolio {
     @Column(length = 100)
     private String job;
 
+    private String email;
+
     @Column(length = 1000)
     private String imageUrl;
 
