@@ -16,6 +16,10 @@ public class PortfolioModuleService {
             .orElseThrow(() -> new IllegalArgumentException("Invalid Portfolio ID"));
     }
 
+    public Portfolio findByUserId(Long userId) {
+        return portfolioRepository.findByUserId(userId);
+    }
+
     public Portfolio save(Portfolio portfolio) {
         return portfolioRepository.save(portfolio);
     }

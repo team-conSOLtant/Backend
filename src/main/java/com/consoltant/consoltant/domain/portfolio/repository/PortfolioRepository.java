@@ -7,6 +7,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
+
+    Portfolio findByUserId(Long userId);
+
     @Query("SELECT p FROM Portfolio p " +
         "JOIN p.user u " +
         "WHERE u.university.id = :universityId " +
