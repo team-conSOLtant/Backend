@@ -2,10 +2,7 @@ package com.consoltant.consoltant.domain.product.service;
 
 import com.consoltant.consoltant.domain.journey.entity.Journey;
 import com.consoltant.consoltant.domain.journey.service.JourneyModuleService;
-import com.consoltant.consoltant.domain.product.dto.ProductInfoResponseDto;
-import com.consoltant.consoltant.domain.product.dto.ProductRequestDto;
-import com.consoltant.consoltant.domain.product.dto.ProductResponseDto;
-import com.consoltant.consoltant.domain.product.dto.ProductStatsResponseDto;
+import com.consoltant.consoltant.domain.product.dto.*;
 import com.consoltant.consoltant.domain.product.entity.Product;
 import com.consoltant.consoltant.domain.product.mapper.ProductMapper;
 import com.consoltant.consoltant.domain.user.entity.User;
@@ -14,20 +11,24 @@ import com.consoltant.consoltant.domain.user.service.UserService;
 import com.consoltant.consoltant.global.exception.BadRequestException;
 import com.consoltant.consoltant.util.api.RestTemplateUtil;
 import com.consoltant.consoltant.util.api.dto.demanddeposit.inquiredemanddepositaccount.InquireDemandDepositAccountResponseDto;
+import com.consoltant.consoltant.util.api.dto.deposit.inquiredepositinfo.InquireDepositInfoResponseDto;
 import com.consoltant.consoltant.util.api.dto.loan.inquireloanaccount.InquireLoanAccountResponseDto;
 import com.consoltant.consoltant.util.api.dto.loan.inquiremycreditrating.InquireMyCreditRatingResponseDto;
 import com.consoltant.consoltant.util.api.dto.saving.inquiresavinginfo.InquireSavingInfoResponseDto;
 import com.consoltant.consoltant.util.constant.JourneyType;
 import com.consoltant.consoltant.util.constant.ProductType;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ProductService {
 
     private final ProductModuleService productModuleService;
@@ -36,6 +37,16 @@ public class ProductService {
     private final ProductMapper productMapper;
     private final RestTemplateUtil restTemplateUtil;
     private final UserService userService;
+
+    //판매중인 금융 상품 조회
+    public List<?> findBankProductByType(String userKey, ProductType productType){
+        return switch (productType) {
+            case DEMAND_DEPOSIT -> restTemplateUtil.inquireDemandDepositList(userKey);
+            case SAVING -> null;
+            case LOAN -> null;
+            case DEPOSIT -> null;
+        };
+    }
 
     // 단일 조회
     public ProductResponseDto findById(Long id) {
@@ -84,14 +95,35 @@ public class ProductService {
     }
     
     // 사용자 ID로 금융상품 리스트 조회
-    public List<ProductResponseDto> findAllByUserId(Long userId){
-//        List<ProductInfoResponseDto> productList = new ArrayList<>();
-//        //TODO: 금융상품 리스트 돌면서 금융 API 호출
-//        for(Product product: productModuleService.findAllByUserId(userId)){
-//            productList.add(restTemplateUtil.inquireDemandDepositAccount())
-//        }
-//        return productList;
-        return null;
+    public ProductListResponseDto findAllByUserId(Long userId, String userKey){
+        ProductListResponseDto productInfoList = new ProductListResponseDto();
+
+        List<Product> productList = productModuleService.findAllByUserId(userId);
+
+        for(Product product: productList){
+            switch (product.getProductType()){
+                case DEMAND_DEPOSIT:
+                    log.info("수시입출금");
+                    productInfoList.getDemandDeposit().add(productMapper.toProductInfo(restTemplateUtil.inquireDemandDepositAccount(userKey,product.getAccountNo())));
+                    break;
+                case DEPOSIT:
+                    log.info("예금");
+                    productInfoList.getDeposit().add(productMapper.toProductInfo(restTemplateUtil.inquireDemandDepositAccount(userKey,product.getAccountNo())));
+                    break;
+                case LOAN:
+                    log.info("대출");
+                    productInfoList.getLoan().add(productMapper.toProductInfo(restTemplateUtil.inquireDemandDepositAccount(userKey,product.getAccountNo())));
+                    break;
+                case SAVING:
+                    log.info("적금");
+                    productInfoList.getSaving().add(productMapper.toProductInfo(restTemplateUtil.inquireDemandDepositAccount(userKey,product.getAccountNo())));
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        return productInfoList;
     }
 
     //사용자 여정에 해당하는 금융상품 리스트 조회
@@ -114,10 +146,103 @@ public class ProductService {
     }
 
     // 등록
-    public ProductResponseDto save(ProductRequestDto productRequestDto) {
+    public ProductResponseDto save(Long userId, ProductSaveRequestDto productRequestDto) {
         //TODO: 금융 API 호출하여 등록해주는 로직
-        User user = userRepository.findById(productRequestDto.getUserId()).orElseThrow();
+        User user = userRepository.findById(userId).orElseThrow();
+
+        String startDate = "";
+        String endDate = "";
+        switch (productRequestDto.getProductType()){
+            case DEMAND_DEPOSIT:
+                log.info("수시입출금 등록");
+                InquireDemandDepositAccountResponseDto inquireDemandDepositAccountResponseDto = restTemplateUtil.inquireDemandDepositAccount(user.getUserKey(), productRequestDto.getAccountNo());
+
+                startDate = inquireDemandDepositAccountResponseDto.getAccountCreatedDate();
+                endDate = inquireDemandDepositAccountResponseDto.getAccountExpiryDate();
+
+
+                productRequestDto.setStartDate(
+                        LocalDate.of(Integer.parseInt(startDate.substring(0,4)),
+                                Integer.parseInt(startDate.substring(4,6)),
+                                Integer.parseInt(startDate.substring(6,8)))
+                );
+
+                productRequestDto.setEndDate(
+                        LocalDate.of(Integer.parseInt(endDate.substring(0,4)),
+                                Integer.parseInt(endDate.substring(4,6)),
+                                Integer.parseInt(endDate.substring(6,8)))
+                );
+
+                break;
+            case DEPOSIT:
+                log.info("예금 등록");
+                InquireDepositInfoResponseDto inquireDepositInfoResponseDto = restTemplateUtil.inquireDepositProducts(user.getUserKey(), productRequestDto.getAccountNo());
+
+                startDate = inquireDepositInfoResponseDto.getAccountCreateDate();
+                endDate = inquireDepositInfoResponseDto.getAccountExpiryDate();
+
+
+                productRequestDto.setStartDate(
+                        LocalDate.of(Integer.parseInt(startDate.substring(0,4)),
+                                Integer.parseInt(startDate.substring(4,6)),
+                                Integer.parseInt(startDate.substring(6,8)))
+                );
+
+                productRequestDto.setEndDate(
+                        LocalDate.of(Integer.parseInt(endDate.substring(0,4)),
+                                Integer.parseInt(endDate.substring(4,6)),
+                                Integer.parseInt(endDate.substring(6,8)))
+                );
+
+                break;
+            case LOAN:
+//                log.info("대출 등록");
+//                InquireLoanAccountResponseDto inquireLoanAccountResponseDto = restTemplateUtil.inquireLoan(user.getUserKey(), productRequestDto.getAccountNo());
+//
+//                String startDate = inquireDemandDepositAccountResponseDto.getAccountCreatedDate();
+//                String endDate = inquireDemandDepositAccountResponseDto.getAccountExpiryDate();
+//
+//
+//                productRequestDto.setStartDate(
+//                        LocalDate.of(Integer.parseInt(startDate.substring(0,4)),
+//                                Integer.parseInt(startDate.substring(4,6)),
+//                                Integer.parseInt(startDate.substring(6,8)))
+//                );
+//
+//                productRequestDto.setStartDate(
+//                        LocalDate.of(Integer.parseInt(endDate.substring(0,4)),
+//                                Integer.parseInt(endDate.substring(4,6)),
+//                                Integer.parseInt(endDate.substring(6,8)))
+//                );
+
+                break;
+            case SAVING:
+//                log.info("적금 등록");
+//                InquireDemandDepositAccountResponseDto inquireDemandDepositAccountResponseDto = restTemplateUtil.inquireDemandDepositAccount(user.getUserKey(), productRequestDto.getAccountNo());
+//
+//                String startDate = inquireDemandDepositAccountResponseDto.getAccountCreatedDate();
+//                String endDate = inquireDemandDepositAccountResponseDto.getAccountExpiryDate();
+//
+//
+//                productRequestDto.setStartDate(
+//                        LocalDate.of(Integer.parseInt(startDate.substring(0,4)),
+//                                Integer.parseInt(startDate.substring(4,6)),
+//                                Integer.parseInt(startDate.substring(6,8)))
+//                );
+//
+//                productRequestDto.setStartDate(
+//                        LocalDate.of(Integer.parseInt(endDate.substring(0,4)),
+//                                Integer.parseInt(endDate.substring(4,6)),
+//                                Integer.parseInt(endDate.substring(6,8)))
+//                );
+
+                break;
+            default:
+                break;
+        }
+
         Product product = productMapper.toProduct(productRequestDto);
+
         product.setUser(user);
         return productMapper.toProductResponseDto(productModuleService.save(product));
     }

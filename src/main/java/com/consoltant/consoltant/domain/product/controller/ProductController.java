@@ -1,9 +1,7 @@
 package com.consoltant.consoltant.domain.product.controller;
 
 import com.consoltant.consoltant.domain.journey.dto.JourneyRequestDto;
-import com.consoltant.consoltant.domain.product.dto.ProductRequestDto;
-import com.consoltant.consoltant.domain.product.dto.ProductResponseDto;
-import com.consoltant.consoltant.domain.product.dto.ProductStatsResponseDto;
+import com.consoltant.consoltant.domain.product.dto.*;
 import com.consoltant.consoltant.domain.product.service.ProductService;
 import com.consoltant.consoltant.domain.user.dto.UserResponseDto;
 import com.consoltant.consoltant.domain.user.service.UserService;
@@ -30,6 +28,14 @@ public class ProductController {
     private final ProductService productService;
     private final UserService userService;
 
+    // 타입별 금융 상품 목록 조회
+    @PostMapping("/bank/type")
+    public BaseSuccessResponse<List<?>> findBankProductByType(@RequestBody BankProductInfoRequestDto bankProductInfoRequestDto) {
+        Long userId = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
+        String userKey = userService.getUserKey(userId);
+        return new BaseSuccessResponse<>(productService.findBankProductByType(userKey, bankProductInfoRequestDto.getProductType()));
+    }
+    
     // 단일 조회
     @GetMapping("/{id}")
     public BaseSuccessResponse<ProductResponseDto> findById(@PathVariable Long id) {
@@ -47,24 +53,28 @@ public class ProductController {
     
     // 사용자 ID로 금융상품 리스트 조회
     @GetMapping
-    public BaseSuccessResponse<List<ProductResponseDto>> findAllByUserId(){
+    public BaseSuccessResponse<ProductListResponseDto> findAllByUserId(){
         log.info("금융상품 리스트 조회 API");
         Long userId = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
         String userKey = userService.getUserKey(userId);
-        return new BaseSuccessResponse<>(productService.findAllByUserId(userId));
+        return new BaseSuccessResponse<>(productService.findAllByUserId(userId, userKey));
     }
 
     //타입별로 사용자 상품 리스트 조회
     @PostMapping("/type")
     public BaseSuccessResponse<List<ProductResponseDto>> findProductsByUserIdAndJourneyType(
         @RequestBody ProductRequestDto productRequestDto){
+        log.info("타입별 사용자 상품 리스트 조회");
         return new BaseSuccessResponse<>(productService.findProductsByUserIdAndProductType(
            productRequestDto.getUserId(), productRequestDto.getProductType()));
     }
 
+    // 금융 상품 등록
     @PostMapping
-    public BaseSuccessResponse<ProductResponseDto> save(@RequestBody ProductRequestDto productRequestDto) {
-        return new BaseSuccessResponse<>(productService.save(productRequestDto));
+    public BaseSuccessResponse<ProductResponseDto> save(@RequestBody ProductSaveRequestDto productRequestDto) {
+        log.info("금융 상품 등록");
+        Long userId = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
+        return new BaseSuccessResponse<>(productService.save(userId, productRequestDto));
     }
 
 

@@ -23,7 +23,7 @@ import org.hibernate.annotations.SQLRestriction;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "UPDATE recommend SET is_deleted = true WHERE recommend_id = ?")
+@SQLDelete(sql = "UPDATE recommend SET is_deleted = true WHERE id = ?")
 @SQLRestriction("is_deleted = false")
 @Table(name = "recommend")
 public class Recommend {

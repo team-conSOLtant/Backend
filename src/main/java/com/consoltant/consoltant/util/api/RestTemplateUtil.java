@@ -407,7 +407,7 @@ public class RestTemplateUtil {
     }
 
     // 예금 상품 조회
-    public List<InquireDepositProductsResponseDto> inquireDepositProducts(){
+    public InquireDepositInfoResponseDto inquireDepositProducts(String userKey, String accountNo){
         final String name = "inquireDepositProducts";
         log.info("금융 API 예금 상품 조회");
 
@@ -415,13 +415,14 @@ public class RestTemplateUtil {
 
         Map<String,Object>requestBody = new HashMap<>();
 
-        RequestHeader headers = requestHeader(name,null);
+        RequestHeader headers = requestHeader(name,userKey);
 
         requestBody.put("Header",headers);
+        requestBody.put("accountNo",accountNo);
 
         HttpEntity<Object> entity = new HttpEntity<>(requestBody);
 
-        ResponseEntity<RECListResponse<InquireDepositProductsResponseDto>> response =
+        ResponseEntity<RECResponse<InquireDepositInfoResponseDto>> response =
                 restTemplate.exchange(
                         url + uri,HttpMethod.POST ,entity,
                         new ParameterizedTypeReference<>(){}
@@ -917,6 +918,8 @@ public class RestTemplateUtil {
 
         return response.getBody().getREC();
     }
+
+    //대출 상품
 
     // TODO 대출 상환 내역 조회
 

@@ -1,9 +1,12 @@
 package com.consoltant.consoltant.domain.user.controller;
 
+import com.consoltant.consoltant.domain.product.dto.ProductSaveRequestDto;
+import com.consoltant.consoltant.domain.product.service.ProductService;
 import com.consoltant.consoltant.domain.user.dto.*;
 import com.consoltant.consoltant.domain.user.mapper.UserMapper;
 import com.consoltant.consoltant.domain.user.service.UserService;
 import com.consoltant.consoltant.util.base.BaseSuccessResponse;
+import com.consoltant.consoltant.util.constant.ProductType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
+    private final ProductService productService;
 
     @GetMapping("/test")
     public ResponseEntity<?> getUser(){
@@ -44,7 +48,15 @@ public class UserController {
         Long id = userService.getUserId(email);
         log.info("계좌 생성 API -> {} {}", id, createAccountRequestDto.getAccountTypeUniqueNo());
 
-        return new BaseSuccessResponse<>(userService.createAccount(id, createAccountRequestDto.getAccountTypeUniqueNo()));
+        //계좌 생성 및 등록
+        CreateAccountResponseDto createAccountResponseDto = userService.createAccount(id, createAccountRequestDto.getAccountTypeUniqueNo());
+        ProductSaveRequestDto productSaveRequestDto = new ProductSaveRequestDto();
+        productSaveRequestDto.setAccountNo(createAccountResponseDto.getAccountNo());
+        productSaveRequestDto.setProductType(ProductType.DEMAND_DEPOSIT);
+
+        productService.save(id,productSaveRequestDto);
+
+        return new BaseSuccessResponse<>(createAccountResponseDto);
     }
 
     @PostMapping("/{email}/academy")
