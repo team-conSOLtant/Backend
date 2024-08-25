@@ -29,6 +29,11 @@ public class PortfolioController {
         return new BaseSuccessResponse<>(portfolioService.findById(id));
     }
 
+    @GetMapping
+    public BaseSuccessResponse<PortfolioResponseDto> findByUserId(@RequestParam Long userId) {
+        return new BaseSuccessResponse<>(portfolioService.findByUserId(userId));
+    }
+
     @PostMapping
     public BaseSuccessResponse<PortfolioResponseDto> save(@RequestBody PortfolioRequestDto portfolioRequestDto) {
         return new BaseSuccessResponse<>(portfolioService.save(portfolioRequestDto));
