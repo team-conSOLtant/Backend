@@ -14,15 +14,16 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+
+import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @SQLDelete(sql = "UPDATE recommend SET is_deleted = true WHERE id = ?")
 @SQLRestriction("is_deleted = false")
 @Table(name = "recommend")
@@ -41,7 +42,7 @@ public class Recommend {
     private ProductType productType;
 
     @Column(nullable = false)
-    private String accountUniqueTypeNo;
+    private String accountTypeUniqueNo;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -54,6 +55,11 @@ public class Recommend {
     private LocalDate endDate;
 
     @Column(nullable = false)
-    private Boolean isDeleted;
+    @Builder.Default
+    private Boolean isDeleted = false;
+
+    public void setUser(User user){
+        this.user = user;
+    }
 
 }

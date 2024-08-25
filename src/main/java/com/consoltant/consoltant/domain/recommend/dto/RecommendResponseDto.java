@@ -15,7 +15,7 @@ public class RecommendResponseDto {
 
     private ProductType productType;
 
-    private String accountUniqueTypeNo;
+    private String accountTypeUniqueNo;
 
     private JourneyType journeyType;
 

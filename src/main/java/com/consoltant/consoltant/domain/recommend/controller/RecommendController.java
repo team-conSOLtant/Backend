@@ -23,12 +23,30 @@ public class RecommendController {
     @GetMapping
     public BaseSuccessResponse<List<RecommendResponseDto>> findAllById(){
         Long userId = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
-        return new BaseSuccessResponse<>(recommendService.findAllById(userId));
+        return new BaseSuccessResponse<>(recommendService.findAllByUserId(userId));
+    }
+
+    @GetMapping("/journey")
+    public BaseSuccessResponse<List<RecommendResponseDto>> findAllByIdAndJourney(){
+        Long userId = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
+        return new BaseSuccessResponse<>(recommendService.findAllByUserIdAndJourney(userId));
+    }
+
+    @GetMapping("/{year}")
+    public BaseSuccessResponse<List<RecommendResponseDto>> findAllByIdAndYear(@PathVariable Integer year){
+        Long userId = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
+        return new BaseSuccessResponse<>(recommendService.findAllByUserIdAndYear(userId,year));
     }
 
     @PostMapping
     public BaseSuccessResponse<List<RecommendResponseDto>> save(@RequestBody RecommendRequestDto recommendRequestDto){
         Long userId = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
         return new BaseSuccessResponse<>(recommendService.save(userId, recommendRequestDto));
+    }
+
+    @DeleteMapping("/{id}")
+    public BaseSuccessResponse<Void> deleteById(@PathVariable("id") Long recommendId){
+        recommendService.delete(recommendId);
+        return new BaseSuccessResponse<>(null);
     }
 }
