@@ -3,6 +3,7 @@ package com.consoltant.consoltant.domain.portfolio.service;
 import com.consoltant.consoltant.domain.portfolio.entity.Portfolio;
 import com.consoltant.consoltant.domain.portfolio.repository.PortfolioRepository;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +17,7 @@ public class PortfolioModuleService {
             .orElseThrow(() -> new IllegalArgumentException("Invalid Portfolio ID"));
     }
 
-    public Portfolio findByUserId(Long userId) {
+    public Optional<Portfolio> findByUserId(Long userId) {
         return portfolioRepository.findByUserId(userId);
     }
 

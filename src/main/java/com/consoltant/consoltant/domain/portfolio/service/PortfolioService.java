@@ -38,7 +38,8 @@ public class PortfolioService {
     }
 
     public PortfolioResponseDto findByUserId(Long userId) {
-        return portfolioMapper.toPortfolioResponseDto(portfolioModuleService.findByUserId(userId));
+        Portfolio portfolio = portfolioModuleService.findByUserId(userId).orElse(null);
+        return portfolio==null ? null : portfolioMapper.toPortfolioResponseDto(portfolio);
     }
 
     public PortfolioResponseDto save(PortfolioRequestDto portfolioRequestDto) {
