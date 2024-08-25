@@ -19,7 +19,7 @@ public class CorsConfig {
         config.setAllowedOriginPatterns(List.of("*"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        config.setExposedHeaders(List.of("Authorization", "Content-Type"));
+        config.setExposedHeaders(List.of("Authorization", "Content-Type", "LoginID"));
         config.setAllowCredentials(true);
         config.setMaxAge(3600L);
 

@@ -51,7 +51,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String token = jwtUtil.createJwt(username, role, 6 * 60 * 60 * 1000L); // 6시간
 
         response.addHeader("Authorization", "Bearer " + token);
-        response.addHeader("userId", Long.toString(customUserDetails.getUserId()));
+        response.addHeader("LoginID", Long.toString(customUserDetails.getUserId()));
     }
 
     //로그인 실패시 실행하는 메소드
