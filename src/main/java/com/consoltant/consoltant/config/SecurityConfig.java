@@ -44,7 +44,7 @@ public class SecurityConfig{
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/users/{email}/**").permitAll()
+                        .requestMatchers("/auth/**", "/users/{email}/**", "/products/bank/**").permitAll()
                         .requestMatchers("/users/**").hasAuthority("USER")
                         .anyRequest().authenticated()
                 )
