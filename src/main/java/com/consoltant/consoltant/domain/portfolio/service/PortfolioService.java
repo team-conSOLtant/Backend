@@ -1,5 +1,13 @@
 package com.consoltant.consoltant.domain.portfolio.service;
 
+import com.consoltant.consoltant.domain.activity.dto.ActivityRequestDto;
+import com.consoltant.consoltant.domain.activity.entity.Activity;
+import com.consoltant.consoltant.domain.activity.mapper.ActivityMapper;
+import com.consoltant.consoltant.domain.activity.service.ActivityModuleService;
+import com.consoltant.consoltant.domain.award.dto.AwardRequestDto;
+import com.consoltant.consoltant.domain.award.entity.Award;
+import com.consoltant.consoltant.domain.award.mapper.AwardMapper;
+import com.consoltant.consoltant.domain.award.service.AwardModuleService;
 import com.consoltant.consoltant.domain.course.entity.Course;
 import com.consoltant.consoltant.domain.course.service.CourseModuleService;
 import com.consoltant.consoltant.domain.matching.entity.Matching;
@@ -8,6 +16,7 @@ import com.consoltant.consoltant.domain.notification.entity.Notification;
 import com.consoltant.consoltant.domain.notification.service.NotificationModuleService;
 import com.consoltant.consoltant.domain.portfolio.dto.PortfolioRequestDto;
 import com.consoltant.consoltant.domain.portfolio.dto.PortfolioResponseDto;
+import com.consoltant.consoltant.domain.portfolio.dto.PortfolioSaveAllRequestDto;
 import com.consoltant.consoltant.domain.portfolio.entity.Portfolio;
 import com.consoltant.consoltant.domain.portfolio.mapper.PortfolioMapper;
 import com.consoltant.consoltant.domain.user.entity.User;
@@ -29,8 +38,14 @@ public class PortfolioService {
     private final PortfolioModuleService portfolioModuleService;
     private final MatchingModuleService matchingModuleService;
     private final CourseModuleService courseModuleService;
-    private final PortfolioMapper portfolioMapper;
     private final NotificationModuleService notificationModuleService;
+    private final ActivityModuleService activityModuleService;
+    private final AwardModuleService awardModuleService;
+
+    private final PortfolioMapper portfolioMapper;
+    private final ActivityMapper activityMapper;
+    private final AwardMapper awardMapper;
+
     private final UserRepository userRepository;
 
     public PortfolioResponseDto findById(Long id) {
@@ -55,6 +70,45 @@ public class PortfolioService {
         portfolio.update(portfolioRequestDto);
         portfolioModuleService.save(portfolio);
         return portfolioMapper.toPortfolioResponseDto(portfolio);
+    }
+
+    //포트폴리오 전체 저장
+    @Transactional
+    public void saveAll(PortfolioSaveAllRequestDto portfolioSaveAllRequestDto){
+        Long portfolioId = portfolioSaveAllRequestDto.getPortfolioId();
+        if(portfolioSaveAllRequestDto.getPortfolioId() == null){
+            //포트폴리오 저장 후 진행, 아이디 갱신시켜주기
+        }
+        Portfolio portfolio = portfolioModuleService.findById(portfolioId);
+        update(portfolioId, portfolioSaveAllRequestDto.getPortfolioRequestDto());
+
+        //활동 내역 저장
+        for (ActivityRequestDto activityRequestDto : portfolioSaveAllRequestDto.getActivities()) {
+            System.out.println(activityRequestDto.toString());
+            if(activityRequestDto.getActivityId() == null){
+                Activity activity = activityMapper.toActivity(activityRequestDto);
+                activity.setPortfolio(portfolio);
+                activityModuleService.save(activity);
+                continue;
+            }
+            Activity activity = activityModuleService.findById(activityRequestDto.getActivityId());
+            activity.update(activityRequestDto);
+            activityModuleService.save(activity);
+        }
+
+        //수상 내역 저장
+        for (AwardRequestDto awardRequestDto : portfolioSaveAllRequestDto.getAwards()) {
+            System.out.println(awardRequestDto.toString());
+            if(awardRequestDto.getAwardId() == null){
+                Award award = awardMapper.toAward(awardRequestDto);
+                award.setPortfolio(portfolio);
+                awardModuleService.save(award);
+                continue;
+            }
+            Award award = awardModuleService.findById(awardRequestDto.getAwardId());
+            award.update(awardRequestDto);
+            awardModuleService.save(award);
+        }
     }
 
     public void delete(Long id){
