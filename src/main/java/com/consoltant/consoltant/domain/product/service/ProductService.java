@@ -39,9 +39,9 @@ public class ProductService {
     private final UserService userService;
 
     //판매중인 금융 상품 조회
-    public List<?> findBankProductByType(String userKey, ProductType productType){
+    public List<?> findBankProductByType(ProductType productType){
         return switch (productType) {
-            case DEMAND_DEPOSIT -> restTemplateUtil.inquireDemandDepositList(userKey);
+            case DEMAND_DEPOSIT -> restTemplateUtil.inquireDemandDepositList();
             case SAVING -> null;
             case LOAN -> null;
             case DEPOSIT -> null;
