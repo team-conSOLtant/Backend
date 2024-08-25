@@ -31,9 +31,7 @@ public class ProductController {
     // 타입별 금융 상품 목록 조회
     @PostMapping("/bank/type")
     public BaseSuccessResponse<List<?>> findBankProductByType(@RequestBody BankProductInfoRequestDto bankProductInfoRequestDto) {
-        Long userId = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
-        String userKey = userService.getUserKey(userId);
-        return new BaseSuccessResponse<>(productService.findBankProductByType(userKey, bankProductInfoRequestDto.getProductType()));
+        return new BaseSuccessResponse<>(productService.findBankProductByType(bankProductInfoRequestDto.getProductType()));
     }
     
     // 단일 조회

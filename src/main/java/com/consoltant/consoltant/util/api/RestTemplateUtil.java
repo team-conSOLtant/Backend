@@ -153,7 +153,7 @@ public class RestTemplateUtil {
     }
 
     // 수시입출금 상품 조회
-    public List<InquireDemandDepositResponseDto> inquireDemandDepositList(String userKey){
+    public List<InquireDemandDepositResponseDto> inquireDemandDepositList(){
 
         final String name = "inquireDemandDepositList";
         log.info("금융 API 수시입출금 상품 조회");
@@ -162,7 +162,7 @@ public class RestTemplateUtil {
 
         Map<String,Object>requestBody = new HashMap<>();
 
-        RequestHeader headers = requestHeader(name, userKey);
+        RequestHeader headers = requestHeader(name,null);
 
         requestBody.put("Header",headers);
 
