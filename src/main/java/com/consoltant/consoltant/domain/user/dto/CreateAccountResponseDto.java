@@ -1,6 +1,6 @@
 package com.consoltant.consoltant.domain.user.dto;
 
-import com.consoltant.consoltant.util.api.dto.createdemanddepositaccount.Currency;
+import com.consoltant.consoltant.util.api.dto.demanddeposit.createdemanddepositaccount.Currency;
 import lombok.Builder;
 import lombok.Getter;
 

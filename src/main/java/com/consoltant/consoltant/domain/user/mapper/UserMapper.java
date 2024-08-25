@@ -4,10 +4,10 @@ import com.consoltant.consoltant.domain.university.dto.UniversityResponseDto;
 import com.consoltant.consoltant.domain.university.entity.University;
 import com.consoltant.consoltant.domain.user.dto.*;
 import com.consoltant.consoltant.domain.user.entity.User;
-import com.consoltant.consoltant.util.api.dto.checkauthcode.CheckAuthCodeResponseDto;
-import com.consoltant.consoltant.util.api.dto.createdemanddepositaccount.CreateDemandDepositAccountResponseDto;
-import com.consoltant.consoltant.util.api.dto.inquiretransactionhistory.InquireTransactionHistoryResponseDto;
-import com.consoltant.consoltant.util.api.dto.openaccountauth.OpenAccountAuthResponseDto;
+import com.consoltant.consoltant.util.api.dto.auth.checkauthcode.CheckAuthCodeResponseDto;
+import com.consoltant.consoltant.util.api.dto.demanddeposit.createdemanddepositaccount.CreateDemandDepositAccountResponseDto;
+import com.consoltant.consoltant.util.api.dto.demanddeposit.inquiretransactionhistory.InquireTransactionHistoryResponseDto;
+import com.consoltant.consoltant.util.api.dto.auth.openaccountauth.OpenAccountAuthResponseDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 

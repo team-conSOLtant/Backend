@@ -36,26 +36,33 @@ public class UserController {
         return new BaseSuccessResponse<>(userService.getUser(id));
     }
 
-    @PostMapping("/create/account")
-    public BaseSuccessResponse<CreateAccountResponseDto> createAccount(@RequestBody CreateAccountRequestDto createAccountRequestDto) {
-        Long id = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
+    @PostMapping("/{email}/create/account")
+    public BaseSuccessResponse<CreateAccountResponseDto> createAccount(
+            @RequestBody CreateAccountRequestDto createAccountRequestDto,
+            @PathVariable("email") String email
+    ) {
+        Long id = userService.getUserId(email);
         log.info("계좌 생성 API -> {} {}", id, createAccountRequestDto.getAccountTypeUniqueNo());
 
         return new BaseSuccessResponse<>(userService.createAccount(id, createAccountRequestDto.getAccountTypeUniqueNo()));
     }
 
-    @PostMapping("/academy")
+    @PostMapping("/{email}/academy")
     public BaseSuccessResponse<UserResponseDto> createUserAcademy(
             @RequestPart("subject") MultipartFile subject,
-            @RequestPart("data") CreateUserAcademyRequestDto createUserAcademyRequestDto) {
-        Long id = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
+            @RequestPart("data") CreateUserAcademyRequestDto createUserAcademyRequestDto,
+            @PathVariable("email") String email
+    ) {
+        Long id = userService.getUserId(email);
         log.info("사용자 학력 추가 API {}", id);
         return new BaseSuccessResponse<>(userService.createUserAcademy(id, createUserAcademyRequestDto, subject));
     }
 
-    @PostMapping("/account")
-    public BaseSuccessResponse<UserResponseDto> createUserAccount(@RequestBody CreateUserAccountRequestDto createUserAccountRequestDto) {
-        Long id = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
+    @PostMapping("/{email}/account")
+    public BaseSuccessResponse<UserResponseDto> createUserAccount(
+            @RequestBody CreateUserAccountRequestDto createUserAccountRequestDto,
+            @PathVariable("email") String email) {
+        Long id = userService.getUserId(email);
         log.info("사용자 계좌 추가 API {}", id);
         return new BaseSuccessResponse<>(userService.createUserAccount(id, createUserAccountRequestDto));
     }
@@ -67,6 +74,19 @@ public class UserController {
         return new BaseSuccessResponse<>(userService.deleteUser(id));
     }
 
+    // 학력 정보 입력 확인 API
+    @GetMapping("/check/academy")
+    public BaseSuccessResponse<Long> checkAcademy() {
+        Long id = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
+        log.info("학력 정보 입력 확인 API {}", id);
+        return new BaseSuccessResponse<>(userService.deleteUser(id));
+    }
 
-
+    // 계좌 정보 입력 확인 API
+    @GetMapping("/check/account")
+    public BaseSuccessResponse<Long> checkAccount() {
+        Long id = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
+        log.info("계좌 정보 입력 확인 API {}", id);
+        return new BaseSuccessResponse<>(userService.deleteUser(id));
+    }
 }
