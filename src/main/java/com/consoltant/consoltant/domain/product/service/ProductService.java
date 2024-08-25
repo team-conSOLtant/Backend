@@ -85,12 +85,13 @@ public class ProductService {
     
     // 사용자 ID로 금융상품 리스트 조회
     public List<ProductResponseDto> findAllByUserId(Long userId){
-        List<ProductInfoResponseDto> productList = new ArrayList<>();
-        //TODO: 금융상품 리스트 돌면서 금융 API 호출
-        for(Product product: productModuleService.findAllByUserId(userId)){
-            productList.add(restTemplateUtil.inquireDemandDepositAccount())
-        }
-        return productList;
+//        List<ProductInfoResponseDto> productList = new ArrayList<>();
+//        //TODO: 금융상품 리스트 돌면서 금융 API 호출
+//        for(Product product: productModuleService.findAllByUserId(userId)){
+//            productList.add(restTemplateUtil.inquireDemandDepositAccount())
+//        }
+//        return productList;
+        return null;
     }
 
     //사용자 여정에 해당하는 금융상품 리스트 조회
