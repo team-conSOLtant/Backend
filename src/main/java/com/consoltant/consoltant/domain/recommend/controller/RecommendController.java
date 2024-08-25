@@ -32,6 +32,12 @@ public class RecommendController {
         return new BaseSuccessResponse<>(recommendService.findAllByUserIdAndJourney(userId));
     }
 
+    @GetMapping("/{year}")
+    public BaseSuccessResponse<List<RecommendResponseDto>> findAllByIdAndYear(@PathVariable Integer year){
+        Long userId = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
+        return new BaseSuccessResponse<>(recommendService.findAllByUserIdAndYear(userId,year));
+    }
+
     @PostMapping
     public BaseSuccessResponse<List<RecommendResponseDto>> save(@RequestBody RecommendRequestDto recommendRequestDto){
         Long userId = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());

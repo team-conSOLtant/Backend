@@ -46,6 +46,14 @@ public class RecommendService {
                 .toList();
     }
 
+    public List<RecommendResponseDto> findAllByUserIdAndYear(Long userId, Integer year){
+        User user = userRepository.findById(userId).orElseThrow(()->new BadRequestException("존재하지 않는 사용자입니다."));
+
+        return  recommendRepository.findAllByUserIdAndYear(user.getId(),year).stream()
+                .map(recommendMapper::toResponseDto)
+                .toList();
+    }
+
     // 상품 장바구니 등록
     public List<RecommendResponseDto> save(Long userId, RecommendRequestDto recommendRequestDto){
 
