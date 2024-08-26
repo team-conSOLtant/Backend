@@ -11,4 +11,5 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Slf4j
 public class RoadmapController {
+    //연봉 별 모범 로드맵 재생성
 }
