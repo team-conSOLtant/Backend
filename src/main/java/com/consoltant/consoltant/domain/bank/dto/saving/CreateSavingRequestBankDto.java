@@ -9,4 +9,9 @@ public class CreateSavingRequestBankDto {
     private String bankCode;
     private String accountName;
     private String accountDescription;
+    private String subscriptionPeriod;
+    private Long minSubscriptionBalance;
+    private Long maxSubscriptionBalance;
+    private Double interestRate;
+    private String rateDescription;
 }

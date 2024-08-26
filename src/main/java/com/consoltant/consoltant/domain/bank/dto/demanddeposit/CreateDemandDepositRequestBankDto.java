@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CreateDemandDepositBankRequestDto {
+public class CreateDemandDepositRequestBankDto {
     private String bankCode;
     private String accountName;
     private String accountDescription;
