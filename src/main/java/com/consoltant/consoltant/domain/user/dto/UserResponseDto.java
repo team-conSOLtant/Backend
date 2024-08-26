@@ -1,8 +1,8 @@
 package com.consoltant.consoltant.domain.user.dto;
 
 import com.consoltant.consoltant.domain.university.dto.UniversityResponseDto;
-import com.consoltant.consoltant.domain.university.entity.University;
 import com.consoltant.consoltant.util.constant.JourneyType;
+import java.time.LocalDate;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -29,7 +29,17 @@ public class UserResponseDto {
 
     private Double majorGpa;
 
-    private Integer totalSumGpa;
+    private Double maxGpa;  //기준학점 4.3인지 4.5인지
+
+    private Integer credit; // 내 총 이수학점
+
+    private Integer maxCredit; // 필요한 총 이수학점
+
+    private String degree;  //학사 석사 박사 나누는 기준
+
+    private LocalDate startDate;    //학사 시작 기간
+
+    private LocalDate endDate;  //학사 종료 기간
 
     private Boolean isEmployed;
 

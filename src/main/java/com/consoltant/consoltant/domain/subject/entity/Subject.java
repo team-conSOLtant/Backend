@@ -27,6 +27,8 @@ public class Subject {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String subjectNumber;
+
     @Column(nullable = false, length = 100)
     private String title;
 
@@ -37,6 +39,7 @@ public class Subject {
     private Boolean isMajor;
 
     @Column(nullable = false)
+    @Builder.Default
     private Boolean isDeleted = false;
 
 }

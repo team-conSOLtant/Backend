@@ -8,6 +8,7 @@ import lombok.Setter;
 @Setter
 public class CertificationRequestDto {
 
+    private Long certificationId;
     private Long portfolioId;
     private String title;
     private String issuingOrganization;

@@ -11,6 +11,7 @@ import lombok.Setter;
 @Setter
 public class ProjectRequestDto {
 
+    private Long projectId;
     private Long portfolioId;
     private String title;
     private String language;

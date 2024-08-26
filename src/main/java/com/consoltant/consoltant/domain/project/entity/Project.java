@@ -62,7 +62,7 @@ public class Project {
 
     @OneToMany(mappedBy = "project")
     @Builder.Default
-    private final List<ProjectUser> projectUsers = new ArrayList<>();
+    private List<ProjectUser> projectUsers = new ArrayList<>();
 
     @Column(nullable = false)
     @Builder.Default
@@ -79,5 +79,9 @@ public class Project {
         this.projectUrl = projectRequestDto.getProjectUrl();
         this.startDate = projectRequestDto.getStartDate();
         this.endDate = projectRequestDto.getEndDate();
+    }
+
+    public void setProjectUsers(List<ProjectUser> projectUsers){
+        this.projectUsers = projectUsers;
     }
 }

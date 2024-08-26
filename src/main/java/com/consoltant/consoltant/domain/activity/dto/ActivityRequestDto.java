@@ -4,11 +4,14 @@ import com.consoltant.consoltant.util.constant.ActivityType;
 import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
 public class ActivityRequestDto {
 
+    private Long activityId;
     private Long portfolioId;
     private String title;
     private String content;

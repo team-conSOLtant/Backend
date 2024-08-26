@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProjectUserRepository extends JpaRepository<ProjectUser, Long> {
     List<ProjectUser> findAllByProjectId(Long id);
+    void deleteAllByProjectId(Long id);
 }
