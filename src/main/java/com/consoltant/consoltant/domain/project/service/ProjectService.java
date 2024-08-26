@@ -7,6 +7,7 @@ import com.consoltant.consoltant.domain.project.dto.ProjectResponseDto;
 import com.consoltant.consoltant.domain.project.entity.Project;
 import com.consoltant.consoltant.domain.project.mapper.ProjectMapper;
 import com.consoltant.consoltant.domain.projectuser.dto.ProjectUserRequestDto;
+import com.consoltant.consoltant.domain.projectuser.service.ProjectUserModuleService;
 import com.consoltant.consoltant.domain.projectuser.service.ProjectUserService;
 import java.util.Comparator;
 import java.util.List;
@@ -21,6 +22,7 @@ public class ProjectService {
     private final ProjectModuleService projectModuleService;
     private final PortfolioModuleService portfolioModuleService;
     private final ProjectUserService projectUserService;
+    private final ProjectUserModuleService projectUserModuleService;
     private final ProjectMapper projectMapper;
 
     // 단일 조회
@@ -48,6 +50,7 @@ public class ProjectService {
             projectUserRequestDto.setProjectId(generatedKey);
             projectUserService.save(projectUserRequestDto);
         }
+        project.setProjectUsers(projectUserModuleService.findAllByProjectId(project.getId()));
         return projectMapper.toProjectResponseDto(savedProject);
     }
 

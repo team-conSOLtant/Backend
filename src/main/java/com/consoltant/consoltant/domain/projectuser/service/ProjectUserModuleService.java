@@ -21,8 +21,16 @@ public class ProjectUserModuleService {
         return projectUserRepository.save(projectUser);
     }
 
+    public List<ProjectUser> saveAll(List<ProjectUser> projectUsers) {
+        return projectUserRepository.saveAll(projectUsers);
+    }
+
     // ProjectUser 삭제
     public void delete(Long id) {
         projectUserRepository.deleteById(id);
+    }
+
+    public void deleteAllByProjectId(Long projectId) {
+        projectUserRepository.deleteAllByProjectId(projectId);
     }
 }

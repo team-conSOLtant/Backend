@@ -8,6 +8,14 @@ import com.consoltant.consoltant.domain.award.dto.AwardRequestDto;
 import com.consoltant.consoltant.domain.award.entity.Award;
 import com.consoltant.consoltant.domain.award.mapper.AwardMapper;
 import com.consoltant.consoltant.domain.award.service.AwardModuleService;
+import com.consoltant.consoltant.domain.career.dto.CareerRequestDto;
+import com.consoltant.consoltant.domain.career.entity.Career;
+import com.consoltant.consoltant.domain.career.mapper.CareerMapper;
+import com.consoltant.consoltant.domain.career.service.CareerModuleService;
+import com.consoltant.consoltant.domain.certification.dto.CertificationRequestDto;
+import com.consoltant.consoltant.domain.certification.entity.Certification;
+import com.consoltant.consoltant.domain.certification.mapper.CertificationMapper;
+import com.consoltant.consoltant.domain.certification.service.CertificationModuleService;
 import com.consoltant.consoltant.domain.course.entity.Course;
 import com.consoltant.consoltant.domain.course.service.CourseModuleService;
 import com.consoltant.consoltant.domain.matching.entity.Matching;
@@ -19,9 +27,19 @@ import com.consoltant.consoltant.domain.portfolio.dto.PortfolioResponseDto;
 import com.consoltant.consoltant.domain.portfolio.dto.PortfolioSaveAllRequestDto;
 import com.consoltant.consoltant.domain.portfolio.entity.Portfolio;
 import com.consoltant.consoltant.domain.portfolio.mapper.PortfolioMapper;
+import com.consoltant.consoltant.domain.project.dto.ProjectRequestDto;
+import com.consoltant.consoltant.domain.project.entity.Project;
+import com.consoltant.consoltant.domain.project.mapper.ProjectMapper;
+import com.consoltant.consoltant.domain.project.service.ProjectModuleService;
+import com.consoltant.consoltant.domain.projectuser.dto.ProjectUserRequestDto;
+import com.consoltant.consoltant.domain.projectuser.entity.ProjectUser;
+import com.consoltant.consoltant.domain.projectuser.mapper.ProjectUserMapper;
+import com.consoltant.consoltant.domain.projectuser.service.ProjectUserModuleService;
+import com.consoltant.consoltant.domain.projectuser.service.ProjectUserService;
 import com.consoltant.consoltant.domain.user.entity.User;
 import com.consoltant.consoltant.domain.user.repository.UserRepository;
 import com.consoltant.consoltant.util.constant.NotificationType;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -41,10 +59,20 @@ public class PortfolioService {
     private final NotificationModuleService notificationModuleService;
     private final ActivityModuleService activityModuleService;
     private final AwardModuleService awardModuleService;
+    private final CertificationModuleService certificationModuleService;
+    private final CareerModuleService careerModuleService;
+    private final ProjectModuleService projectModuleService;
+    private final ProjectUserService projectUserService;
+    private final ProjectUserModuleService projectUserModuleService;
 
     private final PortfolioMapper portfolioMapper;
     private final ActivityMapper activityMapper;
     private final AwardMapper awardMapper;
+    private final CertificationMapper certificationMapper;
+    private final CareerMapper careerMapper;
+    private final ProjectMapper projectMapper;
+    private final ProjectUserMapper projectUserMapper;
+
 
     private final UserRepository userRepository;
 
@@ -75,16 +103,21 @@ public class PortfolioService {
     //포트폴리오 전체 저장
     @Transactional
     public void saveAll(PortfolioSaveAllRequestDto portfolioSaveAllRequestDto){
-        Long portfolioId = portfolioSaveAllRequestDto.getPortfolioId();
+        Long portfolioId = null;
+        Long userId = portfolioSaveAllRequestDto.getUserId();
         if(portfolioSaveAllRequestDto.getPortfolioId() == null){
-            //포트폴리오 저장 후 진행, 아이디 갱신시켜주기
+            Portfolio portfolio = new Portfolio();
+            portfolio.setUser(userRepository.findById(userId).orElseThrow());
+            portfolioId = portfolioModuleService.save(portfolio).getId();
+        }
+        else{
+            portfolioId = portfolioSaveAllRequestDto.getPortfolioId();
         }
         Portfolio portfolio = portfolioModuleService.findById(portfolioId);
         update(portfolioId, portfolioSaveAllRequestDto.getPortfolioRequestDto());
 
         //활동 내역 저장
         for (ActivityRequestDto activityRequestDto : portfolioSaveAllRequestDto.getActivities()) {
-            System.out.println(activityRequestDto.toString());
             if(activityRequestDto.getActivityId() == null){
                 Activity activity = activityMapper.toActivity(activityRequestDto);
                 activity.setPortfolio(portfolio);
@@ -108,6 +141,63 @@ public class PortfolioService {
             Award award = awardModuleService.findById(awardRequestDto.getAwardId());
             award.update(awardRequestDto);
             awardModuleService.save(award);
+        }
+
+        //자격증 내역 저장
+        for (CertificationRequestDto certificationRequestDto : portfolioSaveAllRequestDto.getCertifications()) {
+            System.out.println(certificationRequestDto.toString());
+            if(certificationRequestDto.getCertificationId() == null){
+                Certification certification = certificationMapper.toCertification(certificationRequestDto);
+                certification.setPortfolio(portfolio);
+                certificationModuleService.save(certification);
+                continue;
+            }
+            Certification certification = certificationModuleService.findById(certificationRequestDto.getCertificationId());
+            certification.update(certificationRequestDto);
+            certificationModuleService.save(certification);
+        }
+        //경력 내역 저장
+        for (CareerRequestDto careerRequestDto : portfolioSaveAllRequestDto.getCareers()) {
+            System.out.println(careerRequestDto.toString());
+            if(careerRequestDto.getCareerId() == null){
+                Career career = careerMapper.toCareer(careerRequestDto);
+                career.setPortfolio(portfolio);
+                careerModuleService.save(career);
+                continue;
+            }
+            Career career = careerModuleService.findById(careerRequestDto.getCareerId());
+            career.update(careerRequestDto);
+            careerModuleService.save(career);
+        }
+        // 프로젝트 내역 저장
+        for (ProjectRequestDto projectRequestDto : portfolioSaveAllRequestDto.getProjects()) {
+            System.out.println(projectRequestDto.toString());
+            if(projectRequestDto.getProjectId() == null){
+                Project project = projectMapper.toProject(projectRequestDto);
+                project.setPortfolio(portfolio);
+                Project savedProject = projectModuleService.save(project);
+                Long generatedKey = savedProject.getId();
+                for(ProjectUserRequestDto projectUserRequestDto : projectRequestDto.getProjectUsers()){
+                    projectUserRequestDto.setProjectId(generatedKey);
+                    projectUserService.save(projectUserRequestDto);
+                }
+                project.setProjectUsers(projectUserModuleService.findAllByProjectId(project.getId()));
+                projectModuleService.save(project);
+                continue;
+            }
+            Project project = projectModuleService.findById(projectRequestDto.getProjectId());
+            project.update(projectRequestDto);
+            List<ProjectUser> projectUserList = new ArrayList<>();
+            projectUserModuleService.deleteAllByProjectId(project.getId());
+            for(ProjectUserRequestDto projectUserRequestDto : projectRequestDto.getProjectUsers()) {
+                ProjectUser projectUser = projectUserMapper.toProjectUser(projectUserRequestDto);
+                projectUser.setProject(project);
+                projectUser.setUser(userRepository.findById(projectUserRequestDto.getUserId()).orElseThrow());
+                projectUserList.add(projectUser);
+            }
+            projectUserModuleService.saveAll(projectUserList);
+            project.setProjectUsers(projectUserList);
+            projectModuleService.save(project);
         }
     }
 
