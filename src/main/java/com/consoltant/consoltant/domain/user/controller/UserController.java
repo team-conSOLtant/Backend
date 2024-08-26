@@ -6,6 +6,7 @@ import com.consoltant.consoltant.domain.user.dto.CreateAccountRequestDto;
 import com.consoltant.consoltant.domain.user.dto.CreateAccountResponseDto;
 import com.consoltant.consoltant.domain.user.dto.CreateUserAcademyRequestDto;
 import com.consoltant.consoltant.domain.user.dto.CreateUserAccountRequestDto;
+import com.consoltant.consoltant.domain.user.dto.UpdateUserRequestDto;
 import com.consoltant.consoltant.domain.user.dto.UserResponseDto;
 import com.consoltant.consoltant.domain.user.service.UserService;
 import com.consoltant.consoltant.util.base.BaseSuccessResponse;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -116,5 +118,13 @@ public class UserController {
         Long id = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
         log.info("계좌 정보 입력 확인 API {}", id);
         return new BaseSuccessResponse<>(userService.checkAccount(id));
+    }
+
+    //포트폴리오 유저 정보 바꾸는 API
+    @PutMapping
+    public BaseSuccessResponse<Void> updateUser(UpdateUserRequestDto updateUserRequestDto){
+        Long id = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
+        userService.updateUser(id, updateUserRequestDto);
+        return new BaseSuccessResponse<Void>(null);
     }
 }

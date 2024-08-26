@@ -16,7 +16,9 @@ import com.consoltant.consoltant.domain.certification.dto.CertificationRequestDt
 import com.consoltant.consoltant.domain.certification.entity.Certification;
 import com.consoltant.consoltant.domain.certification.mapper.CertificationMapper;
 import com.consoltant.consoltant.domain.certification.service.CertificationModuleService;
+import com.consoltant.consoltant.domain.course.dto.CourseRequestDto;
 import com.consoltant.consoltant.domain.course.entity.Course;
+import com.consoltant.consoltant.domain.course.mapper.CourseMapper;
 import com.consoltant.consoltant.domain.course.service.CourseModuleService;
 import com.consoltant.consoltant.domain.matching.entity.Matching;
 import com.consoltant.consoltant.domain.matching.service.MatchingModuleService;
@@ -41,6 +43,7 @@ import com.consoltant.consoltant.domain.user.repository.UserRepository;
 import com.consoltant.consoltant.util.constant.NotificationType;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -72,6 +75,7 @@ public class PortfolioService {
     private final CareerMapper careerMapper;
     private final ProjectMapper projectMapper;
     private final ProjectUserMapper projectUserMapper;
+    private final CourseMapper courseMapper;
 
 
     private final UserRepository userRepository;
@@ -111,9 +115,10 @@ public class PortfolioService {
                 Portfolio portfolio = new Portfolio();
                 portfolio.setUser(userRepository.findById(userId).orElseThrow());
                 portfolioId = portfolioModuleService.save(portfolio).getId();
+            }else {
+                //새로 만들지만 최초 저장 아닐 때
+                portfolioId = portfolioModuleService.findByUserId(userId).orElseThrow().getId();
             }
-            //새로 만들지만 최초 저장 아닐 때
-            portfolioId = portfolioModuleService.findByUserId(userId).orElseThrow().getId();
         }
         else{
             portfolioId = portfolioSaveAllRequestDto.getPortfolioId();
@@ -204,6 +209,39 @@ public class PortfolioService {
             project.setProjectUsers(projectUserList);
             projectModuleService.save(project);
         }
+
+        // 선택한 수강 과목 내역 저장
+        User user = userRepository.findById(userId).orElseThrow();
+
+        // 기존에 선택된 과목들의 선택 상태를 해제
+        List<Course> selectedCourse = courseModuleService.findAllByUserIdAndIsSelectedTrue(userId);
+        if (selectedCourse != null) {
+            for (Course course : selectedCourse) {
+                course.setIsSelected(false);
+                courseModuleService.save(course);
+            }
+        }
+
+        // 새로운 선택 과목 처리
+        for (CourseRequestDto courseRequestDto : portfolioSaveAllRequestDto.getCourses()) {
+            // 이미 존재하는 과목인지 확인
+            Optional<Course> existingCourseOpt = courseModuleService.findByUserIdAndSubjectId(
+                userId, courseRequestDto.getSubjectId());
+
+            Course course;
+            if (existingCourseOpt.isPresent()) {
+                // 기존 과목이 존재하면 해당 과목을 가져와서 isSelected를 true로 설정
+                course = existingCourseOpt.get();
+                course.setIsSelected(true);
+            } else {
+                // 존재하지 않으면 새로운 과목 생성
+                course = courseMapper.toCourse(courseRequestDto);
+                course.setUser(user); // User 설정
+                course.setIsSelected(true);
+            }
+            courseModuleService.save(course);
+        }
+
     }
 
     public void delete(Long id){
