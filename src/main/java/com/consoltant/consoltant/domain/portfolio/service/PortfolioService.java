@@ -270,7 +270,7 @@ public class PortfolioService {
         notificationModuleService.save(Notification.builder()
             .user(user)
             .notificationType(NotificationType.PORTFOLIO_MATCHING)
-            .content(bestPortfolio.getUser().getCorporateName())
+            .content(bestPortfolio.getUser().getCorporateName() + "," + bestPortfolio.getId())
             .build());
 
         return portfolioMapper.toPortfolioResponseDto(bestPortfolio);
