@@ -9,6 +9,7 @@ import com.consoltant.consoltant.domain.university.repository.UniversityReposito
 import com.consoltant.consoltant.domain.user.dto.CreateAccountResponseDto;
 import com.consoltant.consoltant.domain.user.dto.CreateUserAcademyRequestDto;
 import com.consoltant.consoltant.domain.user.dto.CreateUserAccountRequestDto;
+import com.consoltant.consoltant.domain.user.dto.UpdateUserRequestDto;
 import com.consoltant.consoltant.domain.user.dto.UserResponseDto;
 import com.consoltant.consoltant.domain.user.entity.User;
 import com.consoltant.consoltant.domain.user.mapper.UserMapper;
@@ -51,6 +52,11 @@ public class UserService{
                 userModuleRepository.findById(id)
                 .orElseThrow(()->new BadRequestException("존재하지 않는 사용자입니다."))
         );
+    }
+
+    public void updateUser(Long id, UpdateUserRequestDto updateUserRequestDto){
+        User user = userRepository.findById(id).orElseThrow();
+        user.updateUserInfo(updateUserRequestDto);
     }
 
     //사용자 학력 정보 업데이트
