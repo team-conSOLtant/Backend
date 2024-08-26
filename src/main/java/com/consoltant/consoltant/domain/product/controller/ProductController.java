@@ -1,9 +1,9 @@
 package com.consoltant.consoltant.domain.product.controller;
 
 import com.consoltant.consoltant.domain.journey.dto.JourneyRequestDto;
+import com.consoltant.consoltant.domain.journey.dto.JourneyStatsResponseDto;
 import com.consoltant.consoltant.domain.product.dto.*;
 import com.consoltant.consoltant.domain.product.service.ProductService;
-import com.consoltant.consoltant.domain.user.dto.UserResponseDto;
 import com.consoltant.consoltant.domain.user.service.UserService;
 import com.consoltant.consoltant.util.base.BaseSuccessResponse;
 import java.util.List;
@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -40,9 +39,9 @@ public class ProductController {
         return new BaseSuccessResponse<>(productService.findById(id));
     }
 
-    // 사용자 ID로 금융상품 통계 보기
+    // JourneyType 별 사용자 ID로 금융상품 통계 보기
     @GetMapping("/stats")
-    public BaseSuccessResponse<ProductStatsResponseDto> findStatsByUserId(){
+    public BaseSuccessResponse<List<JourneyStatsResponseDto>> findStatsByUserId(){
         log.info("금융상품 통계 API");
         Long userId = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
 

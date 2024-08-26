@@ -1,5 +1,6 @@
 package com.consoltant.consoltant.domain.product.service;
 
+import com.consoltant.consoltant.domain.journey.dto.JourneyStatsResponseDto;
 import com.consoltant.consoltant.domain.journey.entity.Journey;
 import com.consoltant.consoltant.domain.journey.service.JourneyModuleService;
 import com.consoltant.consoltant.domain.product.dto.*;
@@ -56,42 +57,10 @@ public class ProductService {
         return productResponseDto;
     }
 
-    // 사용자 ID로 금융상품 통계 조회
-    public ProductStatsResponseDto findStatsByUserId(Long userId){
+    // JourneyType 별 사용자 ID로 금융상품 통계 조회
+    public List<JourneyStatsResponseDto> findStatsByUserId(Long userId){
 
-        User user= userRepository.findById(userId).orElseThrow(()->new BadRequestException("존재하지 않는 사용자입니다."));
-        String userKey = user.getUserKey();
-        String accountNo = user.getAccountNo();
-
-        //사용자 총 자산
-        InquireMyCreditRatingResponseDto inquireMyCreditRatingResponseDto = restTemplateUtil.inquireMyCreditRating(userKey);
-
-        Long totalAssetValue = inquireMyCreditRatingResponseDto.getTotalAssetValue();
-        Long demandDepositAssetValue = inquireMyCreditRatingResponseDto.getDemandDepositAssetValue();
-
-        Long savingAssetValue = restTemplateUtil.inquireSavingInfoList(userKey).stream()
-                .mapToLong(InquireSavingInfoResponseDto::getDepositBalance)
-                .sum();
-        Long depositAssetValue = inquireMyCreditRatingResponseDto.getDepositSavingsAssetValue() - savingAssetValue;
-
-        Long loanAssetValue = restTemplateUtil.inquireLoanAccountList(userKey).stream()
-                .mapToLong(InquireLoanAccountResponseDto::getLoanBalance)
-                .sum();
-
-        InquireDemandDepositAccountResponseDto inquireDemandDepositAccountResponseDto = restTemplateUtil.inquireDemandDepositAccount(userKey,accountNo);
-        String accountName = inquireDemandDepositAccountResponseDto.getAccountName();
-        String accountType = inquireDemandDepositAccountResponseDto.getAccountTypeName();
-
-        return ProductStatsResponseDto.builder()
-                .accountNo(user.getAccountNo())
-                .accountType(accountType)
-                .accountName(accountName)
-                .loan(loanAssetValue.doubleValue() / totalAssetValue.doubleValue() * 100)
-                .totalAssetValue(totalAssetValue)
-                .demandDeposit(demandDepositAssetValue.doubleValue() / totalAssetValue.doubleValue() * 100)
-                .deposit(depositAssetValue.doubleValue() / totalAssetValue.doubleValue() * 100)
-                .savings(savingAssetValue.doubleValue() / totalAssetValue.doubleValue() * 100)
-                .build();
+        return null;
     }
     
     // 사용자 ID로 금융상품 리스트 조회

@@ -47,6 +47,9 @@ public class Product {
     private String accountNo;
 
     @Column(nullable = false)
+    private String color;
+
+    @Column(nullable = false)
     private LocalDate startDate;
 
     @Column(nullable = false)
