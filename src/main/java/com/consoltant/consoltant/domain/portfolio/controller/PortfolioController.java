@@ -2,6 +2,7 @@ package com.consoltant.consoltant.domain.portfolio.controller;
 
 import com.consoltant.consoltant.domain.portfolio.dto.PortfolioRequestDto;
 import com.consoltant.consoltant.domain.portfolio.dto.PortfolioResponseDto;
+import com.consoltant.consoltant.domain.portfolio.dto.PortfolioSaveAllRequestDto;
 import com.consoltant.consoltant.domain.portfolio.service.PortfolioService;
 import com.consoltant.consoltant.util.base.BaseSuccessResponse;
 import lombok.RequiredArgsConstructor;
@@ -53,5 +54,11 @@ public class PortfolioController {
     @GetMapping("/matching")
     public BaseSuccessResponse<PortfolioResponseDto> matchingTest(@RequestParam Long userId){
         return new BaseSuccessResponse<>(portfolioService.getMatchingSeniorPortfolio(userId));
+    }
+
+    @PostMapping("/save-all")
+    public BaseSuccessResponse<Void> saveAll(@RequestBody PortfolioSaveAllRequestDto portfolioSaveAllRequestDto){
+        portfolioService.saveAll(portfolioSaveAllRequestDto);
+        return new BaseSuccessResponse<>(null);
     }
 }

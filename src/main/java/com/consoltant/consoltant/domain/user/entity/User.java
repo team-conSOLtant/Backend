@@ -3,7 +3,7 @@ package com.consoltant.consoltant.domain.user.entity;
 import com.consoltant.consoltant.domain.university.entity.University;
 import com.consoltant.consoltant.domain.user.dto.CreateUserAcademyRequestDto;
 import com.consoltant.consoltant.domain.user.dto.CreateUserAccountRequestDto;
-import com.consoltant.consoltant.domain.user.dto.CreateUserRequestDto;
+import com.consoltant.consoltant.domain.user.dto.UpdateUserRequestDto;
 import com.consoltant.consoltant.util.constant.JourneyType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,7 +16,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.*;
+import java.time.LocalDate;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
@@ -64,9 +69,21 @@ public class User {
 
     private Double totalGpa;
 
+//    private Double totalSumGpa;
+
     private Double majorGpa;
 
-    private Integer totalSumGpa;
+    private Double maxGpa;  //기준학점 4.3인지 4.5인지
+
+    private Integer credit; // 내 총 이수학점
+
+    private Integer maxCredit; // 필요한 총 이수학점
+
+    private String degree;  //학사 석사 박사 나누는 기준
+
+    private LocalDate startDate;    //학사 시작 기간
+
+    private LocalDate endDate;  //학사 종료 기간
 
     @Column(nullable = false)
     @Builder.Default
@@ -102,12 +119,20 @@ public class User {
         this.corporateName = createUserAccountRequestDto.getCorporateName();
     }
 
-    public void addAcademyInfo(University university,CreateUserAcademyRequestDto createUserAcademyRequestDto, Double totalGpa, Double majorGpa, Integer totalSumGpa){
+    public void addAcademyInfo(University university,CreateUserAcademyRequestDto createUserAcademyRequestDto, Double totalGpa, Double majorGpa, Integer credit){
+        this.maxCredit = 140;
+        this.maxGpa = 4.5;
         this.university = university;
         this.major = createUserAcademyRequestDto.getMajor();
         this.totalGpa = totalGpa;
         this.majorGpa = majorGpa;
-        this.totalSumGpa = totalSumGpa;
+        this.credit = credit;   //총 이수학점
+    }
+
+    public void updateUserInfo(UpdateUserRequestDto updateUserRequestDto){
+        this.birthDate = birthDate;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
     }
 
     //사용자 키 추가

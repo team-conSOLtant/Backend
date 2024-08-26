@@ -2,16 +2,26 @@ package com.consoltant.consoltant.domain.user.controller;
 
 import com.consoltant.consoltant.domain.product.dto.ProductSaveRequestDto;
 import com.consoltant.consoltant.domain.product.service.ProductService;
-import com.consoltant.consoltant.domain.user.dto.*;
-import com.consoltant.consoltant.domain.user.mapper.UserMapper;
+import com.consoltant.consoltant.domain.user.dto.CreateAccountRequestDto;
+import com.consoltant.consoltant.domain.user.dto.CreateAccountResponseDto;
+import com.consoltant.consoltant.domain.user.dto.CreateUserAcademyRequestDto;
+import com.consoltant.consoltant.domain.user.dto.CreateUserAccountRequestDto;
+import com.consoltant.consoltant.domain.user.dto.UserResponseDto;
 import com.consoltant.consoltant.domain.user.service.UserService;
 import com.consoltant.consoltant.util.base.BaseSuccessResponse;
 import com.consoltant.consoltant.util.constant.ProductType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 
@@ -67,8 +77,14 @@ public class UserController {
     ) {
         Long id = userService.getUserId(email);
         log.info("사용자 학력 추가 API {}", id);
-        return new BaseSuccessResponse<>(userService.createUserAcademy(id, createUserAcademyRequestDto, subject));
+        try {
+            return new BaseSuccessResponse<>(userService.createUserAcademy(id, createUserAcademyRequestDto, subject));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
+
+
 
     @PostMapping("/{email}/account")
     public BaseSuccessResponse<UserResponseDto> createUserAccount(

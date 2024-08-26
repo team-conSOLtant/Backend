@@ -6,8 +6,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CourseRequestDto {
+
     private Long userId;
     private Long subjectId;
+    private String grade;
     private Boolean isSelected;
 
 }

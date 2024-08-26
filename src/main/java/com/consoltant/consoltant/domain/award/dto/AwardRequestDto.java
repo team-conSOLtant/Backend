@@ -8,6 +8,7 @@ import lombok.Setter;
 @Setter
 public class AwardRequestDto {
 
+    private Long awardId;
     private Long portfolioId;
     private String title;
     private LocalDate acquisitionDate;

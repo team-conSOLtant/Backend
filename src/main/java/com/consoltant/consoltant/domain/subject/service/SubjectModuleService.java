@@ -2,6 +2,7 @@ package com.consoltant.consoltant.domain.subject.service;
 
 import com.consoltant.consoltant.domain.subject.entity.Subject;
 import com.consoltant.consoltant.domain.subject.repository.SubjectRepository;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,10 @@ public class SubjectModuleService {
     public Subject findById(Long id) {
         return subjectRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("Invalid Subject ID"));
+    }
+
+    public Optional<Subject> findBySubjectNumber(String subjectNumber) {
+        return subjectRepository.findBySubjectNumber(subjectNumber);
     }
 
     // Subject 저장

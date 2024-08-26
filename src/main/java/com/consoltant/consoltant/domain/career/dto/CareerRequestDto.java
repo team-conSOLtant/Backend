@@ -7,6 +7,7 @@ import lombok.ToString;
 @ToString
 public class CareerRequestDto {
 
+    private Long careerId;
     private Long portfolioId;
     private String company;
     private String positionLevel;
