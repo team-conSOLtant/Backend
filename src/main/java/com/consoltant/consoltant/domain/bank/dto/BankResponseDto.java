@@ -1,2 +1,9 @@
-package com.consoltant.consoltant.domain.bank.dto;public class BankResponseDto {
+package com.consoltant.consoltant.domain.bank.dto;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class BankResponseDto {
 }
