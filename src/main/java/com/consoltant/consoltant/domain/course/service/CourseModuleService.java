@@ -2,6 +2,8 @@ package com.consoltant.consoltant.domain.course.service;
 
 import com.consoltant.consoltant.domain.course.entity.Course;
 import com.consoltant.consoltant.domain.course.repository.CourseRepository;
+import com.consoltant.consoltant.domain.subject.entity.Subject;
+import com.consoltant.consoltant.domain.user.entity.User;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,10 @@ public class CourseModuleService {
     // 유저 ID로 선택된 모든 Course 조회
     public List<Course> findAllByUserIdAndIsSelectedTrue(Long userId) {
         return courseRepository.findAllByUserIdAndIsSelectedTrue(userId);
+    }
+
+    public boolean existsByUserAndSubject(User user, Subject subject) {
+        return courseRepository.existsByUserAndSubject(user, subject);
     }
 
     public Course save(Course course){

@@ -40,6 +40,10 @@ public class Course {
     @JoinColumn(name = "subject_id", nullable = false)
     private Subject subject;
 
+    private String subjectName;
+
+    private String grade;
+
     @Column(nullable = false)
     @Builder.Default
     private Boolean isSelected = false;
