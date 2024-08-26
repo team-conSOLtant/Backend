@@ -1,13 +1,17 @@
 package com.consoltant.consoltant.domain.journey.controller;
 
+import com.consoltant.consoltant.domain.journey.dto.JourneyGraphResponseDto;
 import com.consoltant.consoltant.domain.journey.dto.JourneyRequestDto;
 import com.consoltant.consoltant.domain.journey.dto.JourneyResponseDto;
+import com.consoltant.consoltant.domain.journey.dto.JourneyStatsResponseDto;
 import com.consoltant.consoltant.domain.journey.service.JourneyService;
+import com.consoltant.consoltant.domain.user.service.UserService;
 import com.consoltant.consoltant.util.base.BaseSuccessResponse;
 import com.consoltant.consoltant.util.constant.JourneyType;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class JourneyController {
 
     private final JourneyService journeyService;
+    private final UserService userService;
 
     // 단일 조회
     @GetMapping("/{id}")
@@ -62,5 +67,23 @@ public class JourneyController {
     public BaseSuccessResponse<Void> delete(@PathVariable Long id){
         journeyService.delete(id);
         return new BaseSuccessResponse<>(null);
+    }
+
+    //여정 별 금융 상품 통계
+    @GetMapping("/stats")
+    public BaseSuccessResponse<List<JourneyStatsResponseDto>> stats(){
+        log.info("여정 별 자산 통계 API");
+        Long userId = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
+
+        return new BaseSuccessResponse<>(journeyService.findStatsByUserId(userId));
+    }
+
+    //여정 그래프
+    @GetMapping("/graph")
+    public BaseSuccessResponse<JourneyGraphResponseDto> graph(){
+        log.info("여정 별 자산 그래프 API");
+
+        Long userId = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
+        return new BaseSuccessResponse<>(journeyService.findGraphByUserId(userId));
     }
 }
