@@ -5,6 +5,7 @@ import com.consoltant.consoltant.domain.course.repository.CourseRepository;
 import com.consoltant.consoltant.domain.subject.entity.Subject;
 import com.consoltant.consoltant.domain.user.entity.User;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -34,5 +35,9 @@ public class CourseModuleService {
 
     public Course save(Course course){
         return courseRepository.save(course);
+    }
+
+    public Optional<Course> findByUserIdAndSubjectId(Long userId, Long subjectId) {
+        return courseRepository.findByUserIdAndSubjectId(userId,subjectId);
     }
 }

@@ -56,4 +56,16 @@ public class Course {
         this.isSelected = courseRequestDto.getIsSelected();
     }
 
+    public void setUser(User user){
+        this.user = user;
+    }
+
+    public void setSubject(Subject subject){
+        this.subject = subject;
+    }
+
+    public void setIsSelected(boolean isSelected){
+        this.isSelected = isSelected;
+    }
+
 }
