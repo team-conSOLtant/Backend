@@ -1,11 +1,11 @@
-package com.consoltant.consoltant.util.api.dto.saving.createproduct;
+package com.consoltant.consoltant.util.api.dto.saving.createsaving;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class CreateProductResponseDto {
+public class CreateSavingResponseDto {
     private String accountTypeUniqueNo;
     private String bankCode;
     private String bankName;
