@@ -106,9 +106,14 @@ public class PortfolioService {
         Long portfolioId = null;
         Long userId = portfolioSaveAllRequestDto.getUserId();
         if(portfolioSaveAllRequestDto.getPortfolioId() == null){
-            Portfolio portfolio = new Portfolio();
-            portfolio.setUser(userRepository.findById(userId).orElseThrow());
-            portfolioId = portfolioModuleService.save(portfolio).getId();
+            //새로 만드는 경우 최초 저장일 때
+            if(portfolioModuleService.findByUserId(userId).isEmpty()) {
+                Portfolio portfolio = new Portfolio();
+                portfolio.setUser(userRepository.findById(userId).orElseThrow());
+                portfolioId = portfolioModuleService.save(portfolio).getId();
+            }
+            //새로 만들지만 최초 저장 아닐 때
+            portfolioId = portfolioModuleService.findByUserId(userId).orElseThrow().getId();
         }
         else{
             portfolioId = portfolioSaveAllRequestDto.getPortfolioId();
