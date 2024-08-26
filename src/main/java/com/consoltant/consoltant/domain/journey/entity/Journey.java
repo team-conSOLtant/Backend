@@ -3,6 +3,7 @@ package com.consoltant.consoltant.domain.journey.entity;
 import com.consoltant.consoltant.domain.journey.dto.JourneyRequestDto;
 import com.consoltant.consoltant.domain.user.entity.User;
 import com.consoltant.consoltant.util.constant.JourneyType;
+import com.consoltant.consoltant.util.constant.ProductType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -42,6 +43,10 @@ public class Journey {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private JourneyType journeyType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ProductType productType;
 
     private LocalDate startDate;
 

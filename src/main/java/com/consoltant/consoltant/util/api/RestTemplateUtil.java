@@ -3,12 +3,13 @@ package com.consoltant.consoltant.util.api;
 
 import com.consoltant.consoltant.global.exception.BadRequestException;
 import com.consoltant.consoltant.util.api.dto.auth.checkauthcode.CheckAuthCodeResponseDto;
+import com.consoltant.consoltant.util.api.dto.demanddeposit.createdemanddeposit.CreateDemandDepositResponseDto;
 import com.consoltant.consoltant.util.api.dto.deposit.createdeposit.CreateDepositResponseDto;
 import com.consoltant.consoltant.util.api.dto.deposit.createdepositaccount.CreateDepositAccountResponseDto;
 import com.consoltant.consoltant.util.api.dto.loan.createloanaccount.CreateLoanAccountResponseDto;
 import com.consoltant.consoltant.util.api.dto.loan.createloanapplication.CreateLoanApplicationResponseDto;
 import com.consoltant.consoltant.util.api.dto.loan.createloanproduct.CreateLoanProductResponseDto;
-import com.consoltant.consoltant.util.api.dto.saving.createproduct.CreateProductResponseDto;
+import com.consoltant.consoltant.util.api.dto.saving.createsaving.CreateSavingResponseDto;
 import com.consoltant.consoltant.util.api.dto.saving.createsavingaccount.CreateSavingAccountResponseDto;
 import com.consoltant.consoltant.util.api.dto.deposit.deletedepositaccount.DeleteDepositAccountResponseDto;
 import com.consoltant.consoltant.util.api.dto.saving.deletesavingaccount.DeleteSavingAccountResponseDto;
@@ -17,7 +18,6 @@ import com.consoltant.consoltant.util.api.dto.demanddeposit.inquiredemanddeposit
 import com.consoltant.consoltant.util.api.dto.demanddeposit.inquiredemanddepositaccount.InquireDemandDepositAccountResponseDto;
 import com.consoltant.consoltant.util.api.dto.demanddeposit.inquiredemanddepositaccountbalance.InquireDemandDepositAccountBalanceResponseDto;
 import com.consoltant.consoltant.util.api.dto.deposit.inquiredepositinfo.InquireDepositInfoResponseDto;
-import com.consoltant.consoltant.util.api.dto.deposit.inquiredepositproducts.InquireDepositProductsResponseDto;
 import com.consoltant.consoltant.util.api.dto.loan.inquireloanaccount.InquireLoanAccountResponseDto;
 import com.consoltant.consoltant.util.api.dto.loan.inquireloanapplication.InquireLoanApplicationResponseDto;
 import com.consoltant.consoltant.util.api.dto.loan.inquireloanproduct.InquireLoanProductResponseDto;
@@ -122,11 +122,11 @@ public class RestTemplateUtil {
 
     // 수시입출금 API
     // 수시입출금 상품 등록
-    public CreateDemandDepositAccountResponseDto createDemandDepositAccount(String bankCode, String accountName, String accountDescription){
-        final String name = "createDemandDepositAccount";
+    public CreateDemandDepositResponseDto createDemandDeposit(String bankCode, String accountName, String accountDescription){
+        final String name = "createDemandDepositA";
         log.info("금융 API 수시입출금 상품 등록");
 
-        String uri = "edu/demandDeposit/createDemandDepositAccount";
+        String uri = "edu/demandDeposit/createDemandDeposit";
 
         Map<String,Object>requestBody = new HashMap<>();
 
@@ -139,7 +139,7 @@ public class RestTemplateUtil {
 
         HttpEntity<Object> entity = new HttpEntity<>(requestBody);
 
-        ResponseEntity<RECResponse<CreateDemandDepositAccountResponseDto>> response =
+        ResponseEntity<RECResponse<CreateDemandDepositResponseDto>> response =
                 restTemplate.exchange(
                         url + uri,HttpMethod.POST ,entity,
                         new ParameterizedTypeReference<>(){}
@@ -527,7 +527,7 @@ public class RestTemplateUtil {
 
     // 적금 API
     // 적금 상품 등록
-    public CreateProductResponseDto createProduct(String bankCode, String accountName, String accountDescription, String subscriptionPeriod, Long minSubscriptionBalance, Long maxSubscriptionBalance, Double interestRate, String rateDescription){
+    public CreateSavingResponseDto createSaving(String bankCode, String accountName, String accountDescription, String subscriptionPeriod, Long minSubscriptionBalance, Long maxSubscriptionBalance, Double interestRate, String rateDescription){
         final String name = "createProduct";
         log.info("금융 API 적금 상품 등록");
 
@@ -549,7 +549,7 @@ public class RestTemplateUtil {
 
         HttpEntity<Object> entity = new HttpEntity<>(requestBody);
 
-        ResponseEntity<RECResponse<CreateProductResponseDto>> response =
+        ResponseEntity<RECResponse<CreateSavingResponseDto>> response =
                 restTemplate.exchange(
                         url + uri,HttpMethod.POST ,entity,
                         new ParameterizedTypeReference<>(){}
@@ -709,8 +709,17 @@ public class RestTemplateUtil {
         return response.getBody().getREC();
     }
 
-    // TODO 대출 상품 등록
-    public CreateLoanProductResponseDto createLoanProduct(String bankCode, String accountName, String accountDescription, String ratingUniqueNo, String loanPeriod, String minLoanBalance, String maxLoanBalance, String interestRate){
+    // 대출 상품 등록
+    public CreateLoanProductResponseDto createLoanProduct(
+            String bankCode,
+            String accountName,
+            String accountDescription,
+            String ratingUniqueNo,
+            Integer loanPeriod,
+            Long minLoanBalance,
+            Long maxLoanBalance,
+            Double interestRate
+    ){
         final String name = "createLoanProduct";
         log.info("금융 API 대출 상품 등록 ");
 

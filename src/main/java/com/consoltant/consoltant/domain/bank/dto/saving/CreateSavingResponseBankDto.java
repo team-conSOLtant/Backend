@@ -1,11 +1,11 @@
-package com.consoltant.consoltant.util.api.dto.demanddeposit.createdemanddeposit;
+package com.consoltant.consoltant.domain.bank.dto.saving;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class CreateDemandDepositResponseDto {
+public class CreateSavingResponseBankDto {
     private String accountTypeUniqueNo;
     private String bankCode;
     private String bankName;
@@ -13,5 +13,9 @@ public class CreateDemandDepositResponseDto {
     private String accountTypeName;
     private String accountName;
     private String accountDescription;
-    private String accountType;
+    private String subscriptionPeriod;
+    private Long minSubscriptionBalance;
+    private Long maxSubscriptionBalance;
+    private Double interestRate;
+    private String rateDescription;
 }
