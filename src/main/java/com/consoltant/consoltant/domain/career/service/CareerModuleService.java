@@ -32,4 +32,8 @@ public class CareerModuleService {
         careerRepository.deleteById(id);
     }
 
+    public void deleteAllByPortfolioId(Long portfolioId){
+        careerRepository.deleteAllByPortfolioId(portfolioId);
+    }
+
 }

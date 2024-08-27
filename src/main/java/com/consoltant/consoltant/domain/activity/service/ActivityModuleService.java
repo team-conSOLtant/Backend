@@ -27,4 +27,8 @@ public class ActivityModuleService {
     public void delete(Long id) {
         activityRepository.deleteById(id);
     }
+
+    public void deleteAllByPortfolioId(Long portfolioId){
+        activityRepository.deleteAllByPortfolioId(portfolioId);
+    }
 }

@@ -3,6 +3,7 @@ package com.consoltant.consoltant.domain.project.entity;
 import com.consoltant.consoltant.domain.portfolio.entity.Portfolio;
 import com.consoltant.consoltant.domain.project.dto.ProjectRequestDto;
 import com.consoltant.consoltant.domain.projectuser.entity.ProjectUser;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -19,7 +20,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 @Entity
@@ -27,7 +27,7 @@ import org.hibernate.annotations.SQLRestriction;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@SQLDelete(sql = "UPDATE project SET is_deleted = true WHERE id = ?")
+//@SQLDelete(sql = "UPDATE project SET is_deleted = true WHERE id = ?")
 @SQLRestriction("is_deleted = false")
 @Table(name = "project")
 public class Project {
@@ -60,7 +60,7 @@ public class Project {
     @Column(length = 1000)
     private String projectUrl;
 
-    @OneToMany(mappedBy = "project")
+    @OneToMany(mappedBy = "project", cascade = CascadeType.REMOVE, orphanRemoval = true)
     @Builder.Default
     private List<ProjectUser> projectUsers = new ArrayList<>();
 

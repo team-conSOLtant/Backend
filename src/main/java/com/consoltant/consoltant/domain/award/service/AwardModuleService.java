@@ -32,4 +32,8 @@ public class AwardModuleService {
     public void delete(Long id) {
         awardRepository.deleteById(id);
     }
+
+    public void deleteAllByPortfolioId(Long portfolioId){
+        awardRepository.deleteAllByPortfolioId(portfolioId);
+    }
 }
