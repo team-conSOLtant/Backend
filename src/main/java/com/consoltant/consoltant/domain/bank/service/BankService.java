@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -24,6 +26,10 @@ public class BankService {
 
     public CreateDemandDepositResponseBankDto createDemandDeposit(CreateDemandDepositRequestBankDto requestDto){
         return bankMapper.toCreateDemandDepositResponseBankDto(restTemplateUtil.createDemandDeposit(requestDto.getBankCode(), requestDto.getAccountName(), requestDto.getAccountDescription()));
+    }
+
+    public List<CreateDemandDepositResponseBankDto> findAllDemandDeposit(){
+        return bankMapper.toCreateDemandDepositResponseBankListDto(restTemplateUtil.inquireDemandDepositList());
     }
 
     public CreateDepositResponseBankDto createDeposit(CreateDepositRequestBankDto requestDto){
@@ -41,19 +47,8 @@ public class BankService {
         );
     }
 
-    public CreateLoanResponseBankDto createLoan(CreateLoanRequestBankDto requestDto){
-        return bankMapper.toCreateLoanResponseBankDto(
-                restTemplateUtil.createLoanProduct(
-                        requestDto.getBankCode(),
-                        requestDto.getAccountName(),
-                        requestDto.getAccountDescription(),
-                        requestDto.getRatingUniqueNo(),
-                        requestDto.getLoanPeriod(),
-                        requestDto.getMinLoanBalance(),
-                        requestDto.getMaxLoanBalance(),
-                        requestDto.getInterestRate()
-                )
-        );
+    public List<CreateDepositResponseBankDto> findAllDeposit(){
+        return bankMapper.toCreateDepositResponseBankListDto(restTemplateUtil.inquireDepositProducts());
     }
 
     public CreateSavingResponseBankDto createSaving(CreateSavingRequestBankDto requestDto){
@@ -69,5 +64,28 @@ public class BankService {
                         requestDto.getRateDescription()
                 )
         );
+    }
+
+    public List<CreateSavingResponseBankDto> findAllSaving(){
+        return bankMapper.toCreateSavingResponseBankListDto(restTemplateUtil.inquireSavingProducts());
+    }
+
+    public CreateLoanResponseBankDto createLoan(CreateLoanRequestBankDto requestDto){
+        return bankMapper.toCreateLoanResponseBankDto(
+                restTemplateUtil.createLoanProduct(
+                        requestDto.getBankCode(),
+                        requestDto.getAccountName(),
+                        requestDto.getAccountDescription(),
+                        requestDto.getRatingUniqueNo(),
+                        requestDto.getLoanPeriod(),
+                        requestDto.getMinLoanBalance(),
+                        requestDto.getMaxLoanBalance(),
+                        requestDto.getInterestRate()
+                )
+        );
+    }
+
+    public List<CreateLoanResponseBankDto> findAllLoan(){
+        return bankMapper.toCreateLoanResponseBankListDto(restTemplateUtil.inquireLoanProductList());
     }
 }
