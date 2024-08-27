@@ -11,6 +11,7 @@ public class InquireDemandDepositResponseDto {
     private String bankName;
     private String accountTypeCode;
     private String accountTypeName;
+    private String accountName;
     private String accountDescription;
     private String accountType;
 }

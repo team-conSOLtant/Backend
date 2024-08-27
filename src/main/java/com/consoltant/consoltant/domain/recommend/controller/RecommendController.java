@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -32,8 +33,9 @@ public class RecommendController {
         return new BaseSuccessResponse<>(recommendService.findAllByUserIdAndJourney(userId));
     }
 
-    @GetMapping("/{year}")
-    public BaseSuccessResponse<List<RecommendResponseDto>> findAllByIdAndYear(@PathVariable Integer year){
+    @GetMapping("/year")
+    public BaseSuccessResponse<List<RecommendResponseDto>> findAllByIdAndYear(){
+        Integer year = LocalDate.now().getYear();
         Long userId = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
         return new BaseSuccessResponse<>(recommendService.findAllByUserIdAndYear(userId,year));
     }
