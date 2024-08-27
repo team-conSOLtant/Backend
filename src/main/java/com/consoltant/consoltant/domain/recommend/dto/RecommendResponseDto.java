@@ -1,5 +1,6 @@
 package com.consoltant.consoltant.domain.recommend.dto;
 
+import com.consoltant.consoltant.domain.product.dto.ProductInfo;
 import com.consoltant.consoltant.util.constant.JourneyType;
 import com.consoltant.consoltant.util.constant.ProductType;
 import lombok.Getter;
@@ -22,5 +23,7 @@ public class RecommendResponseDto {
     private LocalDate startDate;
 
     private LocalDate endDate;
+
+    private ProductInfo productInfo;
 
 }
