@@ -6,18 +6,16 @@ import lombok.Setter;
 @Getter
 @Setter
 public class InquireDepositInfoResponseDto {
+    private String accountTypeUniqueNo;
     private String bankCode;
     private String bankName;
-    private String userName;
-    private String accountNo;
+    private String accountTypeCode;
+    private String accountTypeName;
     private String accountName;
     private String accountDescription;
-    private String withdrawalBankCode;
-    private String withdrawalBankName;
-    private String withdrawalAccountNo;
     private String subscriptionPeriod;
-    private Long depositBalance;
+    private Long minSubscriptionBalance;
+    private Long maxSubscriptionBalance;
     private Double interestRate;
-    private String accountCreateDate;
-    private String accountExpiryDate;
+    private String rateDescription;
 }
