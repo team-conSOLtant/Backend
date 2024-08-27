@@ -80,5 +80,4 @@ public class Portfolio {
         this.description = portfolioRequestDto.getDescription();
         this.backgroundColor = portfolioRequestDto.getBackgroundColor();
     }
-
 }

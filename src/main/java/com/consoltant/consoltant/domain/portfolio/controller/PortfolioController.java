@@ -1,12 +1,13 @@
 package com.consoltant.consoltant.domain.portfolio.controller;
 
-import com.consoltant.consoltant.domain.portfolio.dto.PortfolioRequestDto;
-import com.consoltant.consoltant.domain.portfolio.dto.PortfolioResponseDto;
-import com.consoltant.consoltant.domain.portfolio.dto.PortfolioSaveAllRequestDto;
+import com.consoltant.consoltant.domain.portfolio.dto.*;
+import com.consoltant.consoltant.domain.portfolio.service.PortfolioElasticService;
 import com.consoltant.consoltant.domain.portfolio.service.PortfolioService;
 import com.consoltant.consoltant.util.base.BaseSuccessResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class PortfolioController {
 
     private final PortfolioService portfolioService;
+    private final PortfolioElasticService portfolioElasticService;
 
     @GetMapping("/{id}")
     public BaseSuccessResponse<PortfolioResponseDto> findById(@PathVariable Long id) {
@@ -60,5 +62,10 @@ public class PortfolioController {
     public BaseSuccessResponse<Void> saveAll(@RequestBody PortfolioSaveAllRequestDto portfolioSaveAllRequestDto){
         portfolioService.saveAll(portfolioSaveAllRequestDto);
         return new BaseSuccessResponse<>(null);
+    }
+
+    @PostMapping("/search")
+    public BaseSuccessResponse<Slice<PortfolioSearchResponseDto>> search(@RequestBody PortfolioSearchRequestDto portfolioSearchRequestDto, @RequestParam("cursor") Long cursor, Pageable pageable){
+        return new BaseSuccessResponse<>(portfolioElasticService.searchPortfolios(portfolioSearchRequestDto, cursor, pageable));
     }
 }

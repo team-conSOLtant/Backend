@@ -3,6 +3,10 @@ package com.consoltant.consoltant.domain.auth.service;
 import com.consoltant.consoltant.domain.auth.dto.RegisterRequestDto;
 import com.consoltant.consoltant.domain.auth.dto.RegisterResponseDto;
 import com.consoltant.consoltant.domain.auth.mapper.AuthMapper;
+import com.consoltant.consoltant.domain.portfolio.entity.Portfolio;
+import com.consoltant.consoltant.domain.portfolio.entity.PortfolioDocument;
+import com.consoltant.consoltant.domain.portfolio.repository.PortfolioElasticRepository;
+import com.consoltant.consoltant.domain.portfolio.service.PortfolioModuleService;
 import com.consoltant.consoltant.domain.university.entity.University;
 import com.consoltant.consoltant.domain.university.repository.UniversityRepository;
 import com.consoltant.consoltant.domain.user.dto.CheckAccountResponseDto;
@@ -30,9 +34,12 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final UniversityRepository universityRepository;
 
+    private final PortfolioModuleService portfolioModuleService;
     private final UserModuleRepository userModuleRepository;
     private final UserMapper userMapper;
     private final AuthMapper authMapper;
+
+    private final PortfolioElasticRepository portfolioElasticRepository;
 
     public RegisterResponseDto registerUser(RegisterRequestDto request) {
         userRepository.findByEmail(request.getEmail())
@@ -44,7 +51,19 @@ public class AuthService {
         String userKey = restTemplateUtil.createMember(request.getEmail());
         University university =universityRepository.findById(1L).orElseThrow(()->new BadRequestException("SQL Error"));
 
-        return authMapper.toRegisterResponseDto(userRepository.save(request.createUser(encodePassword,userKey,university)));
+        User user = userRepository.save(request.createUser(encodePassword, userKey, university));
+        Portfolio portfolio = Portfolio.builder().user(user).build();
+        portfolioModuleService.save(portfolio);
+
+        // portfolioDocument 최초 생성
+        PortfolioDocument portfolioDocument = PortfolioDocument.builder()
+                .portfolioId(portfolio.getId())
+                .userId(user.getId())
+                .userEmail(user.getEmail())
+                .build();
+
+        portfolioElasticRepository.save(portfolioDocument);
+        return authMapper.toRegisterResponseDto(user);
     }
 
     //1원 송금

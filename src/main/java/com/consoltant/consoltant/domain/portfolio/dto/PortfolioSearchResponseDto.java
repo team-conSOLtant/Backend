@@ -13,8 +13,8 @@ public class PortfolioSearchResponseDto {
     private Double totalGpa;
     private Double majorGpa;
 
-    private String career;
-    private String keyword;
+    private String job;
+    private String myKeyword;
 
     private Integer awardCount;
     private Integer certificationCount;

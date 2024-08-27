@@ -39,5 +39,6 @@ public class PortfolioSaveAllRequestDto {
     // Career 리스트
     private List<CareerRequestDto> careers;
 
-
+    // es 전체 컨텐츠
+    private String allContent;
 }
