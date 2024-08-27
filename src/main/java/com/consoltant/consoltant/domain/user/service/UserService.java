@@ -170,4 +170,10 @@ public class UserService{
 
         return user.getAccountNo() != null;
     }
+
+    public List<UserResponseDto> findAllByEmail(String email) {
+        return userRepository.findByEmailLike(email).stream()
+            .map(userMapper::toUserResponseDto)
+            .toList();
+    }
 }

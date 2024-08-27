@@ -11,6 +11,7 @@ import com.consoltant.consoltant.domain.user.dto.UserResponseDto;
 import com.consoltant.consoltant.domain.user.service.UserService;
 import com.consoltant.consoltant.util.base.BaseSuccessResponse;
 import com.consoltant.consoltant.util.constant.ProductType;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -126,5 +127,10 @@ public class UserController {
         Long id = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
         userService.updateUser(id, updateUserRequestDto);
         return new BaseSuccessResponse<Void>(null);
+    }
+
+    @GetMapping("/search/{email}")
+    public BaseSuccessResponse<List<UserResponseDto>> findByEmail(@PathVariable String email){
+        return new BaseSuccessResponse<>(userService.findAllByEmail(email));
     }
 }
