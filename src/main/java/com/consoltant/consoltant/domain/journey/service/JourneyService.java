@@ -17,6 +17,7 @@ import com.consoltant.consoltant.util.constant.JourneyType;
 
 import java.util.*;
 
+import com.consoltant.consoltant.util.constant.ProductType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -79,40 +80,58 @@ public class JourneyService {
         String userKey = user.getUserKey();
         String accountNo = user.getAccountNo();
 
+        List<JourneyResponseDto> journeyResponseDtoList = journeyModuleService.findAllByUserId(userId).stream()
+                .sorted(Comparator.comparing(Journey::getStartDate))
+                .map(journeyMapper::toJourneyResponseDto)
+                .toList();
+
         log.info("현재 여정 정보 -> {}",user.getCurrentJourneyType());
+        
+        //내 여정 리스트
         List<JourneyStatsResponseDto> productStatsList = new ArrayList<>();
 
-        //여정 별 루프
-        boolean flag = true;
-
+        InquireDemandDepositAccountResponseDto inquireDemandDepositAccountResponseDto = restTemplateUtil.inquireDemandDepositAccount(userKey,accountNo);
+        String accountName = inquireDemandDepositAccountResponseDto.getAccountName();
+        String accountType = inquireDemandDepositAccountResponseDto.getAccountTypeName();
+        
         for(JourneyType journeyType: JourneyType.values()){
-            if(!flag) break;
 
             if(user.getCurrentJourneyType() == journeyType){
-                flag = false;
+                break;
             }
 
-            //사용자 총 자산
-            InquireMyCreditRatingResponseDto inquireMyCreditRatingResponseDto = restTemplateUtil.inquireMyCreditRating(userKey);
+            List<JourneyResponseDto> journeyList =
+                    journeyResponseDtoList.stream()
+                            .filter(s->s.getJourneyType()==journeyType)
+                            .toList();
 
-            Long totalAssetValue = inquireMyCreditRatingResponseDto.getTotalAssetValue();
-            Long demandDepositAssetValue = inquireMyCreditRatingResponseDto.getDemandDepositAssetValue();
 
-            Long savingAssetValue = restTemplateUtil.inquireSavingInfoList(userKey).stream()
-                    .mapToLong(InquireSavingInfoResponseDto::getDepositBalance)
+            Long demandDepositValue = journeyList.stream()
+                            .filter(s->s.getProductType()== ProductType.DEMAND_DEPOSIT)
+                            .mapToLong(JourneyResponseDto::getBalance)
+                            .sum();
+            Long depositValue = journeyList.stream()
+                    .filter(s->s.getProductType()== ProductType.DEPOSIT)
+                    .mapToLong(JourneyResponseDto::getBalance)
+                    .sum();
+            Long savingValue = journeyList.stream()
+                    .filter(s->s.getProductType()== ProductType.SAVING)
+                    .mapToLong(JourneyResponseDto::getBalance)
+                    .sum();
+            Long loanValue = journeyList.stream()
+                    .filter(s->s.getProductType()== ProductType.LOAN)
+                    .mapToLong(JourneyResponseDto::getBalance)
                     .sum();
 
-            Long depositAssetValue = inquireMyCreditRatingResponseDto.getDepositSavingsAssetValue() - savingAssetValue;
+            Long totalAssetValue = demandDepositValue + depositValue + savingValue + loanValue;
 
-            Long loanAssetValue = restTemplateUtil.inquireLoanAccountList(userKey).stream()
-                    .mapToLong(InquireLoanAccountResponseDto::getLoanBalance)
-                    .sum();
+            Double demandDeposit = (totalAssetValue > 0L ? demandDepositValue.doubleValue()/totalAssetValue.doubleValue() : 0.0) * 100;
+            Double saving = (totalAssetValue > 0L ? savingValue.doubleValue()/totalAssetValue.doubleValue() : 0.0) * 100;
+            Double loan = (totalAssetValue > 0L ? depositValue.doubleValue()/totalAssetValue.doubleValue() : 0.0) * 100;
+            Double deposit = (totalAssetValue > 0L ? loanValue.doubleValue()/totalAssetValue.doubleValue() : 0.0) * 100;
 
-            InquireDemandDepositAccountResponseDto inquireDemandDepositAccountResponseDto = restTemplateUtil.inquireDemandDepositAccount(userKey,accountNo);
-            String accountName = inquireDemandDepositAccountResponseDto.getAccountName();
-            String accountType = inquireDemandDepositAccountResponseDto.getAccountTypeName();
 
-            String HEX = "";
+            String HEX;
             String RGBA = switch (journeyType) {
                 case FRESHMAN -> {
                     HEX = "#005DF9";
@@ -148,26 +167,107 @@ public class JourneyService {
                 }
             };
 
-            productStatsList.add(
-                    JourneyStatsResponseDto.builder()
-                            .accountType(accountType)
-                            .accountName(accountName)
-                            .journeyType(journeyType.getValue())
-                            .HEX(HEX)
-                            .RGBA(RGBA)
-                            .loan((totalAssetValue > 0 ? loanAssetValue.doubleValue() / totalAssetValue.doubleValue() * 100 : 0))
-                            .totalAssetValue(totalAssetValue)
-                            .demandDeposit((totalAssetValue > 0 ? demandDepositAssetValue.doubleValue() / totalAssetValue.doubleValue() * 100:0))
-                            .deposit((totalAssetValue > 0 ? depositAssetValue.doubleValue() / totalAssetValue.doubleValue() * 100:0))
-                            .savings((totalAssetValue > 0 ? savingAssetValue.doubleValue() / totalAssetValue.doubleValue() * 100:0))
-                            .demandDepositValue(demandDepositAssetValue)
-                            .depositValue(demandDepositAssetValue)
-                            .loanValue(loanAssetValue)
-                            .savingsValue(savingAssetValue)
-                            .totalAssetValue(totalAssetValue)
-                            .build()
-            );
+            JourneyStatsResponseDto journeyStatsResponseDto = JourneyStatsResponseDto.builder()
+                    .accountType(accountType)
+                    .accountName(accountName)
+                    .journeyType(journeyType)
+                    .journeyTypeName(journeyType.getValue())
+                    .HEX(HEX)
+                    .RGBA(RGBA)
+                    .loan(loan)
+                    .totalAssetValue(totalAssetValue)
+                    .demandDeposit(demandDeposit)
+                    .deposit(deposit)
+                    .savings(saving)
+                    .demandDepositValue(demandDepositValue)
+                    .depositValue(depositValue)
+                    .loanValue(loanValue)
+                    .savingsValue(savingValue)
+                    .totalAssetValue(totalAssetValue)
+                    .build();
+
+            productStatsList.add(journeyStatsResponseDto);
         }
+
+        //사용자 현재 여정 저장
+        InquireMyCreditRatingResponseDto inquireMyCreditRatingResponseDto = restTemplateUtil.inquireMyCreditRating(userKey);
+
+        Long totalAssetValue = inquireMyCreditRatingResponseDto.getTotalAssetValue();
+        Long demandDepositValue = inquireMyCreditRatingResponseDto.getDemandDepositAssetValue();
+
+        Long savingValue = restTemplateUtil.inquireSavingInfoList(userKey).stream()
+                .mapToLong(InquireSavingInfoResponseDto::getDepositBalance)
+                .sum();
+
+        Long depositValue = inquireMyCreditRatingResponseDto.getDepositSavingsAssetValue() - savingValue;
+
+        Long loanValue = restTemplateUtil.inquireLoanAccountList(userKey).stream()
+                .mapToLong(InquireLoanAccountResponseDto::getLoanBalance)
+                .sum();
+
+
+        Double demandDeposit = (totalAssetValue > 0L ? demandDepositValue.doubleValue()/totalAssetValue.doubleValue() : 0.0) * 100;
+        Double saving = (totalAssetValue > 0L ? savingValue.doubleValue()/totalAssetValue.doubleValue() : 0.0) * 100;
+        Double loan = (totalAssetValue > 0L ? depositValue.doubleValue()/totalAssetValue.doubleValue() : 0.0) * 100;
+        Double deposit = (totalAssetValue > 0L ? loanValue.doubleValue()/totalAssetValue.doubleValue() : 0.0) * 100;
+
+
+        String HEX;
+        String RGBA = switch (user.getCurrentJourneyType()) {
+            case FRESHMAN -> {
+                HEX = "#005DF9";
+                yield "rgba(0, 93, 249, 0.3)";
+            }
+            case SOPHOMORE -> {
+                HEX = "#59ABE1";
+                yield "rgba(89, 171, 225, 0.3)";
+            }
+            case JUNIOR -> {
+                HEX = "#5AAEC4";
+                yield "rgba(90, 174, 196, 0.3)";
+            }
+            case SENIOR -> {
+                HEX = "#5AC4BD";
+                yield "rgba(90, 196, 189, 0.3)";
+            }
+            case THIRTIES -> {
+                HEX = "#34C759";
+                yield "rgba(52, 199, 89, 0.3)";
+            }
+            case FORTIES -> {
+                HEX = "#9ECB4F";
+                yield "rgba(158, 203, 79, 0.3)";
+            }
+            case FIFTIES -> {
+                HEX = "#F7CE46";
+                yield "rgba(247, 206, 70, 0.3)";
+            }
+            case RETIRED -> {
+                HEX = "#F19A37";
+                yield "rgba(241, 154, 55, 0.3)";
+            }
+        };
+
+        JourneyStatsResponseDto journeyStatsResponseDto = JourneyStatsResponseDto.builder()
+                .accountType(accountType)
+                .accountName(accountName)
+                .journeyType(user.getCurrentJourneyType())
+                .journeyTypeName(user.getCurrentJourneyType().getValue())
+                .HEX(HEX)
+                .RGBA(RGBA)
+                .loan(loan)
+                .totalAssetValue(totalAssetValue)
+                .demandDeposit(demandDeposit)
+                .deposit(deposit)
+                .savings(saving)
+                .demandDepositValue(demandDepositValue)
+                .depositValue(depositValue)
+                .loanValue(loanValue)
+                .savingsValue(savingValue)
+                .totalAssetValue(totalAssetValue)
+                .build();
+
+        productStatsList.add(journeyStatsResponseDto);
 
         return productStatsList;
     }

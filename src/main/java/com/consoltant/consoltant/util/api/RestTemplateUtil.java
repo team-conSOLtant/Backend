@@ -54,6 +54,7 @@ import java.util.UUID;
 public class RestTemplateUtil {
     @Autowired
     private RestTemplate restTemplate;
+
     private final String url = "https://finopenapi.ssafy.io/ssafy/api/v1/";
 
     @Value("${institution.code}")
@@ -222,8 +223,6 @@ public class RestTemplateUtil {
 
         RequestHeader headers = requestHeader(name, userKey);
 
-        log.info("요청 헤더 -> {}",headers);
-
         requestBody.put("Header",headers);
         requestBody.put("accountTypeUniqueNo",accountTypeUniqueNo);
 
@@ -235,12 +234,9 @@ public class RestTemplateUtil {
                         new ParameterizedTypeReference<>(){}
                 );
 
-        log.info("response -> {}", response.getBody());
         if(response.getBody() == null){
             throw new BadRequestException("API 요청 중 오류가 발생했습니다.");
         }
-        log.info("Account No -> {}", response.getBody().getHeader().toString());
-        log.info("Account No -> {}", response.getBody().getREC().toString());
 
         return response.getBody().getREC();
     }
@@ -407,7 +403,7 @@ public class RestTemplateUtil {
     }
 
     // 예금 상품 조회
-    public InquireDepositInfoResponseDto inquireDepositProducts(String userKey, String accountNo){
+    public List<InquireDepositInfoResponseDto> inquireDepositProducts(){
         final String name = "inquireDepositProducts";
         log.info("금융 API 예금 상품 조회");
 
@@ -415,14 +411,13 @@ public class RestTemplateUtil {
 
         Map<String,Object>requestBody = new HashMap<>();
 
-        RequestHeader headers = requestHeader(name,userKey);
+        RequestHeader headers = requestHeader(name,null);
 
         requestBody.put("Header",headers);
-        requestBody.put("accountNo",accountNo);
 
         HttpEntity<Object> entity = new HttpEntity<>(requestBody);
 
-        ResponseEntity<RECResponse<InquireDepositInfoResponseDto>> response =
+        ResponseEntity<RECListResponse<InquireDepositInfoResponseDto>> response =
                 restTemplate.exchange(
                         url + uri,HttpMethod.POST ,entity,
                         new ParameterizedTypeReference<>(){}
@@ -564,10 +559,10 @@ public class RestTemplateUtil {
 
     // 적금 상품 조회
     public List<InquireSavingProductsResponseDto> inquireSavingProducts(){
-        final String name = "inquireSavingProducts";
+        final String name = "inquireSavingsProducts";
         log.info("금융 API 적금 상품 조회");
 
-        String uri = "edu/savings/inquireSavingProducts";
+        String uri = "edu/savings/inquireSavingsProducts";
 
         Map<String,Object>requestBody = new HashMap<>();
 

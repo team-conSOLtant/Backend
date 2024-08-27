@@ -145,23 +145,23 @@ public class ProductService {
                 break;
             case DEPOSIT:
                 log.info("예금 등록");
-                InquireDepositInfoResponseDto inquireDepositInfoResponseDto = restTemplateUtil.inquireDepositProducts(user.getUserKey(), productRequestDto.getAccountNo());
-
-                startDate = inquireDepositInfoResponseDto.getAccountCreateDate();
-                endDate = inquireDepositInfoResponseDto.getAccountExpiryDate();
-
-
-                productRequestDto.setStartDate(
-                        LocalDate.of(Integer.parseInt(startDate.substring(0,4)),
-                                Integer.parseInt(startDate.substring(4,6)),
-                                Integer.parseInt(startDate.substring(6,8)))
-                );
-
-                productRequestDto.setEndDate(
-                        LocalDate.of(Integer.parseInt(endDate.substring(0,4)),
-                                Integer.parseInt(endDate.substring(4,6)),
-                                Integer.parseInt(endDate.substring(6,8)))
-                );
+//                InquireDepositInfoResponseDto inquireDepositInfoResponseDto = restTemplateUtil.inquireDepo(user.getUserKey(),productRequestDto.getAccountNo());
+//
+//                startDate = inquireDepositInfoResponseDto.getAccountCreateDate();
+//                endDate = inquireDepositInfoResponseDto.getAccountExpiryDate();
+//
+//
+//                productRequestDto.setStartDate(
+//                        LocalDate.of(Integer.parseInt(startDate.substring(0,4)),
+//                                Integer.parseInt(startDate.substring(4,6)),
+//                                Integer.parseInt(startDate.substring(6,8)))
+//                );
+//
+//                productRequestDto.setEndDate(
+//                        LocalDate.of(Integer.parseInt(endDate.substring(0,4)),
+//                                Integer.parseInt(endDate.substring(4,6)),
+//                                Integer.parseInt(endDate.substring(6,8)))
+//                );
 
                 break;
             case LOAN:

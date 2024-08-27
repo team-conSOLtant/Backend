@@ -1,17 +1,21 @@
 package com.consoltant.consoltant.domain.journey.dto;
 
+import com.consoltant.consoltant.util.constant.JourneyType;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 @Builder
 @Getter
+@Setter
 public class JourneyStatsResponseDto {
 
     private String accountName;
     private String accountType;
     private Long totalAssetValue;
 
-    private String journeyType;
+    private String journeyTypeName;
+    private JourneyType journeyType;
 
     //색
     private String HEX;

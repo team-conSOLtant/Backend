@@ -2,10 +2,13 @@ package com.consoltant.consoltant.domain.product.mapper;
 
 import com.consoltant.consoltant.domain.product.dto.*;
 import com.consoltant.consoltant.domain.product.entity.Product;
+import com.consoltant.consoltant.util.api.dto.demanddeposit.inquiredemanddeposit.InquireDemandDepositResponseDto;
 import com.consoltant.consoltant.util.api.dto.demanddeposit.inquiredemanddepositaccount.InquireDemandDepositAccountResponseDto;
 import com.consoltant.consoltant.util.api.dto.deposit.inquiredepositinfo.InquireDepositInfoResponseDto;
 import com.consoltant.consoltant.util.api.dto.loan.inquireloanaccount.InquireLoanAccountResponseDto;
+import com.consoltant.consoltant.util.api.dto.loan.inquireloanproduct.InquireLoanProductResponseDto;
 import com.consoltant.consoltant.util.api.dto.saving.inquiresavinginfo.InquireSavingInfoResponseDto;
+import com.consoltant.consoltant.util.api.dto.saving.inquiresavingproducts.InquireSavingProductsResponseDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
@@ -23,4 +26,7 @@ public interface ProductMapper {
     ProductInfo toProductInfo(InquireSavingInfoResponseDto inquireSavingInfoResponseDto);
     ProductInfo toProductInfo(InquireDepositInfoResponseDto inquireDepositInfoResponseDto);
     ProductInfo toProductInfo(InquireLoanAccountResponseDto inquireLoanAccountResponseDto);
+    ProductInfo toProductInfo(InquireDemandDepositResponseDto depositResponseDto);
+    ProductInfo toProductInfo(InquireSavingProductsResponseDto inquireSavingProductsResponseDto);
+    ProductInfo toProductInfo(InquireLoanProductResponseDto inquireLoanProductResponseDto);
 }
