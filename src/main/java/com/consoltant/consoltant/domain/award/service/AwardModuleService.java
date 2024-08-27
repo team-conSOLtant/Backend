@@ -21,6 +21,10 @@ public class AwardModuleService {
         return awardRepository.findAllByPortfolioId(portfolioId);
     }
 
+    public Integer countAllByPortfolioId(Long portfolioId) {
+        return awardRepository.findAllByPortfolioId(portfolioId).size();
+    }
+
     public Award save(Award award) {
         return awardRepository.save(award);
     }

@@ -19,6 +19,10 @@ public class CertificationModuleService {
     public List<Certification> findAllByPortfolioId(Long portfolioId) {
         return certificationRepository.findAllByPortfolioId(portfolioId);
     }
+    public Integer countAllByPortfolioId(Long portfolioId) {
+        return certificationRepository.findAllByPortfolioId(portfolioId).size();
+    }
+
 
     public Certification save(Certification certification) {
         return certificationRepository.save(certification);
