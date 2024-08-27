@@ -1,5 +1,7 @@
 package com.consoltant.consoltant.domain.auth.dto;
 
+import com.consoltant.consoltant.domain.portfolio.entity.Portfolio;
+import com.consoltant.consoltant.domain.portfolio.entity.PortfolioDocument;
 import com.consoltant.consoltant.domain.university.entity.University;
 
 import com.consoltant.consoltant.domain.user.entity.User;
@@ -40,5 +42,4 @@ public class RegisterRequestDto {
                 .userKey(userKey)
                 .build();
     }
-
 }

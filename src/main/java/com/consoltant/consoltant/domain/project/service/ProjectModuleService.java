@@ -22,6 +22,10 @@ public class ProjectModuleService {
         return projectRepository.findAllByPortfolioId(portfolioId);
     }
 
+    public Integer countAllByPortfolioId(Long portfolioId) {
+        return projectRepository.findAllByPortfolioId(portfolioId).size();
+    }
+
     // Project 저장
     public Project save(Project project) {
         return projectRepository.save(project);
