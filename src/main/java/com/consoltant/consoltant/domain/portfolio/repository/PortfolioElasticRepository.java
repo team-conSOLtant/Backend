@@ -6,7 +6,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface PortfolioElasticRepository extends ElasticsearchRepository<PortfolioDocument, String> {
     Page<PortfolioDocument> findAllByAllContentContaining(String keyword, Pageable pageable);
+
+    Optional<PortfolioDocument> findByPortfolioId(Long portfolioId);
 }

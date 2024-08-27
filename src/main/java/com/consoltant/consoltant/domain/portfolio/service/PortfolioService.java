@@ -28,7 +28,10 @@ import com.consoltant.consoltant.domain.portfolio.dto.PortfolioRequestDto;
 import com.consoltant.consoltant.domain.portfolio.dto.PortfolioResponseDto;
 import com.consoltant.consoltant.domain.portfolio.dto.PortfolioSaveAllRequestDto;
 import com.consoltant.consoltant.domain.portfolio.entity.Portfolio;
+import com.consoltant.consoltant.domain.portfolio.entity.PortfolioDocument;
 import com.consoltant.consoltant.domain.portfolio.mapper.PortfolioMapper;
+import com.consoltant.consoltant.domain.portfolio.repository.PortfolioElasticRepository;
+import com.consoltant.consoltant.domain.portfolio.repository.PortfolioRepository;
 import com.consoltant.consoltant.domain.project.dto.ProjectRequestDto;
 import com.consoltant.consoltant.domain.project.entity.Project;
 import com.consoltant.consoltant.domain.project.mapper.ProjectMapper;
@@ -40,6 +43,7 @@ import com.consoltant.consoltant.domain.projectuser.service.ProjectUserModuleSer
 import com.consoltant.consoltant.domain.projectuser.service.ProjectUserService;
 import com.consoltant.consoltant.domain.user.entity.User;
 import com.consoltant.consoltant.domain.user.repository.UserRepository;
+import com.consoltant.consoltant.global.exception.BadRequestException;
 import com.consoltant.consoltant.util.constant.NotificationType;
 import java.util.ArrayList;
 import java.util.List;
@@ -77,6 +81,7 @@ public class PortfolioService {
     private final ProjectUserMapper projectUserMapper;
     private final CourseMapper courseMapper;
 
+    private final PortfolioElasticRepository portfolioElasticRepository;
 
     private final UserRepository userRepository;
 
@@ -242,6 +247,14 @@ public class PortfolioService {
             courseModuleService.save(course);
         }
 
+        // es portfolio 수정
+        PortfolioDocument portfolioDocument = portfolioElasticRepository.findByPortfolioId(portfolio.getId())
+                .orElseThrow(()-> new BadRequestException("존재하지 않는 포트폴리오 도큐먼트 입니다."));
+
+        portfolioDocument.updatePortfolioDocument(portfolioSaveAllRequestDto.getAllContent(), user.getIsEmployed(),
+                user.getTotalGpa(), user.getMaxGpa());
+
+        portfolioElasticRepository.save(portfolioDocument);
     }
 
     public void delete(Long id){
