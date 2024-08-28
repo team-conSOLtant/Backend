@@ -124,7 +124,7 @@ public class RestTemplateUtil {
     // 수시입출금 API
     // 수시입출금 상품 등록
     public CreateDemandDepositResponseDto createDemandDeposit(String bankCode, String accountName, String accountDescription){
-        final String name = "createDemandDepositA";
+        final String name = "createDemandDeposit";
         log.info("금융 API 수시입출금 상품 등록");
 
         String uri = "edu/demandDeposit/createDemandDeposit";
