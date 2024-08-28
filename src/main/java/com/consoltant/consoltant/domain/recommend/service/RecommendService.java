@@ -3,6 +3,7 @@ package com.consoltant.consoltant.domain.recommend.service;
 import com.consoltant.consoltant.domain.product.dto.ProductInfo;
 import com.consoltant.consoltant.domain.product.mapper.ProductMapper;
 import com.consoltant.consoltant.domain.recommend.dto.RecommendRequestDto;
+import com.consoltant.consoltant.domain.recommend.dto.RecommendRequestDtoList;
 import com.consoltant.consoltant.domain.recommend.dto.RecommendResponseDto;
 import com.consoltant.consoltant.domain.recommend.entity.Recommend;
 import com.consoltant.consoltant.domain.recommend.mapper.RecommendMapper;
@@ -148,6 +149,22 @@ public class RecommendService {
 
     public void delete(Long id){
         recommendRepository.deleteById(id);
+    }
+
+    public List<RecommendResponseDto> saveAll(Long userId, RecommendRequestDtoList requestDto) {
+        User user = userRepository.findById(userId).orElseThrow((()->new BadRequestException("존재하지 않는 사용자입니다.")));
+
+        for(RecommendRequestDto recommendRequestDto : requestDto.getRecommendRequestDtoList()) {
+            Recommend recommend = recommendMapper.toRecommend(recommendRequestDto);
+            recommend.setUser(user);
+            recommendRepository.save(recommend);
+        }
+
+
+
+        return recommendRepository.findAllByUserId(userId).stream()
+                .map(recommendMapper::toResponseDto)
+                .toList();
     }
     
 }

@@ -1,7 +1,9 @@
 package com.consoltant.consoltant.domain.recommend.controller;
 
 import com.consoltant.consoltant.domain.recommend.dto.RecommendRequestDto;
+import com.consoltant.consoltant.domain.recommend.dto.RecommendRequestDtoList;
 import com.consoltant.consoltant.domain.recommend.dto.RecommendResponseDto;
+import com.consoltant.consoltant.domain.recommend.service.RecommendModuleService;
 import com.consoltant.consoltant.domain.recommend.service.RecommendService;
 import com.consoltant.consoltant.domain.user.service.UserService;
 import com.consoltant.consoltant.util.base.BaseSuccessResponse;
@@ -20,6 +22,7 @@ import java.util.List;
 public class RecommendController {
     private final RecommendService recommendService;
     private final UserService userService;
+    private final RecommendModuleService recommendModuleService;
 
     @GetMapping
     public BaseSuccessResponse<List<RecommendResponseDto>> findAllById(){
@@ -44,6 +47,12 @@ public class RecommendController {
     public BaseSuccessResponse<List<RecommendResponseDto>> save(@RequestBody RecommendRequestDto recommendRequestDto){
         Long userId = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
         return new BaseSuccessResponse<>(recommendService.save(userId, recommendRequestDto));
+    }
+
+    @PostMapping("/list")
+    public BaseSuccessResponse<List<RecommendResponseDto>> saveList(@RequestBody RecommendRequestDtoList recommendRequestDto){
+        Long userId = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
+        return new BaseSuccessResponse<>(recommendService.saveAll(userId, recommendRequestDto));
     }
 
     @DeleteMapping("/{id}")
