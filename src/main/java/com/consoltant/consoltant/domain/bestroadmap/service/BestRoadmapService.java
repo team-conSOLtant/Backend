@@ -2,6 +2,7 @@ package com.consoltant.consoltant.domain.bestroadmap.service;
 
 import com.consoltant.consoltant.domain.bestroadmap.entity.BestRoadmap;
 import com.consoltant.consoltant.domain.bestroadmap.repository.BestRoadmapRepository;
+import com.consoltant.consoltant.domain.journey.dto.JourneyResponseDto;
 import com.consoltant.consoltant.domain.journey.entity.Journey;
 import com.consoltant.consoltant.domain.journey.service.JourneyModuleService;
 import com.consoltant.consoltant.domain.portfolio.entity.Portfolio;
@@ -47,18 +48,19 @@ public class BestRoadmapService {
 
         Map<Standard, Long> roadmapStandard = new HashMap<>();
 
-        //TODO 소인 경우 대출 제외
         for(User user : userList){
 
+            //기준
+            //연봉
             Integer salary = user.getSalary();
 
+            //초기 자산
+            Long startAsset = 0L;
+            
             List<Journey> journeyList = journeyModuleService.findAllByUserId(user.getId())
                     .stream()
                     .sorted(Comparator.comparing(Journey::getAge))
                     .toList();
-
-            Long startAsset = 0L;
-
             JourneyType startJourneyType = journeyList.get(0).getJourneyType();
             for(Journey journey : journeyList){
                 if(journey.getJourneyType() != startJourneyType){
@@ -66,6 +68,12 @@ public class BestRoadmapService {
                 }
                 startAsset += journeyList.get(0).getBalance();
             }
+
+            //금융 키워드
+            Portfolio portfolio = portfolioModuleService.findByUserId(user.getId()).orElseThrow(()->new BadRequestException("존재하지 앟는 포트폴리오입니다."));
+            FinanceKeyword financeKeyword = portfolio.getFinanceKeyword();
+
+            // 시간복잡도 생각말고 정리해서 편하게 계산하자.
 
             Long smallAssetValue = 0L;
             Integer smallAge = 0;
@@ -76,7 +84,23 @@ public class BestRoadmapService {
             Long bigAssetValue = 0L;
             Integer bigAge = 0;
 
-            Integer startAge = journeyList.get(0).getAge();
+
+            //해당 여정들만 정리
+            for(JourneyType journeyType:JourneyType.values()){
+                List<Journey> list = journeyList.stream()
+                        .filter(s->s.getJourneyType()==journeyType)
+                        .toList();
+
+                switch (financeKeyword){
+                    case BIG_HAPPINESS:
+                    case MIDDLE_HAPPINESS:
+                        log.info("asdf");
+                        break;
+                    case SMALL_HAPPINESS:
+
+
+                }
+            }
 
             //나이 별 자산
             Map<Integer,Long> assetMap = new HashMap<>();
@@ -87,7 +111,6 @@ public class BestRoadmapService {
                 assetMap.putIfAbsent(age, 0L);
                 assetMap.put(age, assetMap.get(age) + journey.getBalance());
             }
-
 
             for(Integer age: assetMap.keySet()){
 
@@ -134,13 +157,6 @@ public class BestRoadmapService {
         }
 
 
-
-//
-//        Portfolio portfolio = portfolioModuleService.findByUserId(id).orElseThrow(()->new BadRequestException("존재하지 앟는 포트폴리오입니다."));
-//
-//        Long startAsset = journeyModuleService.findAllByUserId(id).get(0).getBalance();
-
-
     }
 
     // 베스트 로드맵 찾기
@@ -161,7 +177,7 @@ public class BestRoadmapService {
             startAsset += journeyList.get(0).getBalance();
         }
 
-        List<BestRoadmap> roadmapList = bestRoadmapRepository.findAllByFinanceKeyword(portfolio.getFinanceKeyword()).orElseThrow(()->new BadRequestException("베스트 로드맵이 존재하지 않습니다."));
+        List<BestRoadmap> roadmapList = bestRoadmapRepository.findAllByFinanceKeywordAndJourneyType(portfolio.getFinanceKeyword(),user.getCurrentJourneyType()).orElseThrow(()->new BadRequestException("베스트 로드맵이 존재하지 않습니다."));
 
         Long finalStartAsset = startAsset;
         List<BestRoadmap> bestRoadmapList  = roadmapList.stream()

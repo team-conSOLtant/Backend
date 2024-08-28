@@ -3,6 +3,8 @@ package com.consoltant.consoltant.domain.auth.service;
 import com.consoltant.consoltant.domain.auth.dto.RegisterRequestDto;
 import com.consoltant.consoltant.domain.auth.dto.RegisterResponseDto;
 import com.consoltant.consoltant.domain.auth.mapper.AuthMapper;
+import com.consoltant.consoltant.domain.journey.entity.Journey;
+import com.consoltant.consoltant.domain.journey.service.JourneyModuleService;
 import com.consoltant.consoltant.domain.portfolio.entity.Portfolio;
 import com.consoltant.consoltant.domain.portfolio.entity.PortfolioDocument;
 import com.consoltant.consoltant.domain.portfolio.repository.PortfolioElasticRepository;
@@ -18,8 +20,10 @@ import com.consoltant.consoltant.domain.user.repository.UserModuleRepository;
 import com.consoltant.consoltant.domain.user.repository.UserRepository;
 import com.consoltant.consoltant.global.exception.BadRequestException;
 import com.consoltant.consoltant.util.api.RestTemplateUtil;
+import com.consoltant.consoltant.util.constant.JourneyType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -40,6 +44,7 @@ public class AuthService {
     private final AuthMapper authMapper;
 
     private final PortfolioElasticRepository portfolioElasticRepository;
+    private final JourneyModuleService journeyModuleService;
 
     public RegisterResponseDto registerUser(RegisterRequestDto request) {
         userRepository.findByEmail(request.getEmail())
@@ -63,6 +68,7 @@ public class AuthService {
                 .build();
 
         portfolioElasticRepository.save(portfolioDocument);
+
         return authMapper.toRegisterResponseDto(user);
     }
 

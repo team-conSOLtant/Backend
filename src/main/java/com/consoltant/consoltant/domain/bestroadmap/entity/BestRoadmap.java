@@ -42,4 +42,6 @@ public class BestRoadmap {
     @Column(nullable = false)
     private JourneyType journeyType;
 
+    @Column(nullable = false)
+    private Integer age;
 }

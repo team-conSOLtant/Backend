@@ -53,12 +53,11 @@ public class UserController {
         return new BaseSuccessResponse<>(userService.getUser(id));
     }
 
-    @PostMapping("/{email}/create/account")
+    @PostMapping("/create/account")
     public BaseSuccessResponse<CreateAccountResponseDto> createAccount(
-            @RequestBody CreateAccountRequestDto createAccountRequestDto,
-            @PathVariable("email") String email
+            @RequestBody CreateAccountRequestDto createAccountRequestDto
     ) {
-        Long id = userService.getUserId(email);
+        Long id = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
         log.info("계좌 생성 API -> {} {}", id, createAccountRequestDto.getAccountTypeUniqueNo());
 
         //계좌 생성 및 등록
@@ -72,13 +71,11 @@ public class UserController {
         return new BaseSuccessResponse<>(createAccountResponseDto);
     }
 
-    @PostMapping("/{email}/academy")
+    @PostMapping("/academy")
     public BaseSuccessResponse<UserResponseDto> createUserAcademy(
             @RequestPart("subject") MultipartFile subject,
-            @RequestPart("data") CreateUserAcademyRequestDto createUserAcademyRequestDto,
-            @PathVariable("email") String email
-    ) {
-        Long id = userService.getUserId(email);
+            @RequestPart("data") CreateUserAcademyRequestDto createUserAcademyRequestDto) {
+        Long id = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
         log.info("사용자 학력 추가 API {}", id);
         try {
             return new BaseSuccessResponse<>(userService.createUserAcademy(id, createUserAcademyRequestDto, subject));
@@ -89,11 +86,10 @@ public class UserController {
 
 
 
-    @PostMapping("/{email}/account")
+    @PostMapping("/account")
     public BaseSuccessResponse<UserResponseDto> createUserAccount(
-            @RequestBody CreateUserAccountRequestDto createUserAccountRequestDto,
-            @PathVariable("email") String email) {
-        Long id = userService.getUserId(email);
+            @RequestBody CreateUserAccountRequestDto createUserAccountRequestDto) {
+        Long id = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
         log.info("사용자 계좌 추가 API {}", id);
         return new BaseSuccessResponse<>(userService.createUserAccount(id, createUserAccountRequestDto));
     }
