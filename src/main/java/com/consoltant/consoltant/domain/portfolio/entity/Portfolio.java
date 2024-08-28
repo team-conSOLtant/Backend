@@ -73,11 +73,17 @@ public class Portfolio {
     public void update(PortfolioRequestDto portfolioRequestDto){
         this.totalGpa = portfolioRequestDto.getTotalGpa();
         this.majorGpa = portfolioRequestDto.getMajorGpa();
+        this.email = email;
         this.financeKeyword = portfolioRequestDto.getFinanceKeyword();
         this.myKeyword = portfolioRequestDto.getMyKeyword();
         this.job = portfolioRequestDto.getJob();
         this.imageUrl = portfolioRequestDto.getImageUrl();
         this.description = portfolioRequestDto.getDescription();
         this.backgroundColor = portfolioRequestDto.getBackgroundColor();
+    }
+
+    public void setGpa(Double totalGpa, Double majorGpa){
+        this.totalGpa = totalGpa;
+        this.majorGpa = majorGpa;
     }
 }

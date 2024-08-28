@@ -52,4 +52,20 @@ public class NotificationController {
         notificationService.delete(id);
         return new BaseSuccessResponse<>(null);
     }
+
+    @GetMapping("/portfolio-matching")
+    public BaseSuccessResponse<NotificationResponseDto> findByPortfolioMatching(@RequestParam Long userId){
+        return new BaseSuccessResponse<>(notificationService.findTopByNotificationTypeAndUserIdOrderByIdDesc(userId));
+    }
+
+    @GetMapping("/portfolio-comment")
+    public BaseSuccessResponse<List<NotificationResponseDto>> findByPortfolioComment(@RequestParam Long userId){
+        return new BaseSuccessResponse<>(notificationService.findAllByNotificationTypeAndUserId(userId));
+    }
+
+    @PatchMapping("/readall/portfolio-comment")
+    public BaseSuccessResponse<Void> softDeleteByNotificationTypeAndUserId(@RequestParam Long userId){
+        notificationService.softDeleteByNotificationTypeAndUserId(userId);
+        return new BaseSuccessResponse<>(null);
+    }
 }

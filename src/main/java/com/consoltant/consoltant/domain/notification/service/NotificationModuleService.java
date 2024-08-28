@@ -2,7 +2,9 @@ package com.consoltant.consoltant.domain.notification.service;
 
 import com.consoltant.consoltant.domain.notification.entity.Notification;
 import com.consoltant.consoltant.domain.notification.repository.NotificationRepository;
+import com.consoltant.consoltant.util.constant.NotificationType;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -35,5 +37,20 @@ public class NotificationModuleService {
     // Notification 삭제
     public void delete(Long id) {
         notificationRepository.deleteById(id);
+    }
+
+    //매칭 하나만 조회
+    public Optional<Notification> findTopByNotificationTypeAndUserIdOrderByIdDesc(Long userId) {
+        return notificationRepository.findTopByNotificationTypeAndUserIdOrderByIdDesc(NotificationType.PORTFOLIO_MATCHING, userId);
+    }
+
+    //댓글만 조회
+    public List<Notification> findAllByNotificationTypeAndUserId(Long userId){
+        return notificationRepository.findAllByNotificationTypeAndUserId(NotificationType.PORTFOLIO_COMMENT, userId);
+    }
+
+    //댓글 알림 전부 삭제
+    public void softDeleteByNotificationTypeAndUserId(Long userId){
+        notificationRepository.softDeleteByNotificationTypeAndUserId(NotificationType.PORTFOLIO_COMMENT, userId);
     }
 }

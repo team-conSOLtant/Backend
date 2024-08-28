@@ -31,22 +31,28 @@ import com.consoltant.consoltant.domain.portfolio.entity.Portfolio;
 import com.consoltant.consoltant.domain.portfolio.entity.PortfolioDocument;
 import com.consoltant.consoltant.domain.portfolio.mapper.PortfolioMapper;
 import com.consoltant.consoltant.domain.portfolio.repository.PortfolioElasticRepository;
+import com.consoltant.consoltant.domain.project.dto.ProjectRequestDto;
 import com.consoltant.consoltant.domain.project.entity.Project;
 import com.consoltant.consoltant.domain.project.mapper.ProjectMapper;
 import com.consoltant.consoltant.domain.project.service.ProjectModuleService;
+import com.consoltant.consoltant.domain.projectuser.dto.ProjectUserRequestDto;
+import com.consoltant.consoltant.domain.projectuser.entity.ProjectUser;
 import com.consoltant.consoltant.domain.projectuser.mapper.ProjectUserMapper;
 import com.consoltant.consoltant.domain.projectuser.service.ProjectUserModuleService;
 import com.consoltant.consoltant.domain.projectuser.service.ProjectUserService;
 import com.consoltant.consoltant.domain.user.entity.User;
 import com.consoltant.consoltant.domain.user.repository.UserRepository;
+import com.consoltant.consoltant.domain.user.service.UserService;
 import com.consoltant.consoltant.global.exception.BadRequestException;
 import com.consoltant.consoltant.util.constant.NotificationType;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,6 +72,7 @@ public class PortfolioService {
     private final ProjectModuleService projectModuleService;
     private final ProjectUserService projectUserService;
     private final ProjectUserModuleService projectUserModuleService;
+    private final UserService userService;
 
     private final PortfolioMapper portfolioMapper;
     private final ActivityMapper activityMapper;
@@ -81,12 +88,23 @@ public class PortfolioService {
     private final UserRepository userRepository;
 
     public PortfolioResponseDto findById(Long id) {
-        return portfolioMapper.toPortfolioResponseDto(portfolioModuleService.findById(id));
+        Portfolio portfolio = portfolioModuleService.findById(id);
+        PortfolioResponseDto portfolioResponseDto = portfolioMapper.toPortfolioResponseDto(
+            portfolio);
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Long loginUserId = userService.getUserId(email);
+        portfolioResponseDto.setIsMine(portfolio.getUser().getId().equals(loginUserId));
+        return portfolioResponseDto;
     }
 
     public PortfolioResponseDto findByUserId(Long userId) {
         Portfolio portfolio = portfolioModuleService.findByUserId(userId).orElse(null);
-        return portfolio==null ? null : portfolioMapper.toPortfolioResponseDto(portfolio);
+        PortfolioResponseDto portfolioResponseDto = portfolioMapper.toPortfolioResponseDto(
+            portfolio);
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Long loginUserId = userService.getUserId(email);
+        portfolioResponseDto.setIsMine(userId.equals(loginUserId));
+        return portfolioResponseDto;
     }
 
     public PortfolioResponseDto save(PortfolioRequestDto portfolioRequestDto) {
@@ -152,24 +170,24 @@ public class PortfolioService {
             projectUserModuleService.deleteAllByProjectId(project.getId());
         }
         projectModuleService.deleteAllByPortfolioId(portfolioId);
-//        for (ProjectRequestDto projectRequestDto : portfolioSaveAllRequestDto.getProjects()) {
-//            Project project = projectMapper.toProject(projectRequestDto);
-//            project.setPortfolio(portfolio);
-//            Project savedProject = projectModuleService.save(project);
-//            Long generatedKey = savedProject.getId();
-//
-//            List<ProjectUser> projectUserList = new ArrayList<>();
-//            for(ProjectUserRequestDto projectUserRequestDto : projectRequestDto.getProjectUsers()){
-//                projectUserRequestDto.setProjectId(generatedKey);
-//                ProjectUser projectUser = projectUserMapper.toProjectUser(projectUserRequestDto);
-//                projectUser.setProject(project);
-//                projectUser.setUser(userRepository.findById(projectUserRequestDto.getUserId()).orElseThrow());
-//                projectUserList.add(projectUser);
-//            }
-//            projectUserModuleService.saveAll(projectUserList);
-//            project.setProjectUsers(projectUserList);
-//            projectModuleService.save(project);
-//        }
+        for (ProjectRequestDto projectRequestDto : portfolioSaveAllRequestDto.getProjects()) {
+            Project project = projectMapper.toProject(projectRequestDto);
+            project.setPortfolio(portfolio);
+            Project savedProject = projectModuleService.save(project);
+            Long generatedKey = savedProject.getId();
+
+            List<ProjectUser> projectUserList = new ArrayList<>();
+            for(ProjectUserRequestDto projectUserRequestDto : projectRequestDto.getProjectUsers()){
+                projectUserRequestDto.setProjectId(generatedKey);
+                ProjectUser projectUser = projectUserMapper.toProjectUser(projectUserRequestDto);
+                projectUser.setProject(project);
+                projectUser.setUser(userRepository.findById(projectUserRequestDto.getUserId()).orElseThrow());
+                projectUserList.add(projectUser);
+            }
+            projectUserModuleService.saveAll(projectUserList);
+            project.setProjectUsers(projectUserList);
+            projectModuleService.save(project);
+        }
 
         // 선택한 수강 과목 내역 저장
         User user = userRepository.findById(userId).orElseThrow();

@@ -22,12 +22,12 @@ public class CareerModuleService {
         return careerRepository.findAllByPortfolioId(portfolioId);
     }
 
-    //Portfolio 저장
+    //career 저장
     public Career save(Career career) {
         return careerRepository.save(career);
     }
 
-    //portfolio 삭제
+    //career 삭제
     public void delete(Long id) {
         careerRepository.deleteById(id);
     }

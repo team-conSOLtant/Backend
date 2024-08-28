@@ -56,4 +56,20 @@ public class NotificationService {
     public void delete(Long id){
         notificationModuleService.delete(id);
     }
+
+    //선후배 매칭 하나
+    public NotificationResponseDto findTopByNotificationTypeAndUserIdOrderByIdDesc(Long userId) {
+        return notificationMapper.toNotificationResponseDto(notificationModuleService.findTopByNotificationTypeAndUserIdOrderByIdDesc(userId).orElseThrow());
+    }
+
+    public List<NotificationResponseDto> findAllByNotificationTypeAndUserId(Long userId){
+        return notificationModuleService.findAllByNotificationTypeAndUserId(userId).stream()
+            .map(notificationMapper::toNotificationResponseDto)
+            .toList();
+    }
+
+    public void softDeleteByNotificationTypeAndUserId(Long userId){
+        notificationModuleService.softDeleteByNotificationTypeAndUserId(userId);
+    }
+
 }

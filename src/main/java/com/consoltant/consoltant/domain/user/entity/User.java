@@ -120,7 +120,7 @@ public class User {
     }
 
     public void addAcademyInfo(University university,CreateUserAcademyRequestDto createUserAcademyRequestDto, Double totalGpa, Double majorGpa, Integer credit){
-        this.maxCredit = 140;
+        this.maxCredit = 130;
         this.maxGpa = 4.5;
         this.university = university;
         this.major = createUserAcademyRequestDto.getMajor();
