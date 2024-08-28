@@ -31,4 +31,8 @@ public class CertificationModuleService {
     public void delete(Long id) {
         certificationRepository.deleteById(id);
     }
+
+    public void deleteAllByPortfolioId(Long portfolioId){
+        certificationRepository.deleteAllByPortfolioId(portfolioId);
+    }
 }

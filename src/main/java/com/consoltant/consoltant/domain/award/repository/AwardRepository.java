@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AwardRepository extends JpaRepository<Award, Long> {
     List<Award> findAllByPortfolioId(Long id);
+    void deleteAllByPortfolioId(Long portfolioId);
 }

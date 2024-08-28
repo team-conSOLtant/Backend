@@ -31,7 +31,6 @@ import com.consoltant.consoltant.domain.portfolio.entity.Portfolio;
 import com.consoltant.consoltant.domain.portfolio.entity.PortfolioDocument;
 import com.consoltant.consoltant.domain.portfolio.mapper.PortfolioMapper;
 import com.consoltant.consoltant.domain.portfolio.repository.PortfolioElasticRepository;
-import com.consoltant.consoltant.domain.portfolio.repository.PortfolioRepository;
 import com.consoltant.consoltant.domain.project.dto.ProjectRequestDto;
 import com.consoltant.consoltant.domain.project.entity.Project;
 import com.consoltant.consoltant.domain.project.mapper.ProjectMapper;
@@ -43,6 +42,7 @@ import com.consoltant.consoltant.domain.projectuser.service.ProjectUserModuleSer
 import com.consoltant.consoltant.domain.projectuser.service.ProjectUserService;
 import com.consoltant.consoltant.domain.user.entity.User;
 import com.consoltant.consoltant.domain.user.repository.UserRepository;
+import com.consoltant.consoltant.domain.user.service.UserService;
 import com.consoltant.consoltant.global.exception.BadRequestException;
 import com.consoltant.consoltant.util.constant.NotificationType;
 import java.util.ArrayList;
@@ -52,6 +52,7 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -71,6 +72,7 @@ public class PortfolioService {
     private final ProjectModuleService projectModuleService;
     private final ProjectUserService projectUserService;
     private final ProjectUserModuleService projectUserModuleService;
+    private final UserService userService;
 
     private final PortfolioMapper portfolioMapper;
     private final ActivityMapper activityMapper;
@@ -86,12 +88,23 @@ public class PortfolioService {
     private final UserRepository userRepository;
 
     public PortfolioResponseDto findById(Long id) {
-        return portfolioMapper.toPortfolioResponseDto(portfolioModuleService.findById(id));
+        Portfolio portfolio = portfolioModuleService.findById(id);
+        PortfolioResponseDto portfolioResponseDto = portfolioMapper.toPortfolioResponseDto(
+            portfolio);
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Long loginUserId = userService.getUserId(email);
+        portfolioResponseDto.setIsMine(portfolio.getUser().getId().equals(loginUserId));
+        return portfolioResponseDto;
     }
 
     public PortfolioResponseDto findByUserId(Long userId) {
         Portfolio portfolio = portfolioModuleService.findByUserId(userId).orElse(null);
-        return portfolio==null ? null : portfolioMapper.toPortfolioResponseDto(portfolio);
+        PortfolioResponseDto portfolioResponseDto = portfolioMapper.toPortfolioResponseDto(
+            portfolio);
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Long loginUserId = userService.getUserId(email);
+        portfolioResponseDto.setIsMine(userId.equals(loginUserId));
+        return portfolioResponseDto;
     }
 
     public PortfolioResponseDto save(PortfolioRequestDto portfolioRequestDto) {
@@ -112,99 +125,60 @@ public class PortfolioService {
     //포트폴리오 전체 저장
     @Transactional
     public void saveAll(PortfolioSaveAllRequestDto portfolioSaveAllRequestDto){
-        Long portfolioId = null;
+
+        Long portfolioId = portfolioSaveAllRequestDto.getPortfolioId();
         Long userId = portfolioSaveAllRequestDto.getUserId();
-        if(portfolioSaveAllRequestDto.getPortfolioId() == null){
-            //새로 만드는 경우 최초 저장일 때
-            if(portfolioModuleService.findByUserId(userId).isEmpty()) {
-                Portfolio portfolio = new Portfolio();
-                portfolio.setUser(userRepository.findById(userId).orElseThrow());
-                portfolioId = portfolioModuleService.save(portfolio).getId();
-            }else {
-                //새로 만들지만 최초 저장 아닐 때
-                portfolioId = portfolioModuleService.findByUserId(userId).orElseThrow().getId();
-            }
-        }
-        else{
-            portfolioId = portfolioSaveAllRequestDto.getPortfolioId();
-        }
+
         Portfolio portfolio = portfolioModuleService.findById(portfolioId);
         update(portfolioId, portfolioSaveAllRequestDto.getPortfolioRequestDto());
 
-        //활동 내역 저장
+        // 활동 내역 저장
+        activityModuleService.deleteAllByPortfolioId(portfolioId);
         for (ActivityRequestDto activityRequestDto : portfolioSaveAllRequestDto.getActivities()) {
-            if(activityRequestDto.getActivityId() == null){
-                Activity activity = activityMapper.toActivity(activityRequestDto);
-                activity.setPortfolio(portfolio);
-                activityModuleService.save(activity);
-                continue;
-            }
-            Activity activity = activityModuleService.findById(activityRequestDto.getActivityId());
-            activity.update(activityRequestDto);
+            Activity activity = activityMapper.toActivity(activityRequestDto);
+            activity.setPortfolio(portfolio);
             activityModuleService.save(activity);
         }
 
-        //수상 내역 저장
+        // 수상 내역 저장
+        awardModuleService.deleteAllByPortfolioId(portfolioId);
         for (AwardRequestDto awardRequestDto : portfolioSaveAllRequestDto.getAwards()) {
-            System.out.println(awardRequestDto.toString());
-            if(awardRequestDto.getAwardId() == null){
-                Award award = awardMapper.toAward(awardRequestDto);
-                award.setPortfolio(portfolio);
-                awardModuleService.save(award);
-                continue;
-            }
-            Award award = awardModuleService.findById(awardRequestDto.getAwardId());
-            award.update(awardRequestDto);
+            Award award = awardMapper.toAward(awardRequestDto);
+            award.setPortfolio(portfolio);
             awardModuleService.save(award);
         }
 
-        //자격증 내역 저장
+        // 자격증 내역 저장
+        certificationModuleService.deleteAllByPortfolioId(portfolioId);
         for (CertificationRequestDto certificationRequestDto : portfolioSaveAllRequestDto.getCertifications()) {
-            System.out.println(certificationRequestDto.toString());
-            if(certificationRequestDto.getCertificationId() == null){
-                Certification certification = certificationMapper.toCertification(certificationRequestDto);
-                certification.setPortfolio(portfolio);
-                certificationModuleService.save(certification);
-                continue;
-            }
-            Certification certification = certificationModuleService.findById(certificationRequestDto.getCertificationId());
-            certification.update(certificationRequestDto);
+            Certification certification = certificationMapper.toCertification(certificationRequestDto);
+            certification.setPortfolio(portfolio);
             certificationModuleService.save(certification);
         }
-        //경력 내역 저장
+
+        // 경력 내역 저장
+        careerModuleService.deleteAllByPortfolioId(portfolioId);
         for (CareerRequestDto careerRequestDto : portfolioSaveAllRequestDto.getCareers()) {
-            System.out.println(careerRequestDto.toString());
-            if(careerRequestDto.getCareerId() == null){
-                Career career = careerMapper.toCareer(careerRequestDto);
-                career.setPortfolio(portfolio);
-                careerModuleService.save(career);
-                continue;
-            }
-            Career career = careerModuleService.findById(careerRequestDto.getCareerId());
-            career.update(careerRequestDto);
+            Career career = careerMapper.toCareer(careerRequestDto);
+            career.setPortfolio(portfolio);
             careerModuleService.save(career);
         }
+
         // 프로젝트 내역 저장
-        for (ProjectRequestDto projectRequestDto : portfolioSaveAllRequestDto.getProjects()) {
-            System.out.println(projectRequestDto.toString());
-            if(projectRequestDto.getProjectId() == null){
-                Project project = projectMapper.toProject(projectRequestDto);
-                project.setPortfolio(portfolio);
-                Project savedProject = projectModuleService.save(project);
-                Long generatedKey = savedProject.getId();
-                for(ProjectUserRequestDto projectUserRequestDto : projectRequestDto.getProjectUsers()){
-                    projectUserRequestDto.setProjectId(generatedKey);
-                    projectUserService.save(projectUserRequestDto);
-                }
-                project.setProjectUsers(projectUserModuleService.findAllByProjectId(project.getId()));
-                projectModuleService.save(project);
-                continue;
-            }
-            Project project = projectModuleService.findById(projectRequestDto.getProjectId());
-            project.update(projectRequestDto);
-            List<ProjectUser> projectUserList = new ArrayList<>();
+        List<Project> projects = projectModuleService.findAllByPortfolioId(portfolioId);
+        for(Project project : projects){
             projectUserModuleService.deleteAllByProjectId(project.getId());
-            for(ProjectUserRequestDto projectUserRequestDto : projectRequestDto.getProjectUsers()) {
+        }
+        projectModuleService.deleteAllByPortfolioId(portfolioId);
+        for (ProjectRequestDto projectRequestDto : portfolioSaveAllRequestDto.getProjects()) {
+            Project project = projectMapper.toProject(projectRequestDto);
+            project.setPortfolio(portfolio);
+            Project savedProject = projectModuleService.save(project);
+            Long generatedKey = savedProject.getId();
+
+            List<ProjectUser> projectUserList = new ArrayList<>();
+            for(ProjectUserRequestDto projectUserRequestDto : projectRequestDto.getProjectUsers()){
+                projectUserRequestDto.setProjectId(generatedKey);
                 ProjectUser projectUser = projectUserMapper.toProjectUser(projectUserRequestDto);
                 projectUser.setProject(project);
                 projectUser.setUser(userRepository.findById(projectUserRequestDto.getUserId()).orElseThrow());

@@ -3,6 +3,7 @@ package com.consoltant.consoltant.domain.follow.controller;
 import com.consoltant.consoltant.domain.follow.dto.FollowRequestDto;
 import com.consoltant.consoltant.domain.follow.dto.FollowResponseDto;
 import com.consoltant.consoltant.domain.follow.service.FollowService;
+import com.consoltant.consoltant.domain.portfolio.dto.PortfolioSearchResponseDto;
 import com.consoltant.consoltant.util.base.BaseSuccessResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -26,13 +27,13 @@ public class FollowController {
 
     // 유저 ID로 팔로잉 조회
     @GetMapping("/following")
-    public BaseSuccessResponse<List<FollowResponseDto>> findFollowings(@RequestParam Long userId){
+    public BaseSuccessResponse<List<PortfolioSearchResponseDto>> findFollowings(@RequestParam Long userId){
         return new BaseSuccessResponse<>(followService.findAllByUserId(userId));
     }
 
     // 포폴 ID로 팔로워 조회
     @GetMapping("/follower")
-    public BaseSuccessResponse<List<FollowResponseDto>> findFollowers(@RequestParam Long portfolioId){
+    public BaseSuccessResponse<List<PortfolioSearchResponseDto>> findFollowers(@RequestParam Long portfolioId){
         return new BaseSuccessResponse<>(followService.findAllByPortfolioId(portfolioId));
     }
 

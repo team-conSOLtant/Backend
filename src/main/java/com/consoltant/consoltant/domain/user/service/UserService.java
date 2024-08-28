@@ -2,6 +2,7 @@ package com.consoltant.consoltant.domain.user.service;
 
 import com.consoltant.consoltant.domain.course.entity.Course;
 import com.consoltant.consoltant.domain.course.service.CourseModuleService;
+import com.consoltant.consoltant.domain.portfolio.service.PortfolioModuleService;
 import com.consoltant.consoltant.domain.subject.entity.Subject;
 import com.consoltant.consoltant.domain.subject.service.SubjectModuleService;
 import com.consoltant.consoltant.domain.university.entity.University;
@@ -37,6 +38,7 @@ public class UserService{
     private final RestTemplateUtil restTemplateUtil;
     private final CourseModuleService courseModuleService;
     private final SubjectModuleService subjectModuleService;
+    private final PortfolioModuleService portfolioModuleService;
     private final CsvParserUtil csvParserUtil;
 
     public Long getUserId(String email){
@@ -122,7 +124,7 @@ public class UserService{
         double calculatedMajorGpa = majorTotalGpa != 0 ? Math.round((majorGpa / majorTotalGpa) * 100.0) / 100.0 : 0.0;
         totalCredit+=passNonPassCredit; //패논패 학점은 나중에 더해주기
         user.addAcademyInfo(university, createUserAcademyRequestDto, calculatedTotalGpa, calculatedMajorGpa, totalCredit);
-
+        portfolioModuleService.findByUserId(user.getId()).orElseThrow().setGpa(totalGpa,majorGpa); //포폴에도 학점 동기화
         return userMapper.toUserResponseDto(user);
     }
 
