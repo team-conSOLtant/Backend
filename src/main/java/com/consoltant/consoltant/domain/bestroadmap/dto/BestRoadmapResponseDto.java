@@ -13,7 +13,7 @@ public class BestRoadmapResponseDto {
 
     private User user;
 
-    private Long salary;
+    private Integer salary;
 
     private Long startAsset;
 

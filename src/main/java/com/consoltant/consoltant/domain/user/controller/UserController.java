@@ -67,6 +67,10 @@ public class UserController {
         productSaveRequestDto.setProductType(ProductType.DEMAND_DEPOSIT);
 
         productService.save(id,productSaveRequestDto);
+        
+        // TODO User 여정 추가
+        
+        // TODO Journey 현재 여정 추가 (입출금, 예금, 적금, 대출)
 
         return new BaseSuccessResponse<>(createAccountResponseDto);
     }
