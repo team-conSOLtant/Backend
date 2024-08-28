@@ -18,7 +18,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 @Entity
@@ -26,7 +25,7 @@ import org.hibernate.annotations.SQLRestriction;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@SQLDelete(sql = "UPDATE activity SET is_deleted = true WHERE id = ?")
+//@SQLDelete(sql = "UPDATE activity SET is_deleted = true WHERE id = ?")
 @SQLRestriction("is_deleted = false")
 @Table(name = "activity")
 public class Activity {

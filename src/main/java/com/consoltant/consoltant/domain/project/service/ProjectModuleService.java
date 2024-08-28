@@ -35,4 +35,8 @@ public class ProjectModuleService {
     public void delete(Long id) {
         projectRepository.deleteById(id);
     }
+
+    public void deleteAllByPortfolioId(Long portfolioId){
+        projectRepository.deleteAllByPortfolioId(portfolioId);
+    }
 }

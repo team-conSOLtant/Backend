@@ -2,6 +2,8 @@ package com.consoltant.consoltant.domain.user.dto;
 
 import com.consoltant.consoltant.domain.university.dto.UniversityResponseDto;
 import com.consoltant.consoltant.util.constant.JourneyType;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import java.time.LocalDate;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,10 +27,13 @@ public class UserResponseDto {
 
     private String major;
 
+    @JsonSerialize(using = ToStringSerializer.class)
     private Double totalGpa;
 
+    @JsonSerialize(using = ToStringSerializer.class)
     private Double majorGpa;
 
+    @JsonSerialize(using = ToStringSerializer.class)
     private Double maxGpa;  //기준학점 4.3인지 4.5인지
 
     private Integer credit; // 내 총 이수학점

@@ -1,6 +1,10 @@
 package com.consoltant.consoltant.domain.portfolio.controller;
 
-import com.consoltant.consoltant.domain.portfolio.dto.*;
+import com.consoltant.consoltant.domain.portfolio.dto.PortfolioRequestDto;
+import com.consoltant.consoltant.domain.portfolio.dto.PortfolioResponseDto;
+import com.consoltant.consoltant.domain.portfolio.dto.PortfolioSaveAllRequestDto;
+import com.consoltant.consoltant.domain.portfolio.dto.PortfolioSearchRequestDto;
+import com.consoltant.consoltant.domain.portfolio.dto.PortfolioSearchResponseDto;
 import com.consoltant.consoltant.domain.portfolio.service.PortfolioElasticService;
 import com.consoltant.consoltant.domain.portfolio.service.PortfolioService;
 import com.consoltant.consoltant.util.base.BaseSuccessResponse;
@@ -42,6 +46,8 @@ public class PortfolioController {
         return new BaseSuccessResponse<>(portfolioService.save(portfolioRequestDto));
     }
 
+    @PostMapping("/upload-image/{id}")
+
     @PutMapping("/{id}")
     public BaseSuccessResponse<PortfolioResponseDto> update(@PathVariable Long id, @RequestBody PortfolioRequestDto portfolioRequestDto){
         return new BaseSuccessResponse<>(portfolioService.update(id, portfolioRequestDto));
@@ -65,7 +71,7 @@ public class PortfolioController {
     }
 
     @PostMapping("/search")
-    public BaseSuccessResponse<Slice<PortfolioSearchResponseDto>> search(@RequestBody PortfolioSearchRequestDto portfolioSearchRequestDto, @RequestParam("cursor") Long cursor, Pageable pageable){
+    public BaseSuccessResponse<Slice<PortfolioSearchResponseDto>> search(@RequestBody PortfolioSearchRequestDto portfolioSearchRequestDto, @RequestParam(value = "cursor",required = false) Long cursor, Pageable pageable){
         return new BaseSuccessResponse<>(portfolioElasticService.searchPortfolios(portfolioSearchRequestDto, cursor, pageable));
     }
 }
