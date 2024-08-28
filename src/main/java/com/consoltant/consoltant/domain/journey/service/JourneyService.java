@@ -48,6 +48,8 @@ public class JourneyService {
     public List<JourneyResponseDto> findAllByUserId(Long userId){
         return journeyModuleService.findAllByUserId(userId).stream()
             .sorted(Comparator.comparing(Journey::getStartDate))
+                .sorted(Comparator.comparing(Journey::getJourneyType))
+                .sorted(Comparator.comparing(Journey::getAge))
             .map(journeyMapper::toJourneyResponseDto)
             .toList();
     }
@@ -279,6 +281,8 @@ public class JourneyService {
 
         List<Journey> journeyList = journeyRepository.findAllByUserId(userId);
         Map<Integer, Long> assetList = new HashMap<>();
+        Map<Integer, String> journeyValueMap = new HashMap<>();
+        Map<Integer, JourneyType> journeyTypeMap = new HashMap<>();
 
         JourneyGraphResponseDto journeyGraphResponseDto = new JourneyGraphResponseDto();
         journeyGraphResponseDto.setAge(user.getAge());
@@ -287,6 +291,8 @@ public class JourneyService {
             Integer age = journey.getAge();
             assetList.putIfAbsent(age, 0L);
             assetList.put(age,assetList.get(age) + journey.getBalance());
+            journeyTypeMap.put(age, journey.getJourneyType());
+            journeyValueMap.put(age, journey.getJourneyType().getValue());
         }
 
         List<Integer> keySet = new ArrayList<>(assetList.keySet());
@@ -295,7 +301,7 @@ public class JourneyService {
         Collections.sort(keySet);
 
         for(Integer age : keySet){
-            journeyGraphResponseDto.getData().add(new GraphData(age,assetList.get(age)));
+            journeyGraphResponseDto.getData().add(new GraphData(age,assetList.get(age), journeyTypeMap.get(age), journeyValueMap.get(age)));
         }
 
         return journeyGraphResponseDto;

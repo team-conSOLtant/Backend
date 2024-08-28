@@ -3,6 +3,7 @@ package com.consoltant.consoltant.domain.bestroadmap.entity;
 import com.consoltant.consoltant.domain.portfolio.entity.Portfolio;
 import com.consoltant.consoltant.domain.user.entity.User;
 import com.consoltant.consoltant.util.constant.FinanceKeyword;
+import com.consoltant.consoltant.util.constant.JourneyType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,5 +38,8 @@ public class BestRoadmap {
 
     @Column(nullable = false)
     private FinanceKeyword financeKeyword;
+
+    @Column(nullable = false)
+    private JourneyType journeyType;
 
 }

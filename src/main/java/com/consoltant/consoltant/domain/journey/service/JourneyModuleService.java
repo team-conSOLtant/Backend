@@ -12,6 +12,10 @@ import org.springframework.stereotype.Service;
 public class JourneyModuleService {
     private final JourneyRepository journeyRepository;
 
+    public List<Journey> findAll(){
+        return journeyRepository.findAll();
+    }
+
     // Journey ID로 단일 조회
     public Journey findById(Long id) {
         return journeyRepository.findById(id)
