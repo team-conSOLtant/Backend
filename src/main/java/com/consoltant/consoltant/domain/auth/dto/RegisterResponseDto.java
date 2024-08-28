@@ -2,6 +2,7 @@ package com.consoltant.consoltant.domain.auth.dto;
 
 import com.consoltant.consoltant.domain.university.entity.University;
 import com.consoltant.consoltant.domain.user.entity.User;
+import com.consoltant.consoltant.util.constant.JourneyType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,5 +17,5 @@ public class RegisterResponseDto {
     private String name;
     private String phoneNumber;
     private String birthDate;
-    
+    private JourneyType journeyType;
 }

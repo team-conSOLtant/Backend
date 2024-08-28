@@ -5,6 +5,7 @@ import com.consoltant.consoltant.domain.portfolio.entity.PortfolioDocument;
 import com.consoltant.consoltant.domain.university.entity.University;
 
 import com.consoltant.consoltant.domain.user.entity.User;
+import com.consoltant.consoltant.util.constant.JourneyType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,6 +29,8 @@ public class RegisterRequestDto {
     private String phoneNumber;
     @NotNull
     private String birthDate;
+    @NotNull
+    private JourneyType journeyType;
 
     public User createUser(String password, String userKey, University university) {
         return User.builder()
@@ -39,6 +42,7 @@ public class RegisterRequestDto {
                 .university(university)
                 .phoneNumber(phoneNumber)
                 .birthDate(birthDate)
+                .currentJourneyType(journeyType)
                 .userKey(userKey)
                 .build();
     }

@@ -27,28 +27,19 @@ public class AuthController {
         return new BaseSuccessResponse<>(authService.registerUser(registerRequestDto));
     }
 
-    //로그아웃 API
-//    @PostMapping("/logout")
-//    public ResponseEntity<?> logout() {
-//        SecurityContextHolder.clearContext();
-//
-//        return ResponseEntity.ok("logged out");
-//    }
-
-    @PostMapping("/{email}/issue/account")
-    public BaseSuccessResponse<IssueAccountResponseDto> issueAccount(@PathVariable("email") String email, @RequestBody IssueAccountRequestDto issueAccountRequestDto){
+    @PostMapping("/issue/account")
+    public BaseSuccessResponse<IssueAccountResponseDto> issueAccount(@RequestBody IssueAccountRequestDto issueAccountRequestDto){
         log.info("1원 송금 API ");
 
-        Long id = userService.getUserId(email);
-
+        Long id = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
         return new BaseSuccessResponse<>(authService.issueAccount(id,issueAccountRequestDto.getAccountNo()));
     }
 
-    @PostMapping("/{email}/check/account")
-    public BaseSuccessResponse<CheckAccountResponseDto> checkAccount( @PathVariable("email") String email,@RequestBody CheckAccountRequestDto checkAccountRequestDto){
+    @PostMapping("/check/account")
+    public BaseSuccessResponse<CheckAccountResponseDto> checkAccount( @RequestBody CheckAccountRequestDto checkAccountRequestDto){
         log.info("1원 송금 확인 API");
 
-        Long id = userService.getUserId(email);
+        Long id = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
 
         String accountNo = checkAccountRequestDto.getAccountNo();
         String authText = checkAccountRequestDto.getAuthText();
@@ -56,11 +47,11 @@ public class AuthController {
         return new BaseSuccessResponse<>(authService.checkAccount(id, accountNo, authText, authCode));
     }
 
-    @PostMapping("/{email}/check/message")
-    public BaseSuccessResponse<CheckTransactionMessageResponseDto> checkTransactionMessage(@PathVariable("email") String email,@RequestBody CheckTransactionMessageRequestDto checkTransactionMessageRequestDto){
+    @PostMapping("/check/message")
+    public BaseSuccessResponse<CheckTransactionMessageResponseDto> checkTransactionMessage(@RequestBody CheckTransactionMessageRequestDto checkTransactionMessageRequestDto){
         log.info("1원 송금 메세지 확인 API");
 
-        Long id = userService.getUserId(email);
+        Long id = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
 
         String accountNo = checkTransactionMessageRequestDto.getAccountNo();
         Long transactionUniqueNo = checkTransactionMessageRequestDto.getTransactionUniqueNo();
