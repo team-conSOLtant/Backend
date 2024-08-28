@@ -2,19 +2,21 @@ package com.consoltant.consoltant.domain.bestroadmap.service;
 
 import com.consoltant.consoltant.domain.bestroadmap.entity.BestRoadmap;
 import com.consoltant.consoltant.domain.bestroadmap.repository.BestRoadmapRepository;
-import com.consoltant.consoltant.domain.journey.dto.JourneyResponseDto;
 import com.consoltant.consoltant.domain.journey.entity.Journey;
 import com.consoltant.consoltant.domain.journey.service.JourneyModuleService;
 import com.consoltant.consoltant.domain.portfolio.entity.Portfolio;
 import com.consoltant.consoltant.domain.portfolio.service.PortfolioModuleService;
-import com.consoltant.consoltant.domain.roadmap.entity.Roadmap;
+import com.consoltant.consoltant.domain.roadmap.dto.RoadmapGraphData;
+import com.consoltant.consoltant.domain.roadmap.service.RoadmapService;
 import com.consoltant.consoltant.domain.user.entity.User;
 import com.consoltant.consoltant.domain.user.repository.UserRepository;
 import com.consoltant.consoltant.global.exception.BadRequestException;
 import com.consoltant.consoltant.util.constant.FinanceKeyword;
 import com.consoltant.consoltant.util.constant.JourneyType;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
@@ -29,24 +31,40 @@ public class BestRoadmapService {
     private final UserRepository userRepository;
     private final PortfolioModuleService portfolioModuleService;
     private final JourneyModuleService journeyModuleService;
+    private final RoadmapService roadmapService;
 
     //베스트 로드맵 생성
     public void generateBestRoadmap(){
 
+        @Getter
+        @Setter
         @AllArgsConstructor
-        class Standard{
+        class Standard {
             FinanceKeyword financeKeyword;
             Integer salary;
             Long startAsset;
         }
 
+        @Getter
+        @Setter
+        @AllArgsConstructor
+        class Info implements Comparator<Info>{
+            Long id;
+            Long asset;
+            Integer age;
+            JourneyType journeyType;
+
+            @Override
+            public int compare(Info o1, Info o2) {
+                return o1.asset.compareTo(o2.asset);
+            }
+        }
+
         List<User> userList = userRepository.findAll();
 
-        PriorityQueue<Pair<Long, Pair<Standard,Integer>>> smallPQ = new PriorityQueue<>(Collections.reverseOrder());
-        PriorityQueue<Pair<Long, Pair<Standard,Integer>>> middlePQ = new PriorityQueue<>(Collections.reverseOrder());
-        PriorityQueue<Pair<Long, Pair<Standard,Integer>>> bigPQ = new PriorityQueue<>(Collections.reverseOrder());
-
         Map<Standard, Long> roadmapStandard = new HashMap<>();
+
+        Map<Standard,PriorityQueue<Info>> bestRoadmapStandard = new HashMap<>();
 
         for(User user : userList){
 
@@ -54,109 +72,116 @@ public class BestRoadmapService {
             //연봉
             Integer salary = user.getSalary();
 
-            //초기 자산
+            //초기 자산 취준 ~ 30대 기준
             Long startAsset = 0L;
-            
+
             List<Journey> journeyList = journeyModuleService.findAllByUserId(user.getId())
                     .stream()
                     .sorted(Comparator.comparing(Journey::getAge))
                     .toList();
-            JourneyType startJourneyType = journeyList.get(0).getJourneyType();
+
             for(Journey journey : journeyList){
-                if(journey.getJourneyType() != startJourneyType){
-                    break;
+                if(journey.getJourneyType() == JourneyType.THIRTIES){
+                    startAsset += journeyList.get(0).getBalance();
                 }
-                startAsset += journeyList.get(0).getBalance();
             }
 
             //금융 키워드
             Portfolio portfolio = portfolioModuleService.findByUserId(user.getId()).orElseThrow(()->new BadRequestException("존재하지 앟는 포트폴리오입니다."));
             FinanceKeyword financeKeyword = portfolio.getFinanceKeyword();
 
-            // 시간복잡도 생각말고 정리해서 편하게 계산하자.
+            //기준
+            Standard standard = new Standard(financeKeyword,salary,startAsset);
+            
+            List<RoadmapGraphData> graph = roadmapService.makeRoadmap(user.getId()).getData();
 
-            Long smallAssetValue = 0L;
-            Integer smallAge = 0;
+            PriorityQueue<Pair<Standard,Integer>> pq = new PriorityQueue<>(Collections.reverseOrder());
+            
+            //자산 증가량
+            Long asset = 0L;
+            Integer age = 0;
 
-            Long middleAssetValue = 0L;
-            Integer middleAge = 0;
+            if(financeKeyword == FinanceKeyword.SMALL_HAPPINESS){
 
-            Long bigAssetValue = 0L;
-            Integer bigAge = 0;
+                for(int i = 1; i<graph.size();i++) {
+                    //소확행인 경우 대출 제외
+                    //차이
+                    Long temp = (graph.get(i).getTotalAssetValue() - graph.get(i).getLoanAssetValue())
+                            - (graph.get(i-1).getTotalAssetValue() - graph.get(i-1).getLoanAssetValue());
 
-
-            //해당 여정들만 정리
-            for(JourneyType journeyType:JourneyType.values()){
-                List<Journey> list = journeyList.stream()
-                        .filter(s->s.getJourneyType()==journeyType)
-                        .toList();
-
-                switch (financeKeyword){
-                    case BIG_HAPPINESS:
-                    case MIDDLE_HAPPINESS:
-                        log.info("asdf");
-                        break;
-                    case SMALL_HAPPINESS:
-
-
+                    if(temp>asset) {
+                        asset = temp;
+                        age = graph.get(i-1).getAge();
+                    }
+                    
+                    //새로 바뀌는 경우
+                    if(i==graph.size()-1 || graph.get(i+1).getJourneyType() != graph.get(i+1).getJourneyType()){
+                        bestRoadmapStandard.putIfAbsent(standard, new PriorityQueue<>());
+                        //기준 (키워드, 월급, 초기 자산)에 해당하는 자산 증가량과 당시의 나이를 PQ에 저장
+                        bestRoadmapStandard.get(standard).add(new Info(user.getId(),asset,age,graph.get(i).getJourneyType()));
+                    }
                 }
+
             }
+            else if(financeKeyword==FinanceKeyword.MIDDLE_HAPPINESS){
+                for(int i = 5; i<graph.size();i++) {
+                    //차이
+                    Long temp = graph.get(i).getTotalAssetValue() - graph.get(i-5).getTotalAssetValue();
 
-            //나이 별 자산
-            Map<Integer,Long> assetMap = new HashMap<>();
+                    if(temp>asset) {
+                        asset = temp;
+                        age = graph.get(i-5).getAge();
+                    }
 
-            //소중대 자산 비교
-            for (Journey journey : journeyList) {
-                Integer age = journey.getAge();
-                assetMap.putIfAbsent(age, 0L);
-                assetMap.put(age, assetMap.get(age) + journey.getBalance());
+                    //새로 바뀌는 경우
+                    if(i==graph.size()-1 || graph.get(i+1).getJourneyType() != graph.get(i+1).getJourneyType()){
+                        bestRoadmapStandard.putIfAbsent(standard, new PriorityQueue<>());
+                        //기준 (키워드, 월급, 초기 자산)에 해당하는 자산 증가량과 당시의 나이를 PQ에 저장
+                        bestRoadmapStandard.get(standard).add(new Info(user.getId(),asset,age,graph.get(i).getJourneyType()));
+                    }
+                }
+
             }
+            else {
+                for(int i = 10; i<graph.size();i++) {
+                    //차이
+                    Long temp = graph.get(i).getTotalAssetValue() - graph.get(i-10).getTotalAssetValue();
 
-            for(Integer age: assetMap.keySet()){
-
-                //소중대 비교
-                if(assetMap.get(age) > smallAssetValue){
-                    smallAssetValue = assetMap.get(age);
-                    smallAge = age;
-                }
-
-                if(assetMap.get(age-4) != null){
-                    Long middleAsset = 0L;
-                    for(int i = age-4;i<=age;i++){
-                        middleAsset+=assetMap.get(i);
+                    if(temp>asset) {
+                        asset = temp;
+                        age = graph.get(i-10).getAge();
                     }
 
-                    if(middleAsset > middleAssetValue){
-                        middleAssetValue = middleAsset;
-                        middleAge = age;
-                    }
-                }
-
-
-                if(assetMap.get(age-9) != null){
-                    Long bigAsset = 0L;
-                    for(int i = age-9;i<=age;i++){
-                        bigAsset+=assetMap.get(i);
-                    }
-
-                    if(bigAsset > bigAssetValue){
-                        bigAssetValue = bigAsset;
-                        bigAge = age;
+                    //새로 바뀌는 경우
+                    if(i==graph.size()-1 || graph.get(i+1).getJourneyType() != graph.get(i+1).getJourneyType()){
+                        bestRoadmapStandard.putIfAbsent(standard, new PriorityQueue<>());
+                        //기준 (키워드, 월급, 초기 자산)에 해당하는 자산 증가량과 당시의 나이를 PQ에 저장
+                        bestRoadmapStandard.get(standard).add(new Info(user.getId(),asset,age,graph.get(i).getJourneyType()));
                     }
                 }
             }
-
-            Standard small = new Standard(FinanceKeyword.SMALL_HAPPINESS,salary,startAsset);
-            Standard middle = new Standard(FinanceKeyword.MIDDLE_HAPPINESS,salary,startAsset);
-            Standard big = new Standard(FinanceKeyword.BIG_HAPPINESS,salary,startAsset);
-
-            smallPQ.add(Pair.of(smallAssetValue,Pair.of(small,smallAge)));
-            middlePQ.add(Pair.of(middleAssetValue,Pair.of(middle,middleAge)));
-            bigPQ.add(Pair.of(bigAssetValue,Pair.of(big,bigAge)));
 
         }
 
+        //TODO 저장 전에 기존 로드맵 삭제해야하는데 이건 어떡할까요?
 
+        //베스트 로드맵에 저장
+        //실제로는 정규 분포 적용하여 저장
+        for(Standard standard : bestRoadmapStandard.keySet()){
+            Info info = bestRoadmapStandard.get(standard).poll();
+            if(info!=null){
+                bestRoadmapRepository.save(
+                        BestRoadmap.builder()
+                                .age(info.getAge())
+                                .financeKeyword(standard.getFinanceKeyword())
+                                .journeyType(info.getJourneyType())
+                                .startAsset(standard.startAsset)
+                                .salary(standard.getSalary())
+                                .user(userRepository.findById(info.id).orElseThrow(()-> new BadRequestException("존재하지 않는 사용자입니다.")))
+                                .build()
+                );
+            }
+        }
     }
 
     // 베스트 로드맵 찾기

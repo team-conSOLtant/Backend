@@ -31,7 +31,7 @@ public class BestRoadmap {
     private User user;
 
     @Column(nullable = false)
-    private Long salary;
+    private Integer salary;
 
     @Column(nullable = false)
     private Long startAsset;
