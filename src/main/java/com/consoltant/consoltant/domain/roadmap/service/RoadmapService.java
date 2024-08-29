@@ -34,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -211,45 +212,71 @@ public class RoadmapService {
         //현재 연봉 기준 매년 증가하는 금액 체크
         //연봉 적금 예금 대출
 
+        // 수시 입출금 += 연봉 - 대출 이자 1년치
         List<InquireDemandDepositResponseDto> demandDepositList = roadmapGraphResponseDto.getProduct().getDemandDeposit().stream()
                 .sorted(Comparator.comparing(InquireDemandDepositResponseDto::getAge))
                 .sorted(Comparator.comparing(InquireDemandDepositResponseDto::getStartDate))
                 .toList();
+        
+        //예금 += 예금 이자
         List<InquireDepositProductsResponseDto> depositProductsList = roadmapGraphResponseDto.getProduct().getDeposit().stream()
                 .sorted(Comparator.comparing(InquireDepositProductsResponseDto::getAge))
                 .sorted(Comparator.comparing(InquireDepositProductsResponseDto::getStartDate))
                 .toList();
+        
+        //적금 += 적금 이자
         List<InquireSavingProductsResponseDto> savingProductsList = roadmapGraphResponseDto.getProduct().getSaving().stream()
                 .sorted(Comparator.comparing(InquireSavingProductsResponseDto::getAge))
                 .sorted(Comparator.comparing(InquireSavingProductsResponseDto::getStartDate))
                 .toList();
+        
+        //대출 -= 대출 상환액
         List<InquireLoanProductResponseDto> loanProductsList = roadmapGraphResponseDto.getProduct().getLoan().stream()
                 .sorted(Comparator.comparing(InquireLoanProductResponseDto::getAge))
                 .sorted(Comparator.comparing(InquireLoanProductResponseDto::getStartDate))
                 .toList();
 
+        //추천 상품 += 각자 개별 상품
         List<RecommendResponseDto> recommendList = roadmapGraphResponseDto.getRecommend().stream()
                 .sorted(Comparator.comparing(RecommendResponseDto::getStartDate))
                 .toList();
 
-        for(RecommendResponseDto recommend : recommendList){
-            user.
-            recommend.setAge();
-        }
+        int startYear = LocalDate.now().getYear() + 1;
+        int endYear = startYear + 1;
 
         switch (financeKeyword){
             //1년
-            case SMALL_HAPPINESS -> {
-
-            }
+            case SMALL_HAPPINESS -> {endYear = startYear+1;}
             //5년
-            case MIDDLE_HAPPINESS -> {
-
-            }
+            case MIDDLE_HAPPINESS -> {endYear = startYear+5;}
             //10년
-            case BIG_HAPPINESS -> {
+            case BIG_HAPPINESS -> {endYear = startYear+10;}
+        }
+
+        for(int year=startYear; year<=endYear;year++){
+            int finalYear = year;
+
+            // 수시 입출금 += 연봉 - 대출 이자 1년치
+            for(InquireDemandDepositResponseDto demandDepositResponseDto : demandDepositList.stream().filter(s->Integer.parseInt(s.getEndDate()) >= finalYear).toList()){
 
             }
+
+            //예금 += 예금 이자
+
+            //적금
+
+            //대출
+
+            //Recommend
+            for(RecommendResponseDto responseDto: recommendList){
+                switch (responseDto.getProductType()){
+                    case DEPOSIT -> {}
+                    case SAVING -> {}
+                    case LOAN -> {}
+                    case DEMAND_DEPOSIT -> {}
+                }
+            }
+
         }
 
         return null;

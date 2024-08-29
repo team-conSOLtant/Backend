@@ -94,75 +94,90 @@ public class ProductService {
                 case DEMAND_DEPOSIT:
                     log.info("수시입출금");
 //                    productInfoList.getDemandDeposit().add(productMapper.toProductInfo(restTemplateUtil.inquireDemandDepositAccount(userKey,product.getAccountNo())));
-                    productInfoList.getDemandDeposit().add(
-                            demandDepositList.stream()
-                                    .filter(s-> Objects.equals(s.getAccountTypeUniqueNo(), product.getAccountTypeUniqueNo()))
-                                    .findAny()
-                                    .get()
-                    );
-                    productInfoList.getDemandDeposit().get(productInfoList.getDemandDeposit().size() - 1)
-                            .setBalance(product.getBalance());
-                    productInfoList.getDemandDeposit().get(productInfoList.getDemandDeposit().size() - 1)
-                            .setStartDate(startDate);
-                    productInfoList.getDemandDeposit().get(productInfoList.getDemandDeposit().size() - 1)
-                            .setEndDate(endDate);
-                    productInfoList.getDemandDeposit().get(productInfoList.getDemandDeposit().size() - 1)
-                            .setAge(product.getAge());
+
+                    InquireDemandDepositResponseDto inquireDemandDepositResponseDto =demandDepositList.stream()
+                            .filter(s -> Objects.equals(s.getAccountTypeUniqueNo(), product.getAccountTypeUniqueNo()))
+                            .findAny().orElse(null);
+
+                    if(inquireDemandDepositResponseDto != null){
+
+                        productInfoList.getDemandDeposit().add(inquireDemandDepositResponseDto);
+
+                        productInfoList.getDemandDeposit().get(productInfoList.getDemandDeposit().size() - 1)
+                                .setBalance(product.getBalance());
+                        productInfoList.getDemandDeposit().get(productInfoList.getDemandDeposit().size() - 1)
+                                .setStartDate(startDate);
+                        productInfoList.getDemandDeposit().get(productInfoList.getDemandDeposit().size() - 1)
+                                .setEndDate(endDate);
+                        productInfoList.getDemandDeposit().get(productInfoList.getDemandDeposit().size() - 1)
+                                .setAge(product.getAge());
+                    }
+
+
+
 
                     break;
                 case DEPOSIT:
                     log.info("예금");
 //                    productInfoList.getDeposit().add(productMapper.toProductInfo(restTemplateUtil.inquireDemandDepositAccount(userKey,product.getAccountNo())));
-                    productInfoList.getDeposit().add(
-                            depositList.stream()
-                                    .filter(s-> Objects.equals(s.getAccountTypeUniqueNo(), product.getAccountTypeUniqueNo()))
-                                    .findAny()
-                                    .get()
-                    );
-                    productInfoList.getDeposit().get(productInfoList.getDeposit().size() - 1)
-                            .setBalance(product.getBalance());
-                    productInfoList.getDeposit().get(productInfoList.getDeposit().size() - 1)
-                            .setStartDate(startDate);
-                    productInfoList.getDeposit().get(productInfoList.getDeposit().size() - 1)
-                            .setEndDate(endDate);
-                    productInfoList.getDeposit().get(productInfoList.getDeposit().size() - 1)
-                            .setAge(product.getAge());
+
+                    InquireDepositProductsResponseDto inquireDepositProductsResponseDto = depositList.stream()
+                            .filter(s-> Objects.equals(s.getAccountTypeUniqueNo(), product.getAccountTypeUniqueNo()))
+                            .findAny().orElse(null);
+
+                    if(inquireDepositProductsResponseDto!=null){
+                        productInfoList.getDeposit().add(inquireDepositProductsResponseDto);
+                        productInfoList.getDeposit().get(productInfoList.getDeposit().size() - 1)
+                                .setBalance(product.getBalance());
+                        productInfoList.getDeposit().get(productInfoList.getDeposit().size() - 1)
+                                .setStartDate(startDate);
+                        productInfoList.getDeposit().get(productInfoList.getDeposit().size() - 1)
+                                .setEndDate(endDate);
+                        productInfoList.getDeposit().get(productInfoList.getDeposit().size() - 1)
+                                .setAge(product.getAge());
+                    }
+
+
                     break;
                 case LOAN:
                     log.info("대출");
 //                    productInfoList.getLoan().add(productMapper.toProductInfo(restTemplateUtil.inquireDemandDepositAccount(userKey,product.getAccountNo())));
-                    productInfoList.getLoan().add(
-                            loanList.stream()
-                                    .filter(s-> Objects.equals(s.getAccountTypeUniqueNo(), product.getAccountTypeUniqueNo()))
-                                    .findAny()
-                                    .get()
-                    );
-                    productInfoList.getLoan().get(productInfoList.getLoan().size() - 1)
-                            .setBalance(product.getBalance());
-                    productInfoList.getLoan().get(productInfoList.getLoan().size() - 1)
-                            .setStartDate(startDate);
-                    productInfoList.getLoan().get(productInfoList.getLoan().size() - 1)
-                            .setEndDate(endDate);
-                    productInfoList.getLoan().get(productInfoList.getLoan().size() - 1)
-                            .setAge(product.getAge());
+
+                    InquireLoanProductResponseDto inquireLoanProductResponseDto = loanList.stream()
+                            .filter(s-> Objects.equals(s.getAccountTypeUniqueNo(), product.getAccountTypeUniqueNo()))
+                            .findAny().orElse(null);
+
+                    if(inquireLoanProductResponseDto!=null){
+                        productInfoList.getLoan().add(inquireLoanProductResponseDto);
+                        productInfoList.getLoan().get(productInfoList.getLoan().size() - 1)
+                                .setBalance(product.getBalance());
+                        productInfoList.getLoan().get(productInfoList.getLoan().size() - 1)
+                                .setStartDate(startDate);
+                        productInfoList.getLoan().get(productInfoList.getLoan().size() - 1)
+                                .setEndDate(endDate);
+                        productInfoList.getLoan().get(productInfoList.getLoan().size() - 1)
+                                .setAge(product.getAge());
+                    }
+
                     break;
                 case SAVING:
                     log.info("적금");
 //                    productInfoList.getSaving().add(productMapper.toProductInfo(restTemplateUtil.inquireDemandDepositAccount(userKey,product.getAccountNo())));
-                    productInfoList.getSaving().add(
-                            savingList.stream()
-                                    .filter(s-> Objects.equals(s.getAccountTypeUniqueNo(), product.getAccountTypeUniqueNo()))
-                                    .findAny()
-                                    .get()
-                    );
-                    productInfoList.getSaving().get(productInfoList.getSaving().size() - 1)
-                            .setBalance(product.getBalance());
-                    productInfoList.getSaving().get(productInfoList.getSaving().size() - 1)
-                            .setStartDate(startDate);
-                    productInfoList.getSaving().get(productInfoList.getSaving().size() - 1)
-                            .setEndDate(endDate);
-                    productInfoList.getSaving().get(productInfoList.getSaving().size() - 1)
-                            .setAge(product.getAge());
+                    InquireSavingProductsResponseDto inquireSavingProductsResponseDto = savingList.stream()
+                            .filter(s-> Objects.equals(s.getAccountTypeUniqueNo(), product.getAccountTypeUniqueNo()))
+                            .findAny().orElse(null);
+
+                    if(inquireSavingProductsResponseDto!=null){
+                        productInfoList.getSaving().add(inquireSavingProductsResponseDto);
+                        productInfoList.getSaving().get(productInfoList.getSaving().size() - 1)
+                                .setBalance(product.getBalance());
+                        productInfoList.getSaving().get(productInfoList.getSaving().size() - 1)
+                                .setStartDate(startDate);
+                        productInfoList.getSaving().get(productInfoList.getSaving().size() - 1)
+                                .setEndDate(endDate);
+                        productInfoList.getSaving().get(productInfoList.getSaving().size() - 1)
+                                .setAge(product.getAge());
+                    }
                     break;
                 default:
                     break;
