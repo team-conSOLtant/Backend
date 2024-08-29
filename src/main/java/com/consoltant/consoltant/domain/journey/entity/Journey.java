@@ -61,7 +61,6 @@ public class Journey {
     @Column(nullable = false)
     private int age;
 
-    @Column(nullable = false)
     private String accountTypeUniqueNo;
 
     @Column(nullable = false)

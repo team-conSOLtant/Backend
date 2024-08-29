@@ -2,6 +2,7 @@ package com.consoltant.consoltant.domain.roadmap.service;
 
 import com.consoltant.consoltant.domain.bestroadmap.dto.BestRoadmapResponseDto;
 import com.consoltant.consoltant.domain.bestroadmap.service.BestRoadmapModuleService;
+import com.consoltant.consoltant.domain.journey.dto.GraphData;
 import com.consoltant.consoltant.domain.journey.entity.Journey;
 import com.consoltant.consoltant.domain.journey.repository.JourneyRepository;
 import com.consoltant.consoltant.domain.journey.service.JourneyModuleService;
@@ -254,14 +255,24 @@ public class RoadmapService {
         }
 
         for(int year=startYear; year<=endYear;year++){
+
             int finalYear = year;
+            int age = user.getAge() + (year - startYear) + 1;
+
+            long totalAssetValue = 0;
+            long depositAssetValue = 0;
+            long savingAssetValue = 0;
+            long loanAssetValue = 0;
 
             // 수시 입출금 += 연봉 - 대출 이자 1년치
-            for(InquireDemandDepositResponseDto demandDepositResponseDto : demandDepositList.stream().filter(s->Integer.parseInt(s.getEndDate()) >= finalYear).toList()){
-
-            }
+            //연봉 추가
+            totalAssetValue += user.getSalary() * 12;
 
             //예금 += 예금 이자
+            for(InquireDepositProductsResponseDto inquireDepositProductsResponseDto: depositProductsList){
+                //예금 이자 조회
+                inquireDepositProductsResponseDto.getAccountTypeUniqueNo();
+            }
 
             //적금
 
@@ -276,6 +287,8 @@ public class RoadmapService {
                     case DEMAND_DEPOSIT -> {}
                 }
             }
+
+//            RoadmapGraphData roadmapGraphData = new RoadmapGraphData(age,user.getCurrentJourneyType(),);
 
         }
 
