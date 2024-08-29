@@ -6,6 +6,7 @@ import com.consoltant.consoltant.util.api.dto.auth.checkauthcode.CheckAuthCodeRe
 import com.consoltant.consoltant.util.api.dto.demanddeposit.createdemanddeposit.CreateDemandDepositResponseDto;
 import com.consoltant.consoltant.util.api.dto.deposit.createdeposit.CreateDepositResponseDto;
 import com.consoltant.consoltant.util.api.dto.deposit.createdepositaccount.CreateDepositAccountResponseDto;
+import com.consoltant.consoltant.util.api.dto.deposit.inquiredepositproducts.InquireDepositProductsResponseDto;
 import com.consoltant.consoltant.util.api.dto.loan.createloanaccount.CreateLoanAccountResponseDto;
 import com.consoltant.consoltant.util.api.dto.loan.createloanapplication.CreateLoanApplicationResponseDto;
 import com.consoltant.consoltant.util.api.dto.loan.createloanproduct.CreateLoanProductResponseDto;
@@ -403,7 +404,7 @@ public class RestTemplateUtil {
     }
 
     // 예금 상품 조회
-    public List<InquireDepositInfoResponseDto> inquireDepositProducts(){
+    public List<InquireDepositProductsResponseDto> inquireDepositProducts(){
         final String name = "inquireDepositProducts";
         log.info("금융 API 예금 상품 조회");
 
@@ -417,7 +418,7 @@ public class RestTemplateUtil {
 
         HttpEntity<Object> entity = new HttpEntity<>(requestBody);
 
-        ResponseEntity<RECListResponse<InquireDepositInfoResponseDto>> response =
+        ResponseEntity<RECListResponse<InquireDepositProductsResponseDto>> response =
                 restTemplate.exchange(
                         url + uri,HttpMethod.POST ,entity,
                         new ParameterizedTypeReference<>(){}

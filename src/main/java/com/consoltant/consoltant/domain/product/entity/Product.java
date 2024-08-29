@@ -43,7 +43,10 @@ public class Product {
     @Column(nullable = false)
     private ProductType productType; // 수시입출금, 예금, 적금, 대출
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false)
+    private String accountTypeUniqueNo;
+
+    @Column(nullable = true, length = 100)
     private String accountNo;
 
     @Column(nullable = false)

@@ -95,11 +95,19 @@ public class JourneyService {
         InquireDemandDepositAccountResponseDto inquireDemandDepositAccountResponseDto = restTemplateUtil.inquireDemandDepositAccount(userKey,accountNo);
         String accountName = inquireDemandDepositAccountResponseDto.getAccountName();
         String accountType = inquireDemandDepositAccountResponseDto.getAccountTypeName();
-        
+
+        boolean flag = false;
         for(JourneyType journeyType: JourneyType.values()){
 
+            //현재 여정을 지난 후부터는 제공 X
+            if(flag){
+                if(user.getCurrentJourneyType() != journeyType){
+                    break;
+                }
+            }
+
             if(user.getCurrentJourneyType() == journeyType){
-                break;
+                flag = true;
             }
 
             List<JourneyResponseDto> journeyList =
@@ -191,6 +199,7 @@ public class JourneyService {
             productStatsList.add(journeyStatsResponseDto);
         }
 
+        /*
         //사용자 현재 여정 저장
         InquireMyCreditRatingResponseDto inquireMyCreditRatingResponseDto = restTemplateUtil.inquireMyCreditRating(userKey);
 
@@ -270,6 +279,7 @@ public class JourneyService {
                 .build();
 
         productStatsList.add(journeyStatsResponseDto);
+        */
 
         return productStatsList;
     }

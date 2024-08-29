@@ -9,6 +9,6 @@ import org.springframework.web.multipart.MultipartFile;
 @Setter
 public class CreateUserAcademyRequestDto {
     private String university;
-
     private String major;
+    private String status;
 }

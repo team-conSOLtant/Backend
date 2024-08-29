@@ -2,6 +2,8 @@ package com.consoltant.consoltant.domain.user.service;
 
 import com.consoltant.consoltant.domain.course.entity.Course;
 import com.consoltant.consoltant.domain.course.service.CourseModuleService;
+import com.consoltant.consoltant.domain.journey.service.JourneyModuleService;
+import com.consoltant.consoltant.domain.journey.service.JourneyService;
 import com.consoltant.consoltant.domain.portfolio.service.PortfolioModuleService;
 import com.consoltant.consoltant.domain.subject.entity.Subject;
 import com.consoltant.consoltant.domain.subject.service.SubjectModuleService;
@@ -18,11 +20,13 @@ import com.consoltant.consoltant.domain.user.repository.UserModuleRepository;
 import com.consoltant.consoltant.domain.user.repository.UserRepository;
 import com.consoltant.consoltant.global.exception.BadRequestException;
 import com.consoltant.consoltant.util.api.RestTemplateUtil;
+import com.consoltant.consoltant.util.constant.JourneyType;
 import com.consoltant.consoltant.util.csv.CsvParserUtil;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVRecord;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,6 +44,7 @@ public class UserService{
     private final SubjectModuleService subjectModuleService;
     private final PortfolioModuleService portfolioModuleService;
     private final CsvParserUtil csvParserUtil;
+    private final JourneyModuleService journeyModuleService;
 
     public Long getUserId(String email){
         return userRepository.findByEmail(email).orElseThrow(()->new BadRequestException(("존재하지 않는 사용자입니다."))).getId();
@@ -70,61 +75,97 @@ public class UserService{
 
         University university = universityRepository.findByName(createUserAcademyRequestDto.getUniversity());
 
-        List<CSVRecord> records = CsvParserUtil.parseCsv(subjectFile);
-        double totalGpa = 0.0;
-        double majorGpa = 0.0;
-        int totalCredit = 0;
-        int passNonPassCredit = 0;
-        int majorTotalGpa = 0;
+        if(subjectFile != null){
+            List<CSVRecord> records = CsvParserUtil.parseCsv(subjectFile);
+            double totalGpa = 0.0;
+            double majorGpa = 0.0;
+            int totalCredit = 0;
+            int passNonPassCredit = 0;
+            int majorTotalGpa = 0;
 
-        for (CSVRecord record : records) {
-            String subjectNumber = record.get("학수번호");
-            String title = record.get("교과목명");
-            String courseType = record.get("이수구분");
-            int credit = Integer.parseInt(record.get("학점"));
-            String grade = record.get("등급");
-            double gpa = Double.parseDouble(record.get("평점"));
+            for (CSVRecord record : records) {
+                String subjectNumber = record.get("학수번호");
+                String title = record.get("교과목명");
+                String courseType = record.get("이수구분");
+                int credit = Integer.parseInt(record.get("학점"));
+                String grade = record.get("등급");
+                double gpa = Double.parseDouble(record.get("평점"));
 
-            boolean isMajor = courseType.startsWith("전");
+                boolean isMajor = courseType.startsWith("전");
 
-            // Subject 중복 등록 방지
-            Subject subject = subjectModuleService.findBySubjectNumber(subjectNumber)
-                .orElseGet(() -> subjectModuleService.save(Subject.builder()
-                    .subjectNumber(subjectNumber)
-                    .title(title)
-                    .credit(credit)
-                    .isMajor(isMajor)
-                    .build()));
+                // Subject 중복 등록 방지
+                Subject subject = subjectModuleService.findBySubjectNumber(subjectNumber)
+                        .orElseGet(() -> subjectModuleService.save(Subject.builder()
+                                .subjectNumber(subjectNumber)
+                                .title(title)
+                                .credit(credit)
+                                .isMajor(isMajor)
+                                .build()));
 
-            // 중복된 Course가 있는지 확인
-            if (!courseModuleService.existsByUserAndSubject(user, subject)) {
-                // Course 저장
-                courseModuleService.save(Course.builder()
-                    .user(user)
-                    .subject(subject)
-                    .grade(grade)
-                    .subjectName(title)
-                    .build());
+                // 중복된 Course가 있는지 확인
+                if (!courseModuleService.existsByUserAndSubject(user, subject)) {
+                    // Course 저장
+                    courseModuleService.save(Course.builder()
+                            .user(user)
+                            .subject(subject)
+                            .grade(grade)
+                            .subjectName(title)
+                            .build());
 
-                // 학점 및 GPA 계산
-                if ("P".equals(grade)) {
-                    passNonPassCredit += credit;
-                    continue;
+                    // 학점 및 GPA 계산
+                    if ("P".equals(grade)) {
+                        passNonPassCredit += credit;
+                        continue;
+                    }
+                    totalGpa += gpa * credit;
+                    totalCredit += credit;
+                    if (isMajor) {
+                        majorTotalGpa += credit;
+                        majorGpa += gpa * credit;
+                    }
                 }
-                totalGpa += gpa * credit;
-                totalCredit += credit;
-                if (isMajor) {
-                    majorTotalGpa += credit;
-                    majorGpa += gpa * credit;
+            }
+
+            double calculatedTotalGpa = totalCredit != 0 ? Math.round((totalGpa / totalCredit) * 100.0) / 100.0 : 0.0;
+            double calculatedMajorGpa = majorTotalGpa != 0 ? Math.round((majorGpa / majorTotalGpa) * 100.0) / 100.0 : 0.0;
+            totalCredit+=passNonPassCredit; //패논패 학점은 나중에 더해주기
+
+            user.addAcademyInfo(university, createUserAcademyRequestDto, calculatedTotalGpa, calculatedMajorGpa, totalCredit);
+
+            portfolioModuleService.findByUserId(user.getId()).orElseThrow().setGpa(totalGpa,majorGpa); //포폴에도 학점 동기화
+        }
+        else{
+            user.addAcademyInfo(university, createUserAcademyRequestDto, 0.0, 0.0, 0);
+            portfolioModuleService.findByUserId(user.getId()).orElseThrow().setGpa(0.0,0.0);
+        }
+
+        //User
+        switch (createUserAcademyRequestDto.getStatus()){
+            case "1"->{user.changeJourney(JourneyType.FRESHMAN);}
+            case "2"->{user.changeJourney(JourneyType.SOPHOMORE);}
+            case "3"->{user.changeJourney(JourneyType.JUNIOR);}
+            case "4"->{user.changeJourney(JourneyType.SENIOR);}
+            case "5"->{
+                Integer age = user.getAge();
+                if(age<40){
+                    user.changeJourney(JourneyType.THIRTIES);
+                }
+                else if(age<50){
+                    user.changeJourney(JourneyType.FORTIES);
+                }
+                else if(age<60){
+                    user.changeJourney(JourneyType.FIFTIES);
+                }
+                else{
+                    user.changeJourney(JourneyType.RETIRED);
                 }
             }
         }
 
-        double calculatedTotalGpa = totalCredit != 0 ? Math.round((totalGpa / totalCredit) * 100.0) / 100.0 : 0.0;
-        double calculatedMajorGpa = majorTotalGpa != 0 ? Math.round((majorGpa / majorTotalGpa) * 100.0) / 100.0 : 0.0;
-        totalCredit+=passNonPassCredit; //패논패 학점은 나중에 더해주기
-        user.addAcademyInfo(university, createUserAcademyRequestDto, calculatedTotalGpa, calculatedMajorGpa, totalCredit);
-        portfolioModuleService.findByUserId(user.getId()).orElseThrow().setGpa(totalGpa,majorGpa); //포폴에도 학점 동기화
+        // User Jounrney 추가
+
+        journeyModuleService.defaultSave(user);
+
         return userMapper.toUserResponseDto(user);
     }
 

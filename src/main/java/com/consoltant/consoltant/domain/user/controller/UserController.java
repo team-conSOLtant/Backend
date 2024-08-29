@@ -64,13 +64,10 @@ public class UserController {
         CreateAccountResponseDto createAccountResponseDto = userService.createAccount(id, createAccountRequestDto.getAccountTypeUniqueNo());
         ProductSaveRequestDto productSaveRequestDto = new ProductSaveRequestDto();
         productSaveRequestDto.setAccountNo(createAccountResponseDto.getAccountNo());
+        productSaveRequestDto.setAccountTypeUniqueNo(createAccountRequestDto.getAccountTypeUniqueNo());
         productSaveRequestDto.setProductType(ProductType.DEMAND_DEPOSIT);
 
         productService.save(id,productSaveRequestDto);
-        
-        // TODO User 여정 추가
-        
-        // TODO Journey 현재 여정 추가 (입출금, 예금, 적금, 대출)
 
         return new BaseSuccessResponse<>(createAccountResponseDto);
     }
@@ -82,7 +79,10 @@ public class UserController {
         Long id = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
         log.info("사용자 학력 추가 API {}", id);
         try {
-            return new BaseSuccessResponse<>(userService.createUserAcademy(id, createUserAcademyRequestDto, subject));
+
+            UserResponseDto userResponseDto = userService.createUserAcademy(id, createUserAcademyRequestDto, subject);
+
+            return new BaseSuccessResponse<>(userResponseDto);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
