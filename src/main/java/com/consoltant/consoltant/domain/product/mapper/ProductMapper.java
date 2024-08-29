@@ -5,6 +5,7 @@ import com.consoltant.consoltant.domain.product.entity.Product;
 import com.consoltant.consoltant.util.api.dto.demanddeposit.inquiredemanddeposit.InquireDemandDepositResponseDto;
 import com.consoltant.consoltant.util.api.dto.demanddeposit.inquiredemanddepositaccount.InquireDemandDepositAccountResponseDto;
 import com.consoltant.consoltant.util.api.dto.deposit.inquiredepositinfo.InquireDepositInfoResponseDto;
+import com.consoltant.consoltant.util.api.dto.deposit.inquiredepositproducts.InquireDepositProductsResponseDto;
 import com.consoltant.consoltant.util.api.dto.loan.inquireloanaccount.InquireLoanAccountResponseDto;
 import com.consoltant.consoltant.util.api.dto.loan.inquireloanproduct.InquireLoanProductResponseDto;
 import com.consoltant.consoltant.util.api.dto.saving.inquiresavinginfo.InquireSavingInfoResponseDto;
@@ -29,4 +30,6 @@ public interface ProductMapper {
     ProductInfo toProductInfo(InquireDemandDepositResponseDto depositResponseDto);
     ProductInfo toProductInfo(InquireSavingProductsResponseDto inquireSavingProductsResponseDto);
     ProductInfo toProductInfo(InquireLoanProductResponseDto inquireLoanProductResponseDto);
+
+    ProductInfo toProductInfo(InquireDepositProductsResponseDto inquireDepositProductsResponseDto);
 }

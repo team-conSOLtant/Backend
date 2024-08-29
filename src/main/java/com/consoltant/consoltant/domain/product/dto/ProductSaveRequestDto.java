@@ -9,6 +9,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class ProductSaveRequestDto {
+    private String accountTypeUniqueNo;
     private String accountNo;
     private ProductType productType;
     private LocalDate startDate;

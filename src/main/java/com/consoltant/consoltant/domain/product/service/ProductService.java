@@ -11,17 +11,22 @@ import com.consoltant.consoltant.domain.user.repository.UserRepository;
 import com.consoltant.consoltant.domain.user.service.UserService;
 import com.consoltant.consoltant.global.exception.BadRequestException;
 import com.consoltant.consoltant.util.api.RestTemplateUtil;
+import com.consoltant.consoltant.util.api.dto.demanddeposit.inquiredemanddeposit.InquireDemandDepositResponseDto;
 import com.consoltant.consoltant.util.api.dto.demanddeposit.inquiredemanddepositaccount.InquireDemandDepositAccountResponseDto;
 import com.consoltant.consoltant.util.api.dto.deposit.inquiredepositinfo.InquireDepositInfoResponseDto;
+import com.consoltant.consoltant.util.api.dto.deposit.inquiredepositproducts.InquireDepositProductsResponseDto;
 import com.consoltant.consoltant.util.api.dto.loan.inquireloanaccount.InquireLoanAccountResponseDto;
+import com.consoltant.consoltant.util.api.dto.loan.inquireloanproduct.InquireLoanProductResponseDto;
 import com.consoltant.consoltant.util.api.dto.loan.inquiremycreditrating.InquireMyCreditRatingResponseDto;
 import com.consoltant.consoltant.util.api.dto.saving.inquiresavinginfo.InquireSavingInfoResponseDto;
+import com.consoltant.consoltant.util.api.dto.saving.inquiresavingproducts.InquireSavingProductsResponseDto;
 import com.consoltant.consoltant.util.constant.JourneyType;
 import com.consoltant.consoltant.util.constant.ProductType;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -69,23 +74,52 @@ public class ProductService {
 
         List<Product> productList = productModuleService.findAllByUserId(userId);
 
+        List<InquireDemandDepositResponseDto> demandDepositList = restTemplateUtil.inquireDemandDepositList();
+        List<InquireDepositProductsResponseDto> depositList = restTemplateUtil.inquireDepositProducts();
+        List<InquireSavingProductsResponseDto> savingList = restTemplateUtil.inquireSavingProducts();
+        List<InquireLoanProductResponseDto> loanList = restTemplateUtil.inquireLoanProductList();
+
         for(Product product: productList){
             switch (product.getProductType()){
                 case DEMAND_DEPOSIT:
                     log.info("수시입출금");
-                    productInfoList.getDemandDeposit().add(productMapper.toProductInfo(restTemplateUtil.inquireDemandDepositAccount(userKey,product.getAccountNo())));
+//                    productInfoList.getDemandDeposit().add(productMapper.toProductInfo(restTemplateUtil.inquireDemandDepositAccount(userKey,product.getAccountNo())));
+                    productInfoList.getDemandDeposit().add(
+                            demandDepositList.stream()
+                                    .filter(s-> Objects.equals(s.getAccountTypeUniqueNo(), product.getAccountTypeUniqueNo()))
+                                    .findAny()
+                                    .get()
+                    );
                     break;
                 case DEPOSIT:
                     log.info("예금");
-                    productInfoList.getDeposit().add(productMapper.toProductInfo(restTemplateUtil.inquireDemandDepositAccount(userKey,product.getAccountNo())));
+//                    productInfoList.getDeposit().add(productMapper.toProductInfo(restTemplateUtil.inquireDemandDepositAccount(userKey,product.getAccountNo())));
+                    productInfoList.getDeposit().add(
+                            depositList.stream()
+                                    .filter(s-> Objects.equals(s.getAccountTypeUniqueNo(), product.getAccountTypeUniqueNo()))
+                                    .findAny()
+                                    .get()
+                    );
                     break;
                 case LOAN:
                     log.info("대출");
-                    productInfoList.getLoan().add(productMapper.toProductInfo(restTemplateUtil.inquireDemandDepositAccount(userKey,product.getAccountNo())));
+//                    productInfoList.getLoan().add(productMapper.toProductInfo(restTemplateUtil.inquireDemandDepositAccount(userKey,product.getAccountNo())));
+                    productInfoList.getLoan().add(
+                            loanList.stream()
+                                    .filter(s-> Objects.equals(s.getAccountTypeUniqueNo(), product.getAccountTypeUniqueNo()))
+                                    .findAny()
+                                    .get()
+                    );
                     break;
                 case SAVING:
                     log.info("적금");
-                    productInfoList.getSaving().add(productMapper.toProductInfo(restTemplateUtil.inquireDemandDepositAccount(userKey,product.getAccountNo())));
+//                    productInfoList.getSaving().add(productMapper.toProductInfo(restTemplateUtil.inquireDemandDepositAccount(userKey,product.getAccountNo())));
+                    productInfoList.getSaving().add(
+                            savingList.stream()
+                                    .filter(s-> Objects.equals(s.getAccountTypeUniqueNo(), product.getAccountTypeUniqueNo()))
+                                    .findAny()
+                                    .get()
+                    );
                     break;
                 default:
                     break;
