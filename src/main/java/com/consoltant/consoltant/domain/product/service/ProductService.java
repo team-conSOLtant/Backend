@@ -80,6 +80,13 @@ public class ProductService {
         List<InquireLoanProductResponseDto> loanList = restTemplateUtil.inquireLoanProductList();
 
         for(Product product: productList){
+
+            String startDate = Integer.toString(product.getStartDate().getYear()) + (product.getStartDate().getMonthValue() < 10 ? "0" : "") + Integer.toString(product.getStartDate().getMonthValue()) + Integer.toString(product.getStartDate().getDayOfMonth());
+            String endDate = Integer.toString(product.getEndDate().getYear()) + (product.getEndDate().getMonthValue() < 10 ? "0" : "") + Integer.toString(product.getEndDate().getMonthValue()) + Integer.toString(product.getEndDate().getDayOfMonth());
+
+            log.info("start -> {}",startDate);
+            log.info("end -> {}",endDate);
+
             switch (product.getProductType()){
                 case DEMAND_DEPOSIT:
                     log.info("수시입출금");
@@ -90,6 +97,13 @@ public class ProductService {
                                     .findAny()
                                     .get()
                     );
+                    productInfoList.getDemandDeposit().get(productInfoList.getDemandDeposit().size() - 1)
+                            .setBalance(product.getBalance());
+                    productInfoList.getDemandDeposit().get(productInfoList.getDemandDeposit().size() - 1)
+                            .setStartDate(startDate);
+                    productInfoList.getDemandDeposit().get(productInfoList.getDemandDeposit().size() - 1)
+                            .setEndDate(endDate);
+
                     break;
                 case DEPOSIT:
                     log.info("예금");
@@ -100,6 +114,12 @@ public class ProductService {
                                     .findAny()
                                     .get()
                     );
+                    productInfoList.getDeposit().get(productInfoList.getDemandDeposit().size() - 1)
+                            .setBalance(product.getBalance());
+                    productInfoList.getDeposit().get(productInfoList.getDemandDeposit().size() - 1)
+                            .setStartDate(startDate);
+                    productInfoList.getDeposit().get(productInfoList.getDemandDeposit().size() - 1)
+                            .setEndDate(endDate);
                     break;
                 case LOAN:
                     log.info("대출");
@@ -110,6 +130,12 @@ public class ProductService {
                                     .findAny()
                                     .get()
                     );
+                    productInfoList.getLoan().get(productInfoList.getDemandDeposit().size() - 1)
+                            .setBalance(product.getBalance());
+                    productInfoList.getLoan().get(productInfoList.getDemandDeposit().size() - 1)
+                            .setStartDate(startDate);
+                    productInfoList.getLoan().get(productInfoList.getDemandDeposit().size() - 1)
+                            .setEndDate(endDate);
                     break;
                 case SAVING:
                     log.info("적금");
@@ -120,6 +146,12 @@ public class ProductService {
                                     .findAny()
                                     .get()
                     );
+                    productInfoList.getSaving().get(productInfoList.getDemandDeposit().size() - 1)
+                            .setBalance(product.getBalance());
+                    productInfoList.getSaving().get(productInfoList.getDemandDeposit().size() - 1)
+                            .setStartDate(startDate);
+                    productInfoList.getSaving().get(productInfoList.getDemandDeposit().size() - 1)
+                            .setEndDate(endDate);
                     break;
                 default:
                     break;
