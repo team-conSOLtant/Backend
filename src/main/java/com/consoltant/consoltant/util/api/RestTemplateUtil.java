@@ -520,6 +520,35 @@ public class RestTemplateUtil {
 
         return response.getBody().getREC();
     }
+    
+    //예금 만기 이자 조회
+    public DeleteDepositAccountResponseDto inquireExpiryInterest(String userKey, String accountNo){
+        final String name = "deleteAccount";
+        log.info("금융 API 예금 계좌 해지 ");
+
+        String uri = "edu/deposit/deleteAccount";
+
+        Map<String,Object>requestBody = new HashMap<>();
+
+        RequestHeader headers = requestHeader(name,userKey);
+
+        requestBody.put("Header",headers);
+        requestBody.put("accountNo",accountNo);
+
+        HttpEntity<Object> entity = new HttpEntity<>(requestBody);
+
+        ResponseEntity<RECResponse<DeleteDepositAccountResponseDto>> response =
+                restTemplate.exchange(
+                        url + uri,HttpMethod.POST ,entity,
+                        new ParameterizedTypeReference<>(){}
+                );
+
+        if(response.getBody() == null){
+            throw new BadRequestException("API 요청 중 오류가 발생했습니다.");
+        }
+
+        return response.getBody().getREC();
+    }
 
     // 적금 API
     // 적금 상품 등록

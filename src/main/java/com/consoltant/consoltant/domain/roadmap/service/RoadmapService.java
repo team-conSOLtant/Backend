@@ -288,7 +288,13 @@ public class RoadmapService {
                 }
             }
 
-//            RoadmapGraphData roadmapGraphData = new RoadmapGraphData(age,user.getCurrentJourneyType(),);
+            RoadmapGraphData roadmapGraphData = new RoadmapGraphData(
+                    age,
+                    user.getCurrentJourneyType(),totalAssetValue,
+                    depositAssetValue,
+                    savingAssetValue,
+                    loanAssetValue
+            );
 
         }
 
