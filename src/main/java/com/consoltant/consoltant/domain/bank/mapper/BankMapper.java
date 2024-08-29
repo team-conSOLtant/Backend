@@ -8,6 +8,7 @@ import com.consoltant.consoltant.util.api.dto.demanddeposit.createdemanddeposit.
 import com.consoltant.consoltant.util.api.dto.demanddeposit.inquiredemanddeposit.InquireDemandDepositResponseDto;
 import com.consoltant.consoltant.util.api.dto.deposit.createdeposit.CreateDepositResponseDto;
 import com.consoltant.consoltant.util.api.dto.deposit.inquiredepositinfo.InquireDepositInfoResponseDto;
+import com.consoltant.consoltant.util.api.dto.deposit.inquiredepositproducts.InquireDepositProductsResponseDto;
 import com.consoltant.consoltant.util.api.dto.loan.createloanproduct.CreateLoanProductResponseDto;
 import com.consoltant.consoltant.util.api.dto.loan.inquireloanproduct.InquireLoanProductResponseDto;
 import com.consoltant.consoltant.util.api.dto.saving.createsaving.CreateSavingResponseDto;
@@ -26,7 +27,7 @@ public interface BankMapper {
     CreateLoanResponseBankDto toCreateLoanResponseBankDto(CreateLoanProductResponseDto createLoanProductResponseDto);
     CreateSavingResponseBankDto toCreateSavingResponseBankDto(CreateSavingResponseDto createSavingResponseDto);
     List<CreateDemandDepositResponseBankDto> toCreateDemandDepositResponseBankListDto(List<InquireDemandDepositResponseDto> inquireDemandDepositResponseDtoList);
-    List<CreateDepositResponseBankDto> toCreateDepositResponseBankListDto(List<InquireDepositInfoResponseDto> inquireDemandDepositResponseDtoList);
+    List<CreateDepositResponseBankDto> toCreateDepositResponseBankListDto(List<InquireDepositProductsResponseDto> inquireDemandDepositResponseDtoList);
     List<CreateSavingResponseBankDto> toCreateSavingResponseBankListDto(List<InquireSavingProductsResponseDto> inquireSavingProductsResponseDtoList);
     List<CreateLoanResponseBankDto> toCreateLoanResponseBankListDto(List<InquireLoanProductResponseDto> inquireLoanProductResponseDtoList);
 }
