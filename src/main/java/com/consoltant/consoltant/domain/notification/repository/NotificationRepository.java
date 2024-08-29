@@ -11,10 +11,10 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
     List<Notification> findAllByUserId(Long id);
-    List<Notification> findAllByUserIdAndIsReadFalse(Long id);
+    Optional<List<Notification>> findAllByUserIdAndIsReadFalse(Long id);
     Optional<Notification> findTopByNotificationTypeAndUserIdOrderByIdDesc(NotificationType notificationType, Long userId);
 
-    List<Notification> findAllByNotificationTypeAndUserIdAndIsReadFalse(NotificationType notificationType, Long userId);
+    Optional<List<Notification>> findAllByNotificationTypeAndUserIdAndIsReadFalse(NotificationType notificationType, Long userId);
 
     @Transactional
     @Modifying

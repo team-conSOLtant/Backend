@@ -7,6 +7,7 @@ import com.consoltant.consoltant.domain.notification.mapper.NotificationMapper;
 import com.consoltant.consoltant.domain.user.entity.User;
 import com.consoltant.consoltant.domain.user.repository.UserRepository;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +33,9 @@ public class NotificationService {
 
     //유저 ID로 읽지않은 알림만 조회
     public List<NotificationResponseDto> findAllByUserIdAndIsReadFalse(Long userId){
-        return notificationModuleService.findAllByUserIdAndIsReadFalse(userId).stream()
+        return Objects.requireNonNull(
+                notificationModuleService.findAllByUserIdAndIsReadFalse(userId).orElse(null))
+            .stream()
             .map(notificationMapper::toNotificationResponseDto)
             .toList();
     }
@@ -59,11 +62,13 @@ public class NotificationService {
 
     //선후배 매칭 하나
     public NotificationResponseDto findTopByNotificationTypeAndUserIdOrderByIdDesc(Long userId) {
-        return notificationMapper.toNotificationResponseDto(notificationModuleService.findTopByNotificationTypeAndUserIdOrderByIdDesc(userId).orElseThrow());
+        return notificationMapper.toNotificationResponseDto(notificationModuleService.findTopByNotificationTypeAndUserIdOrderByIdDesc(userId).orElse(null));
     }
 
     public List<NotificationResponseDto> findAllByNotificationTypeAndUserIdAndIsReadFalse(Long userId){
-        return notificationModuleService.findAllByNotificationTypeAndUserIdAndIsReadFalse(userId).stream()
+        return Objects.requireNonNull(
+                notificationModuleService.findAllByNotificationTypeAndUserIdAndIsReadFalse(userId)
+                    .orElse(null)).stream()
             .map(notificationMapper::toNotificationResponseDto)
             .toList();
     }
