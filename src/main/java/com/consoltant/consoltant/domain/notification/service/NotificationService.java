@@ -62,6 +62,11 @@ public class NotificationService {
 
     //선후배 매칭 하나
     public NotificationResponseDto findTopByNotificationTypeAndUserIdOrderByIdDesc(Long userId) {
+        Notification notification = notificationModuleService.findTopByNotificationTypeAndUserIdOrderByIdDesc(
+            userId).orElse(null);
+        if(notification == null){
+            return null;
+        }
         return notificationMapper.toNotificationResponseDto(notificationModuleService.findTopByNotificationTypeAndUserIdOrderByIdDesc(userId).orElse(null));
     }
 

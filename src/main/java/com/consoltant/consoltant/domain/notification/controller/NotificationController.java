@@ -61,6 +61,9 @@ public class NotificationController {
     @GetMapping("/portfolio-matching")
     public BaseSuccessResponse<NotificationResponseDto> findByPortfolioMatching(){
         Long userId = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
+        if(notificationService.findTopByNotificationTypeAndUserIdOrderByIdDesc(userId)==null){
+            return new BaseSuccessResponse<>(new NotificationResponseDto());
+        }
         return new BaseSuccessResponse<>(notificationService.findTopByNotificationTypeAndUserIdOrderByIdDesc(userId));
     }
 
