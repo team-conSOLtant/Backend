@@ -62,8 +62,8 @@ public class NotificationService {
         return notificationMapper.toNotificationResponseDto(notificationModuleService.findTopByNotificationTypeAndUserIdOrderByIdDesc(userId).orElseThrow());
     }
 
-    public List<NotificationResponseDto> findAllByNotificationTypeAndUserId(Long userId){
-        return notificationModuleService.findAllByNotificationTypeAndUserId(userId).stream()
+    public List<NotificationResponseDto> findAllByNotificationTypeAndUserIdAndIsReadFalse(Long userId){
+        return notificationModuleService.findAllByNotificationTypeAndUserIdAndIsReadFalse(userId).stream()
             .map(notificationMapper::toNotificationResponseDto)
             .toList();
     }

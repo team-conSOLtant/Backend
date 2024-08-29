@@ -12,6 +12,7 @@ public class ActivityResponseDto {
     private Long id;
     private String title;
     private String content;
+    private String contentTitle;
     private LocalDate startDate;
     private LocalDate endDate;
     private ActivityType activityType;

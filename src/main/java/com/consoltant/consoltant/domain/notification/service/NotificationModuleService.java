@@ -45,8 +45,8 @@ public class NotificationModuleService {
     }
 
     //댓글만 조회
-    public List<Notification> findAllByNotificationTypeAndUserId(Long userId){
-        return notificationRepository.findAllByNotificationTypeAndUserId(NotificationType.PORTFOLIO_COMMENT, userId);
+    public List<Notification> findAllByNotificationTypeAndUserIdAndIsReadFalse(Long userId){
+        return notificationRepository.findAllByNotificationTypeAndUserIdAndIsReadFalse(NotificationType.PORTFOLIO_COMMENT, userId);
     }
 
     //댓글 알림 전부 삭제

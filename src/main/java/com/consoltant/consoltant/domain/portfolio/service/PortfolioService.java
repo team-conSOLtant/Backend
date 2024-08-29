@@ -202,23 +202,25 @@ public class PortfolioService {
         }
 
         // 새로운 선택 과목 처리
-        for (CourseRequestDto courseRequestDto : portfolioSaveAllRequestDto.getCourses()) {
-            // 이미 존재하는 과목인지 확인
-            Optional<Course> existingCourseOpt = courseModuleService.findByUserIdAndSubjectId(
-                userId, courseRequestDto.getSubjectId());
+        if(portfolioSaveAllRequestDto.getCourses()!=null) {
+            for (CourseRequestDto courseRequestDto : portfolioSaveAllRequestDto.getCourses()) {
+                // 이미 존재하는 과목인지 확인
+                Optional<Course> existingCourseOpt = courseModuleService.findByUserIdAndSubjectId(
+                    userId, courseRequestDto.getSubjectId());
 
-            Course course;
-            if (existingCourseOpt.isPresent()) {
-                // 기존 과목이 존재하면 해당 과목을 가져와서 isSelected를 true로 설정
-                course = existingCourseOpt.get();
-                course.setIsSelected(true);
-            } else {
-                // 존재하지 않으면 새로운 과목 생성
-                course = courseMapper.toCourse(courseRequestDto);
-                course.setUser(user); // User 설정
-                course.setIsSelected(true);
+                Course course;
+                if (existingCourseOpt.isPresent()) {
+                    // 기존 과목이 존재하면 해당 과목을 가져와서 isSelected를 true로 설정
+                    course = existingCourseOpt.get();
+                    course.setIsSelected(true);
+                } else {
+                    // 존재하지 않으면 새로운 과목 생성
+                    course = courseMapper.toCourse(courseRequestDto);
+                    course.setUser(user); // User 설정
+                    course.setIsSelected(true);
+                }
+                courseModuleService.save(course);
             }
-            courseModuleService.save(course);
         }
 
         // es portfolio 수정

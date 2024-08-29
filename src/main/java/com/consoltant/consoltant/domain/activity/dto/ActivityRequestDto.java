@@ -14,6 +14,7 @@ public class ActivityRequestDto {
     private Long activityId;
     private Long portfolioId;
     private String title;
+    private String contentTitle;
     private String content;
     private LocalDate startDate;
     private LocalDate endDate;

@@ -10,6 +10,7 @@ public class CourseResponseDto {
     private Long id;
     private Long userId;
     private Long subjectId;
+    private String subjectName;
     private String grade;
     private Boolean isSelected;
     private Boolean isDeleted;

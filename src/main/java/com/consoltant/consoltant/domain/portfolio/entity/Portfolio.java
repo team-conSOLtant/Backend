@@ -73,7 +73,7 @@ public class Portfolio {
     public void update(PortfolioRequestDto portfolioRequestDto){
         this.totalGpa = portfolioRequestDto.getTotalGpa();
         this.majorGpa = portfolioRequestDto.getMajorGpa();
-        this.email = email;
+        this.email = portfolioRequestDto.getEmail();
         this.financeKeyword = portfolioRequestDto.getFinanceKeyword();
         this.myKeyword = portfolioRequestDto.getMyKeyword();
         this.job = portfolioRequestDto.getJob();
