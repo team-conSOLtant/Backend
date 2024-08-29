@@ -1,5 +1,6 @@
 package com.consoltant.consoltant.domain.user.entity;
 
+import com.consoltant.consoltant.domain.journey.entity.Journey;
 import com.consoltant.consoltant.domain.university.entity.University;
 import com.consoltant.consoltant.domain.user.dto.CreateUserAcademyRequestDto;
 import com.consoltant.consoltant.domain.user.dto.CreateUserAccountRequestDto;
@@ -133,6 +134,10 @@ public class User {
         this.birthDate = birthDate;
         this.phoneNumber = phoneNumber;
         this.email = email;
+    }
+
+    public void changeJourney(JourneyType journeyType){
+        this.currentJourneyType = journeyType;
     }
 
     //사용자 키 추가
