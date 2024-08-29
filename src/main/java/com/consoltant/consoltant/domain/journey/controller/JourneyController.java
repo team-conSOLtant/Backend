@@ -1,10 +1,14 @@
 package com.consoltant.consoltant.domain.journey.controller;
 
+import co.elastic.clients.elasticsearch.xpack.usage.Base;
 import com.consoltant.consoltant.domain.journey.dto.JourneyGraphResponseDto;
 import com.consoltant.consoltant.domain.journey.dto.JourneyRequestDto;
 import com.consoltant.consoltant.domain.journey.dto.JourneyResponseDto;
 import com.consoltant.consoltant.domain.journey.dto.JourneyStatsResponseDto;
+import com.consoltant.consoltant.domain.journey.service.JourneyModuleService;
 import com.consoltant.consoltant.domain.journey.service.JourneyService;
+import com.consoltant.consoltant.domain.user.entity.User;
+import com.consoltant.consoltant.domain.user.repository.UserRepository;
 import com.consoltant.consoltant.domain.user.service.UserService;
 import com.consoltant.consoltant.util.base.BaseSuccessResponse;
 import com.consoltant.consoltant.util.constant.JourneyType;
@@ -30,6 +34,17 @@ public class JourneyController {
 
     private final JourneyService journeyService;
     private final UserService userService;
+    private final JourneyModuleService journeyModuleService;
+    private final UserRepository userRepository;
+
+    @GetMapping("/default")
+    public BaseSuccessResponse<Void> test(){
+
+        Long userId = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
+        User user = userRepository.findById(userId).get();
+        journeyModuleService.defaultSave(user);
+        return new BaseSuccessResponse<>(null);
+    }
 
     // 단일 조회
     @GetMapping("/{id}")
