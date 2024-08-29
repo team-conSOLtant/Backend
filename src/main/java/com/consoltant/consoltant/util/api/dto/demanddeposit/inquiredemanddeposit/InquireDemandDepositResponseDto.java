@@ -17,4 +17,5 @@ public class InquireDemandDepositResponseDto {
     private String startDate;
     private String endDate;
     private Long balance;
+    private Integer age;
 }

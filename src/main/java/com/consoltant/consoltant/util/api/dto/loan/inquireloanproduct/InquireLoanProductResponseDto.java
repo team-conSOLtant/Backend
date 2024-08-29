@@ -25,4 +25,5 @@ public class InquireLoanProductResponseDto {
     private String startDate;
     private String endDate;
     private Long balance;
+    private Integer age;
 }

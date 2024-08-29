@@ -21,4 +21,5 @@ public class InquireSavingProductsResponseDto {
     private String startDate;
     private String endDate;
     private Long balance;
+    private Integer age;
 }
