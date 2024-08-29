@@ -2,6 +2,7 @@ package com.consoltant.consoltant.domain.product.entity;
 
 import com.consoltant.consoltant.domain.product.dto.ProductRequestDto;
 import com.consoltant.consoltant.domain.user.entity.User;
+import com.consoltant.consoltant.util.constant.JourneyType;
 import com.consoltant.consoltant.util.constant.ProductType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -41,19 +42,27 @@ public class Product {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ProductType productType; // 수시입출금, 예금, 적금, 대출
+    private JourneyType journeyType;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String accountTypeUniqueNo;
+    private ProductType productType;
+
+    private LocalDate startDate;
+
+    private LocalDate endDate;
 
     @Column(nullable = true, length = 100)
     private String accountNo;
 
     @Column(nullable = false)
-    private LocalDate startDate;
+    private Long balance;
 
     @Column(nullable = false)
-    private LocalDate endDate;
+    private int age;
+
+    @Column(nullable = false)
+    private String accountTypeUniqueNo;
 
     @Column(nullable = false)
     @Builder.Default

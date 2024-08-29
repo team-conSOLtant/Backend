@@ -52,11 +52,17 @@ public class Journey {
 
     private LocalDate endDate;
 
+    @Column(nullable = true, length = 100)
+    private String accountNo;
+
     @Column(nullable = false)
     private Long balance;
 
     @Column(nullable = false)
     private int age;
+
+    @Column(nullable = false)
+    private String accountTypeUniqueNo;
 
     @Column(nullable = false)
     @Builder.Default
