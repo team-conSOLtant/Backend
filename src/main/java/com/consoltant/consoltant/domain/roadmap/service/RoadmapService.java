@@ -7,8 +7,11 @@ import com.consoltant.consoltant.domain.journey.repository.JourneyRepository;
 import com.consoltant.consoltant.domain.journey.service.JourneyModuleService;
 import com.consoltant.consoltant.domain.portfolio.entity.Portfolio;
 import com.consoltant.consoltant.domain.portfolio.service.PortfolioModuleService;
+import com.consoltant.consoltant.domain.product.dto.ProductInfo;
 import com.consoltant.consoltant.domain.product.service.ProductService;
 import com.consoltant.consoltant.domain.recommend.dto.RecommendResponseDto;
+import com.consoltant.consoltant.domain.recommend.entity.Recommend;
+import com.consoltant.consoltant.domain.recommend.repository.RecommendRepository;
 import com.consoltant.consoltant.domain.recommend.service.RecommendModuleService;
 import com.consoltant.consoltant.domain.recommend.service.RecommendService;
 import com.consoltant.consoltant.domain.roadmap.dto.RoadmapGraphData;
@@ -18,7 +21,9 @@ import com.consoltant.consoltant.domain.roadmap.entity.Roadmap;
 import com.consoltant.consoltant.domain.roadmap.repository.RoadmapRepository;
 import com.consoltant.consoltant.domain.user.entity.User;
 import com.consoltant.consoltant.domain.user.repository.UserRepository;
+import com.consoltant.consoltant.domain.user.service.UserService;
 import com.consoltant.consoltant.global.exception.BadRequestException;
+import com.consoltant.consoltant.util.constant.FinanceKeyword;
 import com.consoltant.consoltant.util.constant.JourneyType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,11 +46,13 @@ public class RoadmapService {
     private final JourneyModuleService journeyModuleService;
     private final RecommendModuleService recommendModuleService;
     private final RecommendService recommendService;
+    private final RecommendRepository recommendRepository;
+    private final UserService userService;
 
     //모범 로드맵 매칭
-    public Long matchingRoadmap(Long userId){
+    public void matchingRoadmap(Long userId){
 
-        User user = userRepository.findById(userId).orElse(null);
+        User user = userRepository.findById(userId).orElseThrow(()->new BadRequestException("존재하지 않는 사용자입니다."));
 
         List<Journey> jourenyList = journeyModuleService.findAllByUserId(userId);
         Long startAsset = jourenyList.get(0).getBalance();
@@ -65,11 +72,30 @@ public class RoadmapService {
                 .filter(s->user.getSalary() - 50 <= s.getSalary() &&  s.getSalary() <= user.getSalary() + 20)
                 .toList();
 
-//        Random rand = new Random();
-//
-//        rand.nextInt();
+        for(BestRoadmapResponseDto responseDto : bestRoadmapResponseDtoList){
+            if(Objects.equals(responseDto.getUser().getId(), user.getId()))continue;
+            if(roadmapList!=null){
+                if(roadmapList.stream().filter(s-> Objects.equals(s.getId(), responseDto.getId())).findAny().orElse(null)==null){
+                    roadmapRepository.save(
+                            Roadmap.builder()
+                                    .roadmapUser(responseDto.getUser())
+                                    .user(user)
+                                    .build()
+                    );
+                    break;
+                }
+            }
 
-        return null;
+            else{
+                roadmapRepository.save(
+                        Roadmap.builder()
+                                .roadmapUser(responseDto.getUser())
+                                .user(user)
+                                .build()
+                );
+                break;
+            }
+        }
     }
 
     //로드맵 그래프 생성
@@ -155,7 +181,49 @@ public class RoadmapService {
 
     // 예상 로드맵 생성
     public RoadmapGraphResponseDto makeExpectedRoadmap(Long userId, List<RecommendResponseDto> list){
-        //TODO list가 null이면 사용자가 가진 자산으로만 그래프 제공
+
+        User user = userRepository.findById(userId).orElseThrow(()->new BadRequestException("존재하지 않는 사용자입니다."));
+        FinanceKeyword financeKeyword = portfolioModuleService.findByUserId(userId).orElseThrow((()->new BadRequestException("존재하지 않는 사용자입니다."))).getFinanceKeyword();
+
+        RoadmapGraphResponseDto graphResponseDto = makeRoadmap(userId);
+
+        RoadmapGraphResponseDto roadmapGraphResponseDto = new RoadmapGraphResponseDto();
+
+        //기존 유저 정보 제공
+        roadmapGraphResponseDto.setInfo(graphResponseDto.getInfo());
+        roadmapGraphResponseDto.setAge(graphResponseDto.getAge());
+        roadmapGraphResponseDto.setProduct(graphResponseDto.getProduct());
+        roadmapGraphResponseDto.setRecommend(graphResponseDto.getRecommend());
+
+        //현재 데이터만 저장
+        roadmapGraphResponseDto.getData().add(graphResponseDto.getData().get(graphResponseDto.getData().size()-1));
+
+        //TODO list가 null이거나 빈 배열이면 사용자가 가진 자산으로만 그래프 제공
+        if(!(list == null || list.isEmpty())){
+            roadmapGraphResponseDto.getRecommend().addAll(list);
+            //TODO 정렬 필요할 듯
+        }
+
+        //현재 연봉 기준 매년 증가하는 금액 체크
+        //연봉 적금 예금 대출
+
+        List<ProductInfo> productList;
+        List<RecommendResponseDto> responseList;
+
+        switch (financeKeyword){
+            //1년
+            case SMALL_HAPPINESS -> {
+
+            }
+            //5년
+            case MIDDLE_HAPPINESS -> {
+
+            }
+            //10년
+            case BIG_HAPPINESS -> {
+
+            }
+        }
 
         return null;
     }

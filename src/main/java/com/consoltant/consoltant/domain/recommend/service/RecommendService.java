@@ -15,6 +15,7 @@ import com.consoltant.consoltant.global.exception.BadRequestException;
 import com.consoltant.consoltant.util.api.RestTemplateUtil;
 import com.consoltant.consoltant.util.api.dto.demanddeposit.inquiredemanddeposit.InquireDemandDepositResponseDto;
 import com.consoltant.consoltant.util.api.dto.deposit.inquiredepositinfo.InquireDepositInfoResponseDto;
+import com.consoltant.consoltant.util.api.dto.deposit.inquiredepositproducts.InquireDepositProductsResponseDto;
 import com.consoltant.consoltant.util.api.dto.loan.inquireloanproduct.InquireLoanProductResponseDto;
 import com.consoltant.consoltant.util.api.dto.saving.inquiresavinginfo.InquireSavingInfoResponseDto;
 import com.consoltant.consoltant.util.api.dto.saving.inquiresavingproducts.InquireSavingProductsResponseDto;
@@ -47,7 +48,7 @@ public class RecommendService {
                 .toList();
 
         List<InquireDemandDepositResponseDto> demandDepositList = restTemplateUtil.inquireDemandDepositList();
-        List<InquireDepositInfoResponseDto> depositInfoList = restTemplateUtil.inquireDepositProducts();
+        List<InquireDepositProductsResponseDto> depositInfoList = restTemplateUtil.inquireDepositProducts();
         List<InquireSavingProductsResponseDto> savingInfoList = restTemplateUtil.inquireSavingProducts();
         List<InquireLoanProductResponseDto> loanProductList = restTemplateUtil.inquireLoanProductList();
 
@@ -100,7 +101,7 @@ public class RecommendService {
                 .toList();
 
         List<InquireDemandDepositResponseDto> demandDepositList = restTemplateUtil.inquireDemandDepositList();
-        List<InquireDepositInfoResponseDto> depositInfoList = restTemplateUtil.inquireDepositProducts();
+        List<InquireDepositProductsResponseDto> depositInfoList = restTemplateUtil.inquireDepositProducts();
         List<InquireSavingProductsResponseDto> savingInfoList = restTemplateUtil.inquireSavingProducts();
         List<InquireLoanProductResponseDto> loanProductList = restTemplateUtil.inquireLoanProductList();
 
