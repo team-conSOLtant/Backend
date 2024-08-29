@@ -71,6 +71,9 @@ public class ProductService {
     // 사용자 ID로 금융상품 리스트 조회
     public ProductListResponseDto findAllByUserId(Long userId, String userKey){
         ProductListResponseDto productInfoList = new ProductListResponseDto();
+        User user = userRepository.findById(userId).get();
+        Integer age = user.getAge();
+        String birthDate = user.getBirthDate();
 
         List<Product> productList = productModuleService.findAllByUserId(userId);
 
@@ -103,6 +106,8 @@ public class ProductService {
                             .setStartDate(startDate);
                     productInfoList.getDemandDeposit().get(productInfoList.getDemandDeposit().size() - 1)
                             .setEndDate(endDate);
+                    productInfoList.getDemandDeposit().get(productInfoList.getDemandDeposit().size() - 1)
+                            .setAge(product.getAge());
 
                     break;
                 case DEPOSIT:
@@ -114,12 +119,14 @@ public class ProductService {
                                     .findAny()
                                     .get()
                     );
-                    productInfoList.getDeposit().get(productInfoList.getDemandDeposit().size() - 1)
+                    productInfoList.getDeposit().get(productInfoList.getDeposit().size() - 1)
                             .setBalance(product.getBalance());
-                    productInfoList.getDeposit().get(productInfoList.getDemandDeposit().size() - 1)
+                    productInfoList.getDeposit().get(productInfoList.getDeposit().size() - 1)
                             .setStartDate(startDate);
-                    productInfoList.getDeposit().get(productInfoList.getDemandDeposit().size() - 1)
+                    productInfoList.getDeposit().get(productInfoList.getDeposit().size() - 1)
                             .setEndDate(endDate);
+                    productInfoList.getDeposit().get(productInfoList.getDeposit().size() - 1)
+                            .setAge(product.getAge());
                     break;
                 case LOAN:
                     log.info("대출");
@@ -130,12 +137,14 @@ public class ProductService {
                                     .findAny()
                                     .get()
                     );
-                    productInfoList.getLoan().get(productInfoList.getDemandDeposit().size() - 1)
+                    productInfoList.getLoan().get(productInfoList.getLoan().size() - 1)
                             .setBalance(product.getBalance());
-                    productInfoList.getLoan().get(productInfoList.getDemandDeposit().size() - 1)
+                    productInfoList.getLoan().get(productInfoList.getLoan().size() - 1)
                             .setStartDate(startDate);
-                    productInfoList.getLoan().get(productInfoList.getDemandDeposit().size() - 1)
+                    productInfoList.getLoan().get(productInfoList.getLoan().size() - 1)
                             .setEndDate(endDate);
+                    productInfoList.getLoan().get(productInfoList.getLoan().size() - 1)
+                            .setAge(product.getAge());
                     break;
                 case SAVING:
                     log.info("적금");
@@ -146,12 +155,14 @@ public class ProductService {
                                     .findAny()
                                     .get()
                     );
-                    productInfoList.getSaving().get(productInfoList.getDemandDeposit().size() - 1)
+                    productInfoList.getSaving().get(productInfoList.getSaving().size() - 1)
                             .setBalance(product.getBalance());
-                    productInfoList.getSaving().get(productInfoList.getDemandDeposit().size() - 1)
+                    productInfoList.getSaving().get(productInfoList.getSaving().size() - 1)
                             .setStartDate(startDate);
-                    productInfoList.getSaving().get(productInfoList.getDemandDeposit().size() - 1)
+                    productInfoList.getSaving().get(productInfoList.getSaving().size() - 1)
                             .setEndDate(endDate);
+                    productInfoList.getSaving().get(productInfoList.getSaving().size() - 1)
+                            .setAge(product.getAge());
                     break;
                 default:
                     break;

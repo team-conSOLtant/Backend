@@ -26,4 +26,5 @@ public class RecommendResponseDto {
 
     private ProductInfo productInfo;
 
+    private Integer age;
 }

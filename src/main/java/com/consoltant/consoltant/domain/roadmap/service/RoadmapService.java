@@ -23,6 +23,10 @@ import com.consoltant.consoltant.domain.user.entity.User;
 import com.consoltant.consoltant.domain.user.repository.UserRepository;
 import com.consoltant.consoltant.domain.user.service.UserService;
 import com.consoltant.consoltant.global.exception.BadRequestException;
+import com.consoltant.consoltant.util.api.dto.demanddeposit.inquiredemanddeposit.InquireDemandDepositResponseDto;
+import com.consoltant.consoltant.util.api.dto.deposit.inquiredepositproducts.InquireDepositProductsResponseDto;
+import com.consoltant.consoltant.util.api.dto.loan.inquireloanproduct.InquireLoanProductResponseDto;
+import com.consoltant.consoltant.util.api.dto.saving.inquiresavingproducts.InquireSavingProductsResponseDto;
 import com.consoltant.consoltant.util.constant.FinanceKeyword;
 import com.consoltant.consoltant.util.constant.JourneyType;
 import lombok.RequiredArgsConstructor;
@@ -207,8 +211,31 @@ public class RoadmapService {
         //현재 연봉 기준 매년 증가하는 금액 체크
         //연봉 적금 예금 대출
 
-        List<ProductInfo> productList;
-        List<RecommendResponseDto> responseList;
+        List<InquireDemandDepositResponseDto> demandDepositList = roadmapGraphResponseDto.getProduct().getDemandDeposit().stream()
+                .sorted(Comparator.comparing(InquireDemandDepositResponseDto::getAge))
+                .sorted(Comparator.comparing(InquireDemandDepositResponseDto::getStartDate))
+                .toList();
+        List<InquireDepositProductsResponseDto> depositProductsList = roadmapGraphResponseDto.getProduct().getDeposit().stream()
+                .sorted(Comparator.comparing(InquireDepositProductsResponseDto::getAge))
+                .sorted(Comparator.comparing(InquireDepositProductsResponseDto::getStartDate))
+                .toList();
+        List<InquireSavingProductsResponseDto> savingProductsList = roadmapGraphResponseDto.getProduct().getSaving().stream()
+                .sorted(Comparator.comparing(InquireSavingProductsResponseDto::getAge))
+                .sorted(Comparator.comparing(InquireSavingProductsResponseDto::getStartDate))
+                .toList();
+        List<InquireLoanProductResponseDto> loanProductsList = roadmapGraphResponseDto.getProduct().getLoan().stream()
+                .sorted(Comparator.comparing(InquireLoanProductResponseDto::getAge))
+                .sorted(Comparator.comparing(InquireLoanProductResponseDto::getStartDate))
+                .toList();
+
+        List<RecommendResponseDto> recommendList = roadmapGraphResponseDto.getRecommend().stream()
+                .sorted(Comparator.comparing(RecommendResponseDto::getStartDate))
+                .toList();
+
+        for(RecommendResponseDto recommend : recommendList){
+            user.
+            recommend.setAge();
+        }
 
         switch (financeKeyword){
             //1년
