@@ -22,4 +22,8 @@ public class InquireLoanProductResponseDto {
     private String loanTypeName;
     private String repaymentMethodTypeCode;
     private String repaymentMethodTypeName;
+    private String startDate;
+    private String endDate;
+    private Long balance;
+    private Integer age;
 }

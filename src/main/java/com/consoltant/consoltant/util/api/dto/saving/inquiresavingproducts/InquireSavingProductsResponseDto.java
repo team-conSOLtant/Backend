@@ -18,4 +18,8 @@ public class InquireSavingProductsResponseDto {
     private Long maxSubscriptionBalance;
     private Double interestRate;
     private String rateDescription;
+    private String startDate;
+    private String endDate;
+    private Long balance;
+    private Integer age;
 }
