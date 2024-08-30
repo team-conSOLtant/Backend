@@ -70,31 +70,30 @@ public class RecommendService {
                                 .findFirst().orElse(null))
                     );
 
-                    InquireDepositProductsResponseDto depositProductsResponseDto = depositProductsResponseDtos.stream()
+                    depositProductsResponseDtos.stream()
                             .filter(s-> Objects.equals(s.getAccountTypeUniqueNo(), recommendResponseDto.getAccountTypeUniqueNo()))
                             .findFirst()
-                            .get();
+                                    .ifPresent(depositProductsResponseDto->{
+                                        recommendResponseDto.setMaxSubscriptionBalance(
+                                                depositProductsResponseDto.getMaxSubscriptionBalance()
+                                        );
 
-                    recommendResponseDto.setMaxSubscriptionBalance(
-                            depositProductsResponseDto.getMaxSubscriptionBalance()
-                    );
+                                        recommendResponseDto.setMinSubscriptionBalance(
+                                                depositProductsResponseDto.getMinSubscriptionBalance()
+                                        );
 
-                    recommendResponseDto.setMinSubscriptionBalance(
-                            depositProductsResponseDto.getMinSubscriptionBalance()
-                    );
+                                        recommendResponseDto.setAccountDescription(
+                                                depositProductsResponseDto.getAccountDescription()
+                                        );
 
-                    recommendResponseDto.setAccountDescription(
-                            depositProductsResponseDto.getAccountDescription()
-                    );
+                                        recommendResponseDto.setInterestRate(
+                                                depositProductsResponseDto.getInterestRate()
+                                        );
 
-                    recommendResponseDto.setInterestRate(
-                            depositProductsResponseDto.getInterestRate()
-                    );
-
-                    recommendResponseDto.setSubscriptionPeriod(
-                            depositProductsResponseDto.getSubscriptionPeriod()
-                    );
-
+                                        recommendResponseDto.setSubscriptionPeriod(
+                                                depositProductsResponseDto.getSubscriptionPeriod()
+                                        );
+                                    });
 
                 }
                 case SAVING -> {
@@ -104,30 +103,28 @@ public class RecommendService {
                                 .findFirst().orElse(null))
                     );
 
-                    InquireSavingProductsResponseDto savingProductsResponseDto = savingProductsResponseDtos.stream()
+                    savingProductsResponseDtos.stream()
                             .filter(s-> Objects.equals(s.getAccountTypeUniqueNo(), recommendResponseDto.getAccountTypeUniqueNo()))
                             .findFirst()
-                            .get();
+                                    .ifPresent(savingProductsResponseDto->{
+                                        recommendResponseDto.setMaxSubscriptionBalance(
+                                                savingProductsResponseDto.getMaxSubscriptionBalance()
+                                        );
+                                        recommendResponseDto.setMinSubscriptionBalance(
+                                                savingProductsResponseDto.getMinSubscriptionBalance()
+                                        );
+                                        recommendResponseDto.setAccountDescription(
+                                                savingProductsResponseDto.getAccountDescription()
+                                        );
 
-                    recommendResponseDto.setMaxSubscriptionBalance(
-                            savingProductsResponseDto.getMaxSubscriptionBalance()
-                    );
+                                        recommendResponseDto.setInterestRate(
+                                                savingProductsResponseDto.getInterestRate()
+                                        );
+                                        recommendResponseDto.setSubscriptionPeriod(
+                                                savingProductsResponseDto.getSubscriptionPeriod()
+                                        );
+                                    });
 
-                    recommendResponseDto.setMinSubscriptionBalance(
-                            savingProductsResponseDto.getMinSubscriptionBalance()
-                    );
-
-                    recommendResponseDto.setAccountDescription(
-                            savingProductsResponseDto.getAccountDescription()
-                    );
-
-                    recommendResponseDto.setInterestRate(
-                            savingProductsResponseDto.getInterestRate()
-                    );
-
-                    recommendResponseDto.setSubscriptionPeriod(
-                            savingProductsResponseDto.getSubscriptionPeriod()
-                    );
                 }
                 case LOAN -> {
                     recommendResponseDto.setProductInfo(
@@ -136,18 +133,19 @@ public class RecommendService {
                                 .findFirst().orElse(null))
                     );
 
-                    InquireLoanProductResponseDto loanProductResponseDto = loanProductResponseDtos.stream()
+                    loanProductResponseDtos.stream()
                             .filter(s-> Objects.equals(s.getAccountTypeUniqueNo(), recommendResponseDto.getAccountTypeUniqueNo()))
                             .findFirst()
-                            .get();
+                            .ifPresent(loanProductResponseDto->{recommendResponseDto.setAccountDescription(
+                                    loanProductResponseDto.getAccountDescription()
+                            );
 
-                    recommendResponseDto.setAccountDescription(
-                            loanProductResponseDto.getAccountDescription()
-                    );
+                                recommendResponseDto.setInterestRate(
+                                        loanProductResponseDto.getInterestRate()
+                                );
+                            });
 
-                    recommendResponseDto.setInterestRate(
-                            loanProductResponseDto.getInterestRate()
-                    );
+
                 }
             }
         }
