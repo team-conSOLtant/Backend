@@ -343,6 +343,13 @@ public class PortfolioService {
 
     @Transactional
     public void uploadImage(Long id, String baseUrl) {
+        Portfolio portfolio = portfolioModuleService.findById(id);
+
+        if(baseUrl == null){
+            portfolio.setImageUrl(null);
+            portfolioModuleService.save(portfolio);
+            return;
+        }
         String imagePath = System.getProperty("user.dir") + "/src/main/resources/images/";
         System.out.println(baseUrl.length());
         System.out.println(imagePath);
@@ -356,7 +363,6 @@ public class PortfolioService {
                 fos.write(decodedBytes);
             }
 
-            Portfolio portfolio = portfolioModuleService.findById(id);
             portfolio.setImageUrl(filePath);
             portfolioModuleService.save(portfolio);
 
