@@ -34,7 +34,8 @@ public class PortfolioController {
     private final PortfolioElasticService portfolioElasticService;
 
     @GetMapping("/{id}")
-    public BaseSuccessResponse<PortfolioResponseDto> findById(@PathVariable Long id) {
+    public BaseSuccessResponse<PortfolioResponseDto> findById(@PathVariable Long id)
+        throws IOException {
         return new BaseSuccessResponse<>(portfolioService.findById(id));
     }
 
