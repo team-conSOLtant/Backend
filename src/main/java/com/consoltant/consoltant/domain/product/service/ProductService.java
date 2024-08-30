@@ -3,31 +3,25 @@ package com.consoltant.consoltant.domain.product.service;
 import com.consoltant.consoltant.domain.journey.dto.JourneyStatsResponseDto;
 import com.consoltant.consoltant.domain.journey.entity.Journey;
 import com.consoltant.consoltant.domain.journey.service.JourneyModuleService;
-import com.consoltant.consoltant.domain.product.dto.*;
+import com.consoltant.consoltant.domain.product.dto.ProductListResponseDto;
+import com.consoltant.consoltant.domain.product.dto.ProductResponseDto;
+import com.consoltant.consoltant.domain.product.dto.ProductSaveRequestDto;
 import com.consoltant.consoltant.domain.product.entity.Product;
 import com.consoltant.consoltant.domain.product.mapper.ProductMapper;
 import com.consoltant.consoltant.domain.user.entity.User;
 import com.consoltant.consoltant.domain.user.repository.UserRepository;
 import com.consoltant.consoltant.domain.user.service.UserService;
-import com.consoltant.consoltant.global.exception.BadRequestException;
 import com.consoltant.consoltant.util.api.RestTemplateUtil;
 import com.consoltant.consoltant.util.api.dto.demanddeposit.inquiredemanddeposit.InquireDemandDepositResponseDto;
 import com.consoltant.consoltant.util.api.dto.demanddeposit.inquiredemanddepositaccount.InquireDemandDepositAccountResponseDto;
-import com.consoltant.consoltant.util.api.dto.deposit.inquiredepositinfo.InquireDepositInfoResponseDto;
 import com.consoltant.consoltant.util.api.dto.deposit.inquiredepositproducts.InquireDepositProductsResponseDto;
-import com.consoltant.consoltant.util.api.dto.loan.inquireloanaccount.InquireLoanAccountResponseDto;
 import com.consoltant.consoltant.util.api.dto.loan.inquireloanproduct.InquireLoanProductResponseDto;
-import com.consoltant.consoltant.util.api.dto.loan.inquiremycreditrating.InquireMyCreditRatingResponseDto;
-import com.consoltant.consoltant.util.api.dto.saving.inquiresavinginfo.InquireSavingInfoResponseDto;
 import com.consoltant.consoltant.util.api.dto.saving.inquiresavingproducts.InquireSavingProductsResponseDto;
 import com.consoltant.consoltant.util.constant.JourneyType;
 import com.consoltant.consoltant.util.constant.ProductType;
-
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -90,37 +84,43 @@ public class ProductService {
             switch (product.getProductType()){
                 case DEMAND_DEPOSIT:
                     log.info("수시입출금");
-//                    productInfoList.getDemandDeposit().add(productMapper.toProductInfo(restTemplateUtil.inquireDemandDepositAccount(userKey,product.getAccountNo())));
 
-                    InquireDemandDepositResponseDto inquireDemandDepositResponseDto =demandDepositList.stream()
-                            .filter(s -> Objects.equals(s.getAccountTypeUniqueNo(), product.getAccountTypeUniqueNo()))
-                            .findAny().orElse(null);
+                    InquireDemandDepositResponseDto findInquireDemandDepositResponseDto = demandDepositList.stream()
+                        .filter(s -> Objects.equals(s.getAccountTypeUniqueNo(), product.getAccountTypeUniqueNo()))
+                        .findAny().orElse(null);
 
-                    if(inquireDemandDepositResponseDto != null){
-
-                        productInfoList.getDemandDeposit().add(inquireDemandDepositResponseDto);
-
-                        productInfoList.getDemandDeposit().get(productInfoList.getDemandDeposit().size() - 1)
-                                .setBalance(product.getBalance());
-                        productInfoList.getDemandDeposit().get(productInfoList.getDemandDeposit().size() - 1)
-                                .setStartDate(startDate);
-                        productInfoList.getDemandDeposit().get(productInfoList.getDemandDeposit().size() - 1)
-                                .setEndDate(endDate);
-                        productInfoList.getDemandDeposit().get(productInfoList.getDemandDeposit().size() - 1)
-                                .setAge(product.getAge());
+                    if (findInquireDemandDepositResponseDto == null) {
+                        continue;
                     }
 
+                    InquireDemandDepositResponseDto inquireDemandDepositResponseDto = new InquireDemandDepositResponseDto(findInquireDemandDepositResponseDto);
 
-
+                    if (inquireDemandDepositResponseDto != null) {
+                        productInfoList.getDemandDeposit().add(inquireDemandDepositResponseDto);
+                        productInfoList.getDemandDeposit().get(productInfoList.getDemandDeposit().size() - 1)
+                            .setBalance(product.getBalance());
+                        productInfoList.getDemandDeposit().get(productInfoList.getDemandDeposit().size() - 1)
+                            .setStartDate(startDate);
+                        productInfoList.getDemandDeposit().get(productInfoList.getDemandDeposit().size() - 1)
+                            .setEndDate(endDate);
+                        productInfoList.getDemandDeposit().get(productInfoList.getDemandDeposit().size() - 1)
+                            .setAge(product.getAge());
+                    }
 
                     break;
                 case DEPOSIT:
                     log.info("예금");
 //                    productInfoList.getDeposit().add(productMapper.toProductInfo(restTemplateUtil.inquireDemandDepositAccount(userKey,product.getAccountNo())));
 
-                    InquireDepositProductsResponseDto inquireDepositProductsResponseDto = depositList.stream()
-                            .filter(s-> Objects.equals(s.getAccountTypeUniqueNo(), product.getAccountTypeUniqueNo()))
-                            .findAny().orElse(null);
+                    InquireDepositProductsResponseDto findInquireDepositProductsResponseDto = depositList.stream()
+                        .filter(s-> Objects.equals(s.getAccountTypeUniqueNo(), product.getAccountTypeUniqueNo()))
+                        .findAny().orElse(null);
+
+                    if(findInquireDepositProductsResponseDto == null){
+                        continue;
+                    }
+
+                    InquireDepositProductsResponseDto inquireDepositProductsResponseDto = new InquireDepositProductsResponseDto(findInquireDepositProductsResponseDto);
 
                     if(inquireDepositProductsResponseDto!=null){
                         productInfoList.getDeposit().add(inquireDepositProductsResponseDto);
@@ -138,43 +138,55 @@ public class ProductService {
                     break;
                 case LOAN:
                     log.info("대출");
-//                    productInfoList.getLoan().add(productMapper.toProductInfo(restTemplateUtil.inquireDemandDepositAccount(userKey,product.getAccountNo())));
 
-                    InquireLoanProductResponseDto inquireLoanProductResponseDto = loanList.stream()
-                            .filter(s-> Objects.equals(s.getAccountTypeUniqueNo(), product.getAccountTypeUniqueNo()))
-                            .findAny().orElse(null);
+                    InquireLoanProductResponseDto findInquireLoanProductResponseDto = loanList.stream()
+                        .filter(s -> Objects.equals(s.getAccountTypeUniqueNo(), product.getAccountTypeUniqueNo()))
+                        .findAny().orElse(null);
 
-                    if(inquireLoanProductResponseDto!=null){
+                    if (findInquireLoanProductResponseDto == null) {
+                        continue;
+                    }
+
+                    InquireLoanProductResponseDto inquireLoanProductResponseDto = new InquireLoanProductResponseDto(findInquireLoanProductResponseDto);
+
+                    if (inquireLoanProductResponseDto != null) {
                         productInfoList.getLoan().add(inquireLoanProductResponseDto);
                         productInfoList.getLoan().get(productInfoList.getLoan().size() - 1)
-                                .setBalance(product.getBalance());
+                            .setBalance(product.getBalance());
                         productInfoList.getLoan().get(productInfoList.getLoan().size() - 1)
-                                .setStartDate(startDate);
+                            .setStartDate(startDate);
                         productInfoList.getLoan().get(productInfoList.getLoan().size() - 1)
-                                .setEndDate(endDate);
+                            .setEndDate(endDate);
                         productInfoList.getLoan().get(productInfoList.getLoan().size() - 1)
-                                .setAge(product.getAge());
+                            .setAge(product.getAge());
                     }
 
                     break;
                 case SAVING:
                     log.info("적금");
-//                    productInfoList.getSaving().add(productMapper.toProductInfo(restTemplateUtil.inquireDemandDepositAccount(userKey,product.getAccountNo())));
-                    InquireSavingProductsResponseDto inquireSavingProductsResponseDto = savingList.stream()
-                            .filter(s-> Objects.equals(s.getAccountTypeUniqueNo(), product.getAccountTypeUniqueNo()))
-                            .findAny().orElse(null);
 
-                    if(inquireSavingProductsResponseDto!=null){
+                    InquireSavingProductsResponseDto findInquireSavingProductsResponseDto = savingList.stream()
+                        .filter(s -> Objects.equals(s.getAccountTypeUniqueNo(), product.getAccountTypeUniqueNo()))
+                        .findAny().orElse(null);
+
+                    if (findInquireSavingProductsResponseDto == null) {
+                        continue;
+                    }
+
+                    InquireSavingProductsResponseDto inquireSavingProductsResponseDto = new InquireSavingProductsResponseDto(findInquireSavingProductsResponseDto);
+
+                    if (inquireSavingProductsResponseDto != null) {
                         productInfoList.getSaving().add(inquireSavingProductsResponseDto);
                         productInfoList.getSaving().get(productInfoList.getSaving().size() - 1)
-                                .setBalance(product.getBalance());
+                            .setBalance(product.getBalance());
                         productInfoList.getSaving().get(productInfoList.getSaving().size() - 1)
-                                .setStartDate(startDate);
+                            .setStartDate(startDate);
                         productInfoList.getSaving().get(productInfoList.getSaving().size() - 1)
-                                .setEndDate(endDate);
+                            .setEndDate(endDate);
                         productInfoList.getSaving().get(productInfoList.getSaving().size() - 1)
-                                .setAge(product.getAge());
+                            .setAge(product.getAge());
                     }
+
                     break;
                 default:
                     break;
