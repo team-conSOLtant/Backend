@@ -57,6 +57,9 @@ public class Recommend {
     @Builder.Default
     private Boolean isDeleted = false;
 
+    @Column(nullable = false)
+    private Long balance;
+
     public void setUser(User user){
         this.user = user;
     }

@@ -40,17 +40,13 @@ import java.util.*;
 @RequiredArgsConstructor
 public class RoadmapService {
     private final RoadmapRepository roadmapRepository;
-    private final RoadmapModuleService roadmapModuleService;
     private final UserRepository userRepository;
     private final JourneyRepository journeyRepository;
     private final ProductService productService;
     private final BestRoadmapModuleService bestRoadmapModuleService;
     private final PortfolioModuleService portfolioModuleService;
     private final JourneyModuleService journeyModuleService;
-    private final RecommendModuleService recommendModuleService;
     private final RecommendService recommendService;
-    private final RecommendRepository recommendRepository;
-    private final UserService userService;
     private final RestTemplateUtil restTemplateUtil;
 
     //모범 로드맵 매칭
