@@ -29,4 +29,15 @@ public class RecommendResponseDto {
     private ProductInfo productInfo;
 
     private Integer age;
+
+    private Double interestRate;
+
+    private String accountDescription;
+
+    private String subscriptionPeriod;
+
+    private Long minSubscriptionBalance;
+
+    private Long maxSubscriptionBalance;
+
 }

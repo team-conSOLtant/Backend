@@ -7,6 +7,8 @@ import com.consoltant.consoltant.domain.recommend.service.RecommendModuleService
 import com.consoltant.consoltant.domain.recommend.service.RecommendService;
 import com.consoltant.consoltant.domain.user.service.UserService;
 import com.consoltant.consoltant.util.base.BaseSuccessResponse;
+import com.consoltant.consoltant.util.constant.JourneyType;
+import com.consoltant.consoltant.util.constant.ProductType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -46,13 +48,29 @@ public class RecommendController {
     @PostMapping
     public BaseSuccessResponse<List<RecommendResponseDto>> save(@RequestBody RecommendRequestDto recommendRequestDto){
         Long userId = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
+        recommendRequestDto.setJourneyType(JourneyType.RETIRED);
+        switch (recommendRequestDto.getAccountTypeName()){
+            case "예금" -> recommendRequestDto.setProductType(ProductType.DEPOSIT);
+            case "적금"-> recommendRequestDto.setProductType(ProductType.SAVING);
+            case "대출"-> recommendRequestDto.setProductType(ProductType.LOAN);
+        }
         return new BaseSuccessResponse<>(recommendService.save(userId, recommendRequestDto));
     }
 
     @PostMapping("/list")
-    public BaseSuccessResponse<List<RecommendResponseDto>> saveList(@RequestBody RecommendRequestDtoList recommendRequestDto){
+    public BaseSuccessResponse<List<RecommendResponseDto>> saveList(@RequestBody RecommendRequestDtoList recommendRequestDtoList){
         Long userId = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
-        return new BaseSuccessResponse<>(recommendService.saveAll(userId, recommendRequestDto));
+
+        for(RecommendRequestDto recommendRequestDto : recommendRequestDtoList.getRecommend()){
+            recommendRequestDto.setJourneyType(JourneyType.RETIRED);
+            switch (recommendRequestDto.getAccountTypeName()){
+                case "예금" -> recommendRequestDto.setProductType(ProductType.DEPOSIT);
+                case "적금"-> recommendRequestDto.setProductType(ProductType.SAVING);
+                case "대출"-> recommendRequestDto.setProductType(ProductType.LOAN);
+            }
+        }
+
+        return new BaseSuccessResponse<>(recommendService.saveAll(userId, recommendRequestDtoList));
     }
 
     @DeleteMapping("/{id}")
