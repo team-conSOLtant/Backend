@@ -15,12 +15,13 @@ public class ExpectRoadmapGraphResponseDto {
     private List<RoadmapGraphData> data;
     private ProductListResponseDto product;
     private UserInfo info;
-    private List<RecommendResponseDto> recommend;
-    private List<PreRecommendDto> preRecommend;
+    private RecommendProductList recommend;
+    private ExpectProductList preRecommend;
 
     public ExpectRoadmapGraphResponseDto() {
 
         data = new ArrayList<>();
-        preRecommend = new ArrayList<>();
+        preRecommend = new ExpectProductList();
+        recommend = new RecommendProductList();
     }
 }
