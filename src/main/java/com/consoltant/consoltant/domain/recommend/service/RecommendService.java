@@ -98,7 +98,8 @@ public class RecommendService {
                 }
                 case SAVING -> {
                     recommendResponseDto.setProductInfo(
-                        productMapper.toProductInfo(savingInfoList.stream()
+                        productMapper.toProductInfo(
+                                savingInfoList.stream()
                                 .filter(s-> Objects.equals(s.getAccountTypeUniqueNo(), recommendResponseDto.getAccountTypeUniqueNo()))
                                 .findFirst().orElse(null))
                     );
