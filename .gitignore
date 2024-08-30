@@ -38,3 +38,6 @@ out/
 
 ### Secret Info ###
 src/main/resources/info.properties
+
+##image file
+src/main/resources/images/**

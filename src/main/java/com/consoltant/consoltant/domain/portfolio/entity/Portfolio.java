@@ -86,4 +86,8 @@ public class Portfolio {
         this.totalGpa = totalGpa;
         this.majorGpa = majorGpa;
     }
+
+    public void setImageUrl(String imageUrl){
+        this.imageUrl = imageUrl;
+    }
 }

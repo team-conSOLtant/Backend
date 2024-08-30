@@ -45,10 +45,17 @@ import com.consoltant.consoltant.domain.user.repository.UserRepository;
 import com.consoltant.consoltant.domain.user.service.UserService;
 import com.consoltant.consoltant.global.exception.BadRequestException;
 import com.consoltant.consoltant.util.constant.NotificationType;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -97,13 +104,20 @@ public class PortfolioService {
         return portfolioResponseDto;
     }
 
-    public PortfolioResponseDto findByUserId(Long userId) {
+    @Transactional
+    public PortfolioResponseDto findByUserId(Long userId) throws IOException {
         Portfolio portfolio = portfolioModuleService.findByUserId(userId).orElse(null);
         PortfolioResponseDto portfolioResponseDto = portfolioMapper.toPortfolioResponseDto(
             portfolio);
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Long loginUserId = userService.getUserId(email);
         portfolioResponseDto.setIsMine(userId.equals(loginUserId));
+        //이미지 처리
+        String filePath = portfolio.getImageUrl();
+        byte[] bytes = Files.readAllBytes(Paths.get(filePath)); //실제 파일 불러오기
+        String base64EncodedString = Base64.getEncoder().encodeToString(bytes); //인코딩
+        portfolioResponseDto.setImageUrl(base64EncodedString); //thumbnail에 인코딩 정보 넣어주기
+        //이미지 처리
         return portfolioResponseDto;
     }
 
@@ -320,4 +334,27 @@ public class PortfolioService {
         });
     }
 
+    @Transactional
+    public void uploadImage(Long id, String baseUrl) {
+        String imagePath = System.getProperty("user.dir") + "/src/main/resources/images/";
+        System.out.println(baseUrl.length());
+        System.out.println(imagePath);
+        String uuid = UUID.randomUUID().toString();
+        String fileName = uuid + ".jpg";
+        String filePath = imagePath + fileName;
+        try {
+            byte[] decodedBytes = Base64.getDecoder().decode(baseUrl);
+
+            try (FileOutputStream fos = new FileOutputStream(new File(filePath))) {
+                fos.write(decodedBytes);
+            }
+
+            Portfolio portfolio = portfolioModuleService.findById(id);
+            portfolio.setImageUrl(filePath);
+            portfolioModuleService.save(portfolio);
+
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save image file", e);
+        }
+    }
 }
