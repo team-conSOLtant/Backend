@@ -20,4 +20,5 @@ public class ProductInfo {
     private Long accountBalance;
     private String lastTransactionDate;
     private String currency;
+    private Integer interest;
 }
