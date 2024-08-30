@@ -45,7 +45,6 @@ public class Recommend {
     private String accountTypeUniqueNo;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private JourneyType journeyType;
 
     @Column(nullable = false)

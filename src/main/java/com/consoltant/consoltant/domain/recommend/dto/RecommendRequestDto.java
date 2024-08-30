@@ -12,6 +12,7 @@ import java.time.LocalDate;
 public class RecommendRequestDto {
     private String accountTypeUniqueNo;
     private JourneyType journeyType;
+    private String accountTypeName;
     private ProductType productType;
     private LocalDate startDate;
     private LocalDate endDate;
