@@ -20,6 +20,7 @@ import com.consoltant.consoltant.util.api.dto.saving.inquiresavingproducts.Inqui
 import com.consoltant.consoltant.util.constant.JourneyType;
 import com.consoltant.consoltant.util.constant.ProductType;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -63,7 +64,7 @@ public class ProductService {
     }
     
     // 사용자 ID로 금융상품 리스트 조회
-    public ProductListResponseDto findAllByUserId(Long userId, String userKey){
+    public ProductListResponseDto findAllByUserId(Long userId, String userKey) {
         ProductListResponseDto productInfoList = new ProductListResponseDto();
         User user = userRepository.findById(userId).get();
         Integer age = user.getAge();
@@ -76,12 +77,19 @@ public class ProductService {
         List<InquireSavingProductsResponseDto> savingList = restTemplateUtil.inquireSavingProducts();
         List<InquireLoanProductResponseDto> loanList = restTemplateUtil.inquireLoanProductList();
 
-        for(Product product: productList){
+        // Define the formatter for yyyyMMdd
+        DateTimeFormatter formatter8Digits = DateTimeFormatter.ofPattern("yyyyMMdd");
 
-            String startDate = Integer.toString(product.getStartDate().getYear()) + (product.getStartDate().getMonthValue() < 10 ? "0" : "") + Integer.toString(product.getStartDate().getMonthValue()) + Integer.toString(product.getStartDate().getDayOfMonth());
-            String endDate = Integer.toString(product.getEndDate().getYear()) + (product.getEndDate().getMonthValue() < 10 ? "0" : "") + Integer.toString(product.getEndDate().getMonthValue()) + Integer.toString(product.getEndDate().getDayOfMonth());
+        // Define the formatter for yyyy-MM-dd
+        DateTimeFormatter formatterHyphenated = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-            switch (product.getProductType()){
+        for (Product product : productList) {
+
+            // Format startDate and endDate as yyyyMMdd
+            String startDate = product.getStartDate().format(formatter8Digits);
+            String endDate = product.getEndDate().format(formatter8Digits);
+
+            switch (product.getProductType()) {
                 case DEMAND_DEPOSIT:
                     log.info("수시입출금");
 
@@ -110,30 +118,28 @@ public class ProductService {
                     break;
                 case DEPOSIT:
                     log.info("예금");
-//                    productInfoList.getDeposit().add(productMapper.toProductInfo(restTemplateUtil.inquireDemandDepositAccount(userKey,product.getAccountNo())));
 
                     InquireDepositProductsResponseDto findInquireDepositProductsResponseDto = depositList.stream()
-                        .filter(s-> Objects.equals(s.getAccountTypeUniqueNo(), product.getAccountTypeUniqueNo()))
+                        .filter(s -> Objects.equals(s.getAccountTypeUniqueNo(), product.getAccountTypeUniqueNo()))
                         .findAny().orElse(null);
 
-                    if(findInquireDepositProductsResponseDto == null){
+                    if (findInquireDepositProductsResponseDto == null) {
                         continue;
                     }
 
                     InquireDepositProductsResponseDto inquireDepositProductsResponseDto = new InquireDepositProductsResponseDto(findInquireDepositProductsResponseDto);
 
-                    if(inquireDepositProductsResponseDto!=null){
+                    if (inquireDepositProductsResponseDto != null) {
                         productInfoList.getDeposit().add(inquireDepositProductsResponseDto);
                         productInfoList.getDeposit().get(productInfoList.getDeposit().size() - 1)
-                                .setBalance(product.getBalance());
+                            .setBalance(product.getBalance());
                         productInfoList.getDeposit().get(productInfoList.getDeposit().size() - 1)
-                                .setStartDate(startDate);
+                            .setStartDate(startDate);
                         productInfoList.getDeposit().get(productInfoList.getDeposit().size() - 1)
-                                .setEndDate(endDate);
+                            .setEndDate(endDate);
                         productInfoList.getDeposit().get(productInfoList.getDeposit().size() - 1)
-                                .setAge(product.getAge());
+                            .setAge(product.getAge());
                     }
-
 
                     break;
                 case LOAN:
@@ -192,6 +198,24 @@ public class ProductService {
                     break;
             }
         }
+
+        // Format startDate and endDate in the DTOs to yyyy-MM-dd before returning
+        productInfoList.getDemandDeposit().forEach(dto -> {
+            dto.setStartDate(LocalDate.parse(dto.getStartDate(), formatter8Digits).format(formatterHyphenated));
+            dto.setEndDate(LocalDate.parse(dto.getEndDate(), formatter8Digits).format(formatterHyphenated));
+        });
+        productInfoList.getDeposit().forEach(dto -> {
+            dto.setStartDate(LocalDate.parse(dto.getStartDate(), formatter8Digits).format(formatterHyphenated));
+            dto.setEndDate(LocalDate.parse(dto.getEndDate(), formatter8Digits).format(formatterHyphenated));
+        });
+        productInfoList.getSaving().forEach(dto -> {
+            dto.setStartDate(LocalDate.parse(dto.getStartDate(), formatter8Digits).format(formatterHyphenated));
+            dto.setEndDate(LocalDate.parse(dto.getEndDate(), formatter8Digits).format(formatterHyphenated));
+        });
+        productInfoList.getLoan().forEach(dto -> {
+            dto.setStartDate(LocalDate.parse(dto.getStartDate(), formatter8Digits).format(formatterHyphenated));
+            dto.setEndDate(LocalDate.parse(dto.getEndDate(), formatter8Digits).format(formatterHyphenated));
+        });
 
         return productInfoList;
     }
