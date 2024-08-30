@@ -75,7 +75,7 @@ public class RoadmapController {
 
         Long id = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
 
-        return new BaseSuccessResponse<>(roadmapService.makeExpectedRoadmap(id, expectRoadmapRequestDto.getProductList()));
+        return new BaseSuccessResponse<>(roadmapService.makeExpectedRoadmap(id, expectRoadmapRequestDto.getProduct()));
     }
 
     //마이 로드맵

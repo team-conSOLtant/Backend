@@ -8,5 +8,5 @@ import java.util.List;
 @Getter
 @Setter
 public class ExpectRoadmapRequestDto {
-    private ExpectProductList productList;
+    private ExpectProductList product;
 }
