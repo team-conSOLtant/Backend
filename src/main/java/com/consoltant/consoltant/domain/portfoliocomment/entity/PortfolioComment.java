@@ -43,6 +43,8 @@ public class PortfolioComment {
     @Column(nullable = false, length = 1000)
     private String comment;
 
+    private String userName;
+
     @Column(nullable = false)
     @Builder.Default
     private Boolean isDeleted = false;
