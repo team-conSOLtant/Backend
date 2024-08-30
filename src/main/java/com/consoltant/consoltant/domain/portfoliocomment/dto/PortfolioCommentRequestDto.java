@@ -9,6 +9,7 @@ public class PortfolioCommentRequestDto {
 
     private Long portfolioId;
     private Long userId;
+    private String userName;
     private String comment;
 
 }
