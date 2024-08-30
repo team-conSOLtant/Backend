@@ -16,4 +16,5 @@ public class RecommendRequestDto {
     private ProductType productType;
     private LocalDate startDate;
     private LocalDate endDate;
+    private Long balance;
 }
