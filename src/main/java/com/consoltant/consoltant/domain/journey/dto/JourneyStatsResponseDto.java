@@ -22,13 +22,13 @@ public class JourneyStatsResponseDto {
     private String RGBA;
 
     //수시입출금 비율
-    private Double demandDeposit;
+    private Long demandDeposit;
     //예금 비율
-    private Double deposit;
+    private Long deposit;
     //적금 비율
-    private Double savings;
+    private Long savings;
     //대출 비율
-    private Double loan;
+    private Long loan;
 
     //수시입출금 비율
     private Long demandDepositValue;

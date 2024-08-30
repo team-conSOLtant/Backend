@@ -135,10 +135,12 @@ public class JourneyService {
 
             Long totalAssetValue = demandDepositValue + depositValue + savingValue + loanValue;
 
-            Double demandDeposit = (totalAssetValue > 0L ? demandDepositValue.doubleValue()/totalAssetValue.doubleValue() : 0.0) * 100;
-            Double saving = (totalAssetValue > 0L ? savingValue.doubleValue()/totalAssetValue.doubleValue() : 0.0) * 100;
-            Double loan = (totalAssetValue > 0L ? depositValue.doubleValue()/totalAssetValue.doubleValue() : 0.0) * 100;
-            Double deposit = (totalAssetValue > 0L ? loanValue.doubleValue()/totalAssetValue.doubleValue() : 0.0) * 100;
+            Long demandDeposit = (long) ((totalAssetValue > 0L ? demandDepositValue.doubleValue()/totalAssetValue.doubleValue() : 0.0) * 100);
+            Long saving = (long) ((totalAssetValue > 0L ? savingValue.doubleValue()/totalAssetValue.doubleValue() : 0.0) * 100);
+            Long loan = (long) ((totalAssetValue > 0L ? depositValue.doubleValue()/totalAssetValue.doubleValue() : 0.0) * 100);
+            Long deposit = 100 - demandDeposit - saving - loan;
+
+            // Long deposit = (long) ((totalAssetValue > 0L ? loanValue.doubleValue()/totalAssetValue.doubleValue() : 0.0) * 100);
 
 
             String HEX;
