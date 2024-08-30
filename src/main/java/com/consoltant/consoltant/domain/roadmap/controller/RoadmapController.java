@@ -1,8 +1,7 @@
 package com.consoltant.consoltant.domain.roadmap.controller;
 
 import com.consoltant.consoltant.domain.bestroadmap.service.BestRoadmapService;
-import com.consoltant.consoltant.domain.roadmap.dto.ExpectRoadmapRequestDto;
-import com.consoltant.consoltant.domain.roadmap.dto.RoadmapGraphResponseDto;
+import com.consoltant.consoltant.domain.roadmap.dto.*;
 import com.consoltant.consoltant.domain.roadmap.service.RoadmapModuleService;
 import com.consoltant.consoltant.domain.roadmap.service.RoadmapService;
 import com.consoltant.consoltant.domain.user.entity.User;
@@ -68,13 +67,12 @@ public class RoadmapController {
 
     //예상 로드맵
     @PostMapping("/expect")
-    public BaseSuccessResponse<RoadmapGraphResponseDto> expectedRoadMap(@RequestBody ExpectRoadmapRequestDto expectRoadmapRequestDto){
+    public BaseSuccessResponse<ExpectRoadmapGraphResponseDto> expectedRoadMap(@RequestBody ExpectRoadmapRequestDto expectRoadmapRequestDto){
         log.info("예상 로드맵 API");
 
         Long id = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
-        roadmapService.makeExpectedRoadmap(id, expectRoadmapRequestDto.getProductList());
 
-        return new BaseSuccessResponse<>(null);
+        return new BaseSuccessResponse<>(roadmapService.makeExpectedRoadmap(id, expectRoadmapRequestDto.getProductList()));
     }
 
     //마이 로드맵
@@ -84,5 +82,19 @@ public class RoadmapController {
         Long id = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
 
         return new BaseSuccessResponse<>(roadmapService.makeRoadmap(id));
+    }
+
+    //로드맵 피드백
+    @PostMapping("/feedback")
+    public BaseSuccessResponse<ChatbotFeedbackResponseDto>feedback(@RequestBody ChatbotFeedbackRequestDto chatbotFeedbackRequestDto){
+
+        log.info("로드맵 피드백 API");
+
+        Long id = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
+
+        //TODO 유저 로드맵 정보 가져오기
+        RoadmapGraphResponseDto roadmapGraphResponseDto = roadmapService.makeRoadmap(id);
+
+        return new BaseSuccessResponse<>(roadmapService.feedback(roadmapGraphResponseDto, chatbotFeedbackRequestDto.getPrompt()));
     }
 }

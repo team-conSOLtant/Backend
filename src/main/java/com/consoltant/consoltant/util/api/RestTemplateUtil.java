@@ -1,8 +1,11 @@
 package com.consoltant.consoltant.util.api;
 
 
+import com.consoltant.consoltant.domain.roadmap.dto.RoadmapGraphResponseDto;
 import com.consoltant.consoltant.global.exception.BadRequestException;
 import com.consoltant.consoltant.util.api.dto.auth.checkauthcode.CheckAuthCodeResponseDto;
+import com.consoltant.consoltant.util.api.dto.chatbot.ChatbotRequestDto;
+import com.consoltant.consoltant.util.api.dto.chatbot.ChatbotResponseDto;
 import com.consoltant.consoltant.util.api.dto.demanddeposit.createdemanddeposit.CreateDemandDepositResponseDto;
 import com.consoltant.consoltant.util.api.dto.deposit.createdeposit.CreateDepositResponseDto;
 import com.consoltant.consoltant.util.api.dto.deposit.createdepositaccount.CreateDepositAccountResponseDto;
@@ -64,6 +67,10 @@ public class RestTemplateUtil {
     private String fintechAppNo;
     @Value("${api.key}")
     private String apiKey;
+    @Value("${gemini.api.url}")
+    private String geminiApiUrl;
+    @Value("${gemini.api.key}")
+    private String geminiApiKey;
 
     //정수형 UUID 생성
     private static String generateNumericUUID() {
@@ -520,35 +527,6 @@ public class RestTemplateUtil {
 
         return response.getBody().getREC();
     }
-    
-    //예금 만기 이자 조회
-    public DeleteDepositAccountResponseDto inquireExpiryInterest(String userKey, String accountNo){
-        final String name = "deleteAccount";
-        log.info("금융 API 예금 계좌 해지 ");
-
-        String uri = "edu/deposit/deleteAccount";
-
-        Map<String,Object>requestBody = new HashMap<>();
-
-        RequestHeader headers = requestHeader(name,userKey);
-
-        requestBody.put("Header",headers);
-        requestBody.put("accountNo",accountNo);
-
-        HttpEntity<Object> entity = new HttpEntity<>(requestBody);
-
-        ResponseEntity<RECResponse<DeleteDepositAccountResponseDto>> response =
-                restTemplate.exchange(
-                        url + uri,HttpMethod.POST ,entity,
-                        new ParameterizedTypeReference<>(){}
-                );
-
-        if(response.getBody() == null){
-            throw new BadRequestException("API 요청 중 오류가 발생했습니다.");
-        }
-
-        return response.getBody().getREC();
-    }
 
     // 적금 API
     // 적금 상품 등록
@@ -835,6 +813,9 @@ public class RestTemplateUtil {
 
         return response.getBody().getREC();
     }
+    
+    //내 신용 등급 조회
+    
 
     // 대출심사 신청
     public CreateLoanApplicationResponseDto createLoanApplication(String userKey, String accountTypeUniqueNo){
@@ -1023,6 +1004,28 @@ public class RestTemplateUtil {
         log.info("Status -> {}", response.getBody().getREC().getStatus());
 
         return response.getBody().getREC();
+    }
+    
+    //챗봇 피드백
+    public String ChatbotFeedback(RoadmapGraphResponseDto roadmapGraphResponseDto, String prompt){
+
+        log.info("프롬프트 -> {}", prompt);
+        ChatbotRequestDto chatbotRequestDto = new ChatbotRequestDto(prompt);
+
+        // Gemini에 요청 전송
+        String requestUrl = geminiApiUrl + "?key=" + geminiApiKey;
+
+        log.info("URL -> {}",requestUrl);
+
+        HttpEntity<Object> entity = new HttpEntity<>(chatbotRequestDto);
+
+        ResponseEntity<ChatbotResponseDto> response
+                = restTemplate.exchange(
+                requestUrl, HttpMethod.POST, entity,
+                new ParameterizedTypeReference<>(){}
+        );
+
+        return response.getBody().getCandidates().get(0).getContent().getParts().get(0).getText().toString();
     }
 
 }
