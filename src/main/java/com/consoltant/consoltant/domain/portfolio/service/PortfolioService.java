@@ -94,13 +94,19 @@ public class PortfolioService {
 
     private final UserRepository userRepository;
 
-    public PortfolioResponseDto findById(Long id) {
+    public PortfolioResponseDto findById(Long id) throws IOException {
         Portfolio portfolio = portfolioModuleService.findById(id);
         PortfolioResponseDto portfolioResponseDto = portfolioMapper.toPortfolioResponseDto(
             portfolio);
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Long loginUserId = userService.getUserId(email);
         portfolioResponseDto.setIsMine(portfolio.getUser().getId().equals(loginUserId));
+        if(portfolio.getImageUrl()!=null) {
+            String filePath = portfolio.getImageUrl();
+            byte[] bytes = Files.readAllBytes(Paths.get(filePath)); //실제 파일 불러오기
+            String base64EncodedString = Base64.getEncoder().encodeToString(bytes); //인코딩
+            portfolioResponseDto.setImageUrl(base64EncodedString); //thumbnail에 인코딩 정보 넣어주기
+        }
         return portfolioResponseDto;
     }
 
@@ -113,11 +119,12 @@ public class PortfolioService {
         Long loginUserId = userService.getUserId(email);
         portfolioResponseDto.setIsMine(userId.equals(loginUserId));
         //이미지 처리
-        String filePath = portfolio.getImageUrl();
-        byte[] bytes = Files.readAllBytes(Paths.get(filePath)); //실제 파일 불러오기
-        String base64EncodedString = Base64.getEncoder().encodeToString(bytes); //인코딩
-        portfolioResponseDto.setImageUrl(base64EncodedString); //thumbnail에 인코딩 정보 넣어주기
-        //이미지 처리
+        if(portfolio.getImageUrl()!=null) {
+            String filePath = portfolio.getImageUrl();
+            byte[] bytes = Files.readAllBytes(Paths.get(filePath)); //실제 파일 불러오기
+            String base64EncodedString = Base64.getEncoder().encodeToString(bytes); //인코딩
+            portfolioResponseDto.setImageUrl(base64EncodedString); //thumbnail에 인코딩 정보 넣어주기
+        }
         return portfolioResponseDto;
     }
 
