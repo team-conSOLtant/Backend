@@ -1,6 +1,5 @@
 package com.consoltant.consoltant.domain.recommend.service;
 
-import com.consoltant.consoltant.domain.product.dto.ProductInfo;
 import com.consoltant.consoltant.domain.product.mapper.ProductMapper;
 import com.consoltant.consoltant.domain.recommend.dto.RecommendRequestDto;
 import com.consoltant.consoltant.domain.recommend.dto.RecommendRequestDtoList;
@@ -14,15 +13,12 @@ import com.consoltant.consoltant.domain.user.repository.UserRepository;
 import com.consoltant.consoltant.global.exception.BadRequestException;
 import com.consoltant.consoltant.util.api.RestTemplateUtil;
 import com.consoltant.consoltant.util.api.dto.demanddeposit.inquiredemanddeposit.InquireDemandDepositResponseDto;
-import com.consoltant.consoltant.util.api.dto.deposit.inquiredepositinfo.InquireDepositInfoResponseDto;
 import com.consoltant.consoltant.util.api.dto.deposit.inquiredepositproducts.InquireDepositProductsResponseDto;
 import com.consoltant.consoltant.util.api.dto.loan.inquireloanproduct.InquireLoanProductResponseDto;
-import com.consoltant.consoltant.util.api.dto.saving.inquiresavinginfo.InquireSavingInfoResponseDto;
 import com.consoltant.consoltant.util.api.dto.saving.inquiresavingproducts.InquireSavingProductsResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -155,7 +151,7 @@ public class RecommendService {
     public List<RecommendResponseDto> saveAll(Long userId, RecommendRequestDtoList requestDto) {
         User user = userRepository.findById(userId).orElseThrow((()->new BadRequestException("존재하지 않는 사용자입니다.")));
 
-        for(RecommendRequestDto recommendRequestDto : requestDto.getRecommendRequestDtoList()) {
+        for(RecommendRequestDto recommendRequestDto : requestDto.getRecommend()) {
             Recommend recommend = recommendMapper.toRecommend(recommendRequestDto);
             recommend.setUser(user);
             recommendRepository.save(recommend);
