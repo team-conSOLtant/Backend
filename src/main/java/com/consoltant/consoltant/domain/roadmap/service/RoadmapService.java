@@ -2,16 +2,13 @@ package com.consoltant.consoltant.domain.roadmap.service;
 
 import com.consoltant.consoltant.domain.bestroadmap.dto.BestRoadmapResponseDto;
 import com.consoltant.consoltant.domain.bestroadmap.service.BestRoadmapModuleService;
-import com.consoltant.consoltant.domain.journey.dto.GraphData;
 import com.consoltant.consoltant.domain.journey.entity.Journey;
 import com.consoltant.consoltant.domain.journey.repository.JourneyRepository;
 import com.consoltant.consoltant.domain.journey.service.JourneyModuleService;
 import com.consoltant.consoltant.domain.portfolio.entity.Portfolio;
 import com.consoltant.consoltant.domain.portfolio.service.PortfolioModuleService;
-import com.consoltant.consoltant.domain.product.dto.ProductInfo;
 import com.consoltant.consoltant.domain.product.service.ProductService;
 import com.consoltant.consoltant.domain.recommend.dto.RecommendResponseDto;
-import com.consoltant.consoltant.domain.recommend.entity.Recommend;
 import com.consoltant.consoltant.domain.recommend.repository.RecommendRepository;
 import com.consoltant.consoltant.domain.recommend.service.RecommendModuleService;
 import com.consoltant.consoltant.domain.recommend.service.RecommendService;
@@ -221,6 +218,8 @@ public class RoadmapService {
                 .toList();
 
 
+
+
         //넣기 상품
         List<PreRecommendDto> depositPreRecommendList = new ArrayList<>();
         List<PreRecommendDto> savingPreRecommendList = new ArrayList<>();
@@ -231,6 +230,10 @@ public class RoadmapService {
             savingPreRecommendList.addAll(preRecommend.getSaving());
             loanPreRecommendList.addAll(preRecommend.getLoan());
         }
+
+        log.info("넣기 예금 개수 -> {}",depositPreRecommendList.size());
+        log.info("넣기 적금 개수 -> {}",savingPreRecommendList.size());
+        log.info("넣기 대출 개수 -> {}",loanPreRecommendList.size());
 
         //현재 연봉 기준 매년 증가하는 금액 체크
         //연봉 적금 예금 대출
@@ -377,7 +380,7 @@ public class RoadmapService {
             for(PreRecommendDto preRecommendDto: depositPreRecommendList){
                 //예금 이자 조회
                 long depositAsset = preRecommendDto.getBalance();
-                depositAsset += (long) (depositAsset*(preRecommendDto.getInterest()/100));
+                depositAsset += (long) (depositAsset*(preRecommendDto.getInterestRate()/100));
 
                 depositAssetValue += depositAsset;
 
@@ -391,7 +394,7 @@ public class RoadmapService {
                 for (int i = 0; i < 12; i++) {
                     // 이자 계산: 매달 납입한 금액에 대해 이자가 붙음
                     totalAmount += savingAsset/12;
-                    totalAmount += (long)(totalAmount * (preRecommendDto.getInterest()/100 / 12));
+                    totalAmount += (long)(totalAmount * (preRecommendDto.getInterestRate()/100 / 12));
                 }
 
                 savingAssetValue += totalAmount;
@@ -406,7 +409,7 @@ public class RoadmapService {
                 //원금 이자 상환
                 int month = Integer.parseInt(preRecommendDto.getEndDate().substring(0,4)) - Integer.parseInt(preRecommendDto.getStartDate().substring(0,4));
                 long loanAsset = preRecommendDto.getBalance();
-                long interest = (long) (loanAsset*preRecommendDto.getInterest()/100);
+                long interest = (long) (loanAsset*preRecommendDto.getInterestRate()/100);
 
                 //원금 상환
                 loanAssetValue -= loanAsset/month;
