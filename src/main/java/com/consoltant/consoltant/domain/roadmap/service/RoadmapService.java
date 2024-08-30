@@ -239,8 +239,8 @@ public class RoadmapService {
         roadmapGraphResponseDto.getPreRecommend().setSaving(savingPreRecommendList);
         roadmapGraphResponseDto.getPreRecommend().setLoan(loanPreRecommendList);
 
-        roadmapGraphResponseDto.getRecommend().setLoan(loanRecommendList);
-        roadmapGraphResponseDto.getRecommend().setLoan(loanRecommendList);
+        roadmapGraphResponseDto.getRecommend().setDeposit(depositRecommendList);
+        roadmapGraphResponseDto.getRecommend().setSaving(savingRecommendList);
         roadmapGraphResponseDto.getRecommend().setLoan(loanRecommendList);
 
 
@@ -294,15 +294,17 @@ public class RoadmapService {
             case BIG_HAPPINESS -> {endYear = startYear+10;}
         }
 
+        //이전 자산 정보 저장
+
+        long totalAssetValue = graphResponseDto.getData().get(graphResponseDto.getData().size()-1).getTotalAssetValue();
+        long depositAssetValue = graphResponseDto.getData().get(graphResponseDto.getData().size()-1).getDepositAssetValue();
+        long savingAssetValue = graphResponseDto.getData().get(graphResponseDto.getData().size()-1).getSavingAssetValue();
+        long loanAssetValue = graphResponseDto.getData().get(graphResponseDto.getData().size()-1).getLoanAssetValue();
+
         for(int year=startYear; year<=endYear;year++){
 
             final int finalYear = year;
             int age = user.getAge() + (year - startYear) + 1;
-
-            long totalAssetValue = 0;
-            long depositAssetValue = 0;
-            long savingAssetValue = 0;
-            long loanAssetValue = 0;
 
             // 수시 입출금 += 연봉 - 대출 이자 1년치 - 생활비
             //연봉 추가
