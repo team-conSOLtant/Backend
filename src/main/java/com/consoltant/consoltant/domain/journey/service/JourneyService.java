@@ -1,6 +1,10 @@
 package com.consoltant.consoltant.domain.journey.service;
 
-import com.consoltant.consoltant.domain.journey.dto.*;
+import com.consoltant.consoltant.domain.journey.dto.GraphData;
+import com.consoltant.consoltant.domain.journey.dto.JourneyGraphResponseDto;
+import com.consoltant.consoltant.domain.journey.dto.JourneyRequestDto;
+import com.consoltant.consoltant.domain.journey.dto.JourneyResponseDto;
+import com.consoltant.consoltant.domain.journey.dto.JourneyStatsResponseDto;
 import com.consoltant.consoltant.domain.journey.entity.Journey;
 import com.consoltant.consoltant.domain.journey.mapper.JourneyMapper;
 import com.consoltant.consoltant.domain.journey.repository.JourneyRepository;
@@ -10,14 +14,14 @@ import com.consoltant.consoltant.domain.user.service.UserService;
 import com.consoltant.consoltant.global.exception.BadRequestException;
 import com.consoltant.consoltant.util.api.RestTemplateUtil;
 import com.consoltant.consoltant.util.api.dto.demanddeposit.inquiredemanddepositaccount.InquireDemandDepositAccountResponseDto;
-import com.consoltant.consoltant.util.api.dto.loan.inquireloanaccount.InquireLoanAccountResponseDto;
-import com.consoltant.consoltant.util.api.dto.loan.inquiremycreditrating.InquireMyCreditRatingResponseDto;
-import com.consoltant.consoltant.util.api.dto.saving.inquiresavinginfo.InquireSavingInfoResponseDto;
 import com.consoltant.consoltant.util.constant.JourneyType;
-
-import java.util.*;
-
 import com.consoltant.consoltant.util.constant.ProductType;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -143,7 +147,7 @@ public class JourneyService {
             // Long deposit = (long) ((totalAssetValue > 0L ? loanValue.doubleValue()/totalAssetValue.doubleValue() : 0.0) * 100);
 
 
-            String HEX;
+            String HEX ="";
             String RGBA = switch (journeyType) {
                 case FRESHMAN -> {
                     HEX = "#005DF9";
