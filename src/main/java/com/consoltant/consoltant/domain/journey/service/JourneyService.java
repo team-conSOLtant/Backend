@@ -141,7 +141,7 @@ public class JourneyService {
 
             Long demandDeposit = (long) ((totalAssetValue > 0L ? demandDepositValue.doubleValue()/totalAssetValue.doubleValue() : 0.0) * 100);
             Long saving = (long) ((totalAssetValue > 0L ? savingValue.doubleValue()/totalAssetValue.doubleValue() : 0.0) * 100);
-            Long loan = (long) ((totalAssetValue > 0L ? depositValue.doubleValue()/totalAssetValue.doubleValue() : 0.0) * 100);
+            Long loan = (long) ((totalAssetValue > 0L ? loanValue.doubleValue()/totalAssetValue.doubleValue() : 0.0) * 100);
             Long deposit = 100 - demandDeposit - saving - loan;
 
             // Long deposit = (long) ((totalAssetValue > 0L ? loanValue.doubleValue()/totalAssetValue.doubleValue() : 0.0) * 100);
