@@ -305,6 +305,8 @@ public class ProductService {
         Product product = productMapper.toProduct(productRequestDto);
 
         product.setUser(user);
+        product.setBalance(0L);
+        product.setJourneyType(user.getCurrentJourneyType());
         return productMapper.toProductResponseDto(productModuleService.save(product));
     }
 

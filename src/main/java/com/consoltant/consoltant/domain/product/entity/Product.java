@@ -55,10 +55,8 @@ public class Product {
     @Column(nullable = true, length = 100)
     private String accountNo;
 
-    @Column(nullable = false)
     private Long balance;
 
-    @Column(nullable = false)
     private int age;
 
     @Column(nullable = false)
@@ -74,6 +72,14 @@ public class Product {
 
     public void update(ProductRequestDto productRequestDto){
 
+    }
+
+    public void setBalance(Long balance){
+        this.balance = balance;
+    }
+
+    public void setJourneyType(JourneyType journeyType){
+        this.journeyType = journeyType;
     }
 
 }
