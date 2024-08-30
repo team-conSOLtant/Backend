@@ -13,10 +13,7 @@ import com.consoltant.consoltant.domain.user.repository.UserRepository;
 import com.consoltant.consoltant.global.exception.BadRequestException;
 import com.consoltant.consoltant.util.constant.FinanceKeyword;
 import com.consoltant.consoltant.util.constant.JourneyType;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
@@ -48,15 +45,16 @@ public class BestRoadmapService {
         @Getter
         @Setter
         @AllArgsConstructor
-        class Info implements Comparator<Info>{
+        @ToString
+        class Info implements Comparable<Info>{
             Long id;
             Long asset;
             Integer age;
             JourneyType journeyType;
 
             @Override
-            public int compare(Info o1, Info o2) {
-                return o1.asset.compareTo(o2.asset);
+            public int compareTo(Info o) {
+                return this.asset.compareTo(o.asset);
             }
         }
 
@@ -156,6 +154,7 @@ public class BestRoadmapService {
                     if(i==graph.size()-1 || graph.get(i+1).getJourneyType() != graph.get(i+1).getJourneyType()){
                         bestRoadmapStandard.putIfAbsent(standard, new PriorityQueue<>());
                         //기준 (키워드, 월급, 초기 자산)에 해당하는 자산 증가량과 당시의 나이를 PQ에 저장
+
                         bestRoadmapStandard.get(standard).add(new Info(user.getId(),asset,age,graph.get(i).getJourneyType()));
                     }
                 }

@@ -36,12 +36,18 @@ public class BestRoadmap {
     @Column(nullable = false)
     private Long startAsset;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private FinanceKeyword financeKeyword;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private JourneyType journeyType;
 
     @Column(nullable = false)
     private Integer age;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean isDeleted = false;
 }

@@ -20,9 +20,9 @@ public class RoadmapModuleService {
     private final UserRepository userRepository;
 
     public Long findRoadmapUserId(Long userId){
-        Roadmap roadmap = roadmapRepository.findById(userId).orElse(null);
+        Roadmap roadmap = roadmapRepository.findByUserId(userId).orElse(null);
 
-        return (roadmap==null?null:roadmap.getId());
+        return (roadmap==null?null:roadmap.getRoadmapUser().getId());
     }
 
     @Transactional

@@ -111,6 +111,9 @@ public class RoadmapService {
 
         List<Journey> jourenyList = journeyModuleService.findAllByUserId(userId);
 
+        if(jourenyList != null){
+
+        }
         Long startAsset = jourenyList.get(0).getBalance();
         Long presentAsset = jourenyList.get(jourenyList.size()-1).getBalance();
         Portfolio portfolio = portfolioModuleService.findByUserId(userId).orElseThrow(()->new BadRequestException("존재하지 않는 포트폴리오입니다."));
