@@ -20,6 +20,8 @@ public class RecommendResponseDto {
 
     private JourneyType journeyType;
 
+    private Long balance;
+
     private LocalDate startDate;
 
     private LocalDate endDate;

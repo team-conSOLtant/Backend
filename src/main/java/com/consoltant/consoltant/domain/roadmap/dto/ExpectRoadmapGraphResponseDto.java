@@ -10,14 +10,17 @@ import java.util.List;
 
 @Getter
 @Setter
-public class RoadmapGraphResponseDto {
+public class ExpectRoadmapGraphResponseDto {
     private Integer age;
     private List<RoadmapGraphData> data;
     private ProductListResponseDto product;
     private UserInfo info;
     private List<RecommendResponseDto> recommend;
+    private List<PreRecommendDto> preRecommend;
 
-    public RoadmapGraphResponseDto() {
+    public ExpectRoadmapGraphResponseDto() {
+
         data = new ArrayList<>();
+        preRecommend = new ArrayList<>();
     }
 }
