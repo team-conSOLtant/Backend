@@ -155,34 +155,43 @@ public class PortfolioService {
 
         // 활동 내역 저장
         activityModuleService.deleteAllByPortfolioId(portfolioId);
-        for (ActivityRequestDto activityRequestDto : portfolioSaveAllRequestDto.getActivities()) {
-            Activity activity = activityMapper.toActivity(activityRequestDto);
-            activity.setPortfolio(portfolio);
-            activityModuleService.save(activity);
+        if(portfolioSaveAllRequestDto.getActivities()!=null) {
+            for (ActivityRequestDto activityRequestDto : portfolioSaveAllRequestDto.getActivities()) {
+                Activity activity = activityMapper.toActivity(activityRequestDto);
+                activity.setPortfolio(portfolio);
+                activityModuleService.save(activity);
+            }
         }
 
         // 수상 내역 저장
         awardModuleService.deleteAllByPortfolioId(portfolioId);
-        for (AwardRequestDto awardRequestDto : portfolioSaveAllRequestDto.getAwards()) {
-            Award award = awardMapper.toAward(awardRequestDto);
-            award.setPortfolio(portfolio);
-            awardModuleService.save(award);
+        if(portfolioSaveAllRequestDto.getAwards()!=null) {
+            for (AwardRequestDto awardRequestDto : portfolioSaveAllRequestDto.getAwards()) {
+                Award award = awardMapper.toAward(awardRequestDto);
+                award.setPortfolio(portfolio);
+                awardModuleService.save(award);
+            }
         }
 
         // 자격증 내역 저장
         certificationModuleService.deleteAllByPortfolioId(portfolioId);
-        for (CertificationRequestDto certificationRequestDto : portfolioSaveAllRequestDto.getCertifications()) {
-            Certification certification = certificationMapper.toCertification(certificationRequestDto);
-            certification.setPortfolio(portfolio);
-            certificationModuleService.save(certification);
+        if(portfolioSaveAllRequestDto.getCertifications()!=null) {
+            for (CertificationRequestDto certificationRequestDto : portfolioSaveAllRequestDto.getCertifications()) {
+                Certification certification = certificationMapper.toCertification(
+                    certificationRequestDto);
+                certification.setPortfolio(portfolio);
+                certificationModuleService.save(certification);
+            }
         }
 
         // 경력 내역 저장
         careerModuleService.deleteAllByPortfolioId(portfolioId);
-        for (CareerRequestDto careerRequestDto : portfolioSaveAllRequestDto.getCareers()) {
-            Career career = careerMapper.toCareer(careerRequestDto);
-            career.setPortfolio(portfolio);
-            careerModuleService.save(career);
+        if(portfolioSaveAllRequestDto.getCareers()!=null) {
+            for (CareerRequestDto careerRequestDto : portfolioSaveAllRequestDto.getCareers()) {
+                Career career = careerMapper.toCareer(careerRequestDto);
+                career.setPortfolio(portfolio);
+                careerModuleService.save(career);
+            }
         }
 
         // 프로젝트 내역 저장
@@ -191,23 +200,27 @@ public class PortfolioService {
             projectUserModuleService.deleteAllByProjectId(project.getId());
         }
         projectModuleService.deleteAllByPortfolioId(portfolioId);
-        for (ProjectRequestDto projectRequestDto : portfolioSaveAllRequestDto.getProjects()) {
-            Project project = projectMapper.toProject(projectRequestDto);
-            project.setPortfolio(portfolio);
-            Project savedProject = projectModuleService.save(project);
-            Long generatedKey = savedProject.getId();
+        if(portfolioSaveAllRequestDto.getProjects()!=null) {
+            for (ProjectRequestDto projectRequestDto : portfolioSaveAllRequestDto.getProjects()) {
+                Project project = projectMapper.toProject(projectRequestDto);
+                project.setPortfolio(portfolio);
+                Project savedProject = projectModuleService.save(project);
+                Long generatedKey = savedProject.getId();
 
-            List<ProjectUser> projectUserList = new ArrayList<>();
-            for(ProjectUserRequestDto projectUserRequestDto : projectRequestDto.getProjectUsers()){
-                projectUserRequestDto.setProjectId(generatedKey);
-                ProjectUser projectUser = projectUserMapper.toProjectUser(projectUserRequestDto);
-                projectUser.setProject(project);
-                projectUser.setUser(userRepository.findById(projectUserRequestDto.getUserId()).orElseThrow());
-                projectUserList.add(projectUser);
+                List<ProjectUser> projectUserList = new ArrayList<>();
+                for (ProjectUserRequestDto projectUserRequestDto : projectRequestDto.getProjectUsers()) {
+                    projectUserRequestDto.setProjectId(generatedKey);
+                    ProjectUser projectUser = projectUserMapper.toProjectUser(
+                        projectUserRequestDto);
+                    projectUser.setProject(project);
+                    projectUser.setUser(
+                        userRepository.findById(projectUserRequestDto.getUserId()).orElseThrow());
+                    projectUserList.add(projectUser);
+                }
+                projectUserModuleService.saveAll(projectUserList);
+                project.setProjectUsers(projectUserList);
+                projectModuleService.save(project);
             }
-            projectUserModuleService.saveAll(projectUserList);
-            project.setProjectUsers(projectUserList);
-            projectModuleService.save(project);
         }
 
         // 선택한 수강 과목 내역 저장
