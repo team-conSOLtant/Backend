@@ -133,4 +133,10 @@ public class UserController {
     public BaseSuccessResponse<List<UserResponseDto>> findByEmail(@PathVariable String email){
         return new BaseSuccessResponse<>(userService.findAllByEmail(email));
     }
+
+    @GetMapping("/is-company")
+    public BaseSuccessResponse<Boolean> isCompany(){
+        Long id = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
+        return new BaseSuccessResponse<>(userService.isCompanyUser(id));
+    }
 }

@@ -14,4 +14,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
     @Query("SELECT u FROM User u WHERE u.email LIKE %:email%")
     List<User> findByEmailLike(@Param("email") String email);
+
+    @Query("SELECT CASE WHEN (u.role = 'COMPANY') THEN TRUE ELSE FALSE END FROM User u WHERE u.id = :id")
+    Boolean isRoleCompany(@Param("id") Long id);
 }

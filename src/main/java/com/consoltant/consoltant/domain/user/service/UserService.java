@@ -3,7 +3,6 @@ package com.consoltant.consoltant.domain.user.service;
 import com.consoltant.consoltant.domain.course.entity.Course;
 import com.consoltant.consoltant.domain.course.service.CourseModuleService;
 import com.consoltant.consoltant.domain.journey.service.JourneyModuleService;
-import com.consoltant.consoltant.domain.journey.service.JourneyService;
 import com.consoltant.consoltant.domain.portfolio.service.PortfolioModuleService;
 import com.consoltant.consoltant.domain.subject.entity.Subject;
 import com.consoltant.consoltant.domain.subject.service.SubjectModuleService;
@@ -26,7 +25,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVRecord;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -218,5 +216,9 @@ public class UserService{
         return userRepository.findByEmailLike(email).stream()
             .map(userMapper::toUserResponseDto)
             .toList();
+    }
+
+    public Boolean isCompanyUser(Long id){
+        return userRepository.isRoleCompany(id);
     }
 }
