@@ -1,5 +1,6 @@
 package com.consoltant.consoltant.domain.portfolio.controller;
 
+import com.consoltant.consoltant.domain.portfolio.dto.ImageUploadRequest;
 import com.consoltant.consoltant.domain.portfolio.dto.PortfolioRequestDto;
 import com.consoltant.consoltant.domain.portfolio.dto.PortfolioResponseDto;
 import com.consoltant.consoltant.domain.portfolio.dto.PortfolioSaveAllRequestDto;
@@ -8,6 +9,7 @@ import com.consoltant.consoltant.domain.portfolio.dto.PortfolioSearchResponseDto
 import com.consoltant.consoltant.domain.portfolio.service.PortfolioElasticService;
 import com.consoltant.consoltant.domain.portfolio.service.PortfolioService;
 import com.consoltant.consoltant.util.base.BaseSuccessResponse;
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -37,7 +39,8 @@ public class PortfolioController {
     }
 
     @GetMapping
-    public BaseSuccessResponse<PortfolioResponseDto> findByUserId(@RequestParam Long userId) {
+    public BaseSuccessResponse<PortfolioResponseDto> findByUserId(@RequestParam Long userId)
+        throws IOException {
         return new BaseSuccessResponse<>(portfolioService.findByUserId(userId));
     }
 
@@ -47,6 +50,10 @@ public class PortfolioController {
     }
 
     @PostMapping("/upload-image/{id}")
+    public BaseSuccessResponse<Void> uploadImage(@PathVariable Long id, @RequestBody ImageUploadRequest imageUploadRequest){
+        portfolioService.uploadImage(id, imageUploadRequest.getImageUrl());
+        return new BaseSuccessResponse<>(null);
+    }
 
     @PutMapping("/{id}")
     public BaseSuccessResponse<PortfolioResponseDto> update(@PathVariable Long id, @RequestBody PortfolioRequestDto portfolioRequestDto){
