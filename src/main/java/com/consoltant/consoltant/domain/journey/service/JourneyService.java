@@ -132,10 +132,13 @@ public class JourneyService {
                     .filter(s->s.getProductType()== ProductType.SAVING)
                     .mapToLong(JourneyResponseDto::getBalance)
                     .sum();
-            Long loanValue = journeyList.stream()
+
+
+           List<JourneyResponseDto> loanlist = journeyList.stream()
                     .filter(s->s.getProductType()== ProductType.LOAN)
-                    .mapToLong(JourneyResponseDto::getBalance)
-                    .sum();
+                    .sorted(Comparator.comparing(JourneyResponseDto::getStartDate).reversed())
+                    .toList();
+            Long loanValue = (!loanlist.isEmpty() ? loanlist.get(0).getBalance():0L);
 
             Long totalAssetValue = demandDepositValue + depositValue + savingValue + loanValue;
 
