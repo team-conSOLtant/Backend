@@ -35,4 +35,7 @@ public class Roadmap {
     @JoinColumn(name = "recommend_user_id", nullable = false)
     User roadmapUser;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean isDeleted = false;
 }

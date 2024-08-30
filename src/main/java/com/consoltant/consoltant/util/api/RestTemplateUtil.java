@@ -90,8 +90,6 @@ public class RestTemplateUtil {
 
         String institutionTransactionUniqueNo = date + time + numericUUID.substring(0,(Math.min(numericUUID.length(), 6)));
 
-        log.info("기관거래고유번호 -> {}",institutionTransactionUniqueNo);
-
         return RequestHeader.builder()
                 .apiName(name)
                 .apiKey(apiKey)
@@ -110,7 +108,7 @@ public class RestTemplateUtil {
     // 사용자 로그인 API
     // 사용자 생성
     public String createMember(String userId) {
-        log.info("금융 API 사용자 생성 -> {}",userId);
+        log.info("금융 API 사용자 생성 ");
         String uri = "member";
 
         Map<String,Object>requestBody = new HashMap<>();
@@ -124,7 +122,6 @@ public class RestTemplateUtil {
         if(response.getBody() == null){
             throw new BadRequestException("API 요청 중 오류가 발생했습니다.");
         }
-        log.info("UserKey -> {}", response.getBody().getUserKey());
 
         return response.getBody().getUserKey();
     }
@@ -222,8 +219,7 @@ public class RestTemplateUtil {
     // 수시입출금 계좌 생성
     public CreateDemandDepositAccountResponseDto createDemandDepositAccount(String userKey, String accountTypeUniqueNo) {
         final String name = "createDemandDepositAccount";
-        log.info("금융 API 계좌 생성 userKey -> {}",userKey);
-        log.info("금융 API 계좌 생성 accountType -> {}",accountTypeUniqueNo);
+        log.info("금융 API 계좌 생성");
 
         String uri = "edu/demandDeposit/createDemandDepositAccount";
 
@@ -968,7 +964,6 @@ public class RestTemplateUtil {
         if(response.getBody() == null){
             throw new BadRequestException("API 요청 중 오류가 발생했습니다.");
         }
-        log.info("AccountNo -> {}", response.getBody().getREC().getAccountNo());
 
         return response.getBody().getREC();
     }
@@ -1001,7 +996,6 @@ public class RestTemplateUtil {
         if(response.getBody() == null){
             throw new BadRequestException("API 요청 중 오류가 발생했습니다.");
         }
-        log.info("Status -> {}", response.getBody().getREC().getStatus());
 
         return response.getBody().getREC();
     }
@@ -1009,13 +1003,12 @@ public class RestTemplateUtil {
     //챗봇 피드백
     public String ChatbotFeedback(RoadmapGraphResponseDto roadmapGraphResponseDto, String prompt){
 
-        log.info("프롬프트 -> {}", prompt);
+        log.info("금융 로드맵 피드백 API");
         ChatbotRequestDto chatbotRequestDto = new ChatbotRequestDto(prompt);
 
         // Gemini에 요청 전송
         String requestUrl = geminiApiUrl + "?key=" + geminiApiKey;
 
-        log.info("URL -> {}",requestUrl);
 
         HttpEntity<Object> entity = new HttpEntity<>(chatbotRequestDto);
 

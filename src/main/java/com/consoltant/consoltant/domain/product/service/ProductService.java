@@ -87,9 +87,6 @@ public class ProductService {
             String startDate = Integer.toString(product.getStartDate().getYear()) + (product.getStartDate().getMonthValue() < 10 ? "0" : "") + Integer.toString(product.getStartDate().getMonthValue()) + Integer.toString(product.getStartDate().getDayOfMonth());
             String endDate = Integer.toString(product.getEndDate().getYear()) + (product.getEndDate().getMonthValue() < 10 ? "0" : "") + Integer.toString(product.getEndDate().getMonthValue()) + Integer.toString(product.getEndDate().getDayOfMonth());
 
-            log.info("start -> {}",startDate);
-            log.info("end -> {}",endDate);
-
             switch (product.getProductType()){
                 case DEMAND_DEPOSIT:
                     log.info("수시입출금");
