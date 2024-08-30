@@ -95,7 +95,8 @@ public class User {
     @Column(length = 100)
     private String accountNo;
 
-    private Integer salary;
+    @Builder.Default
+    private Integer salary = 0;
 
     @Enumerated(EnumType.STRING)
     private JourneyType currentJourneyType; // Custom enum for 여정중 현재인 것 조회용
