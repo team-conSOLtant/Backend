@@ -98,6 +98,6 @@ public class RoadmapController {
         //TODO 유저 로드맵 정보 가져오기
         RoadmapGraphResponseDto roadmapGraphResponseDto = roadmapService.makeRoadmap(id);
 
-        return new BaseSuccessResponse<>(roadmapService.feedback(roadmapGraphResponseDto, chatbotFeedbackRequestDto.getPrompt()));
+        return new BaseSuccessResponse<>(roadmapService.feedback(id, roadmapGraphResponseDto, chatbotFeedbackRequestDto.getPrompt()));
     }
 }

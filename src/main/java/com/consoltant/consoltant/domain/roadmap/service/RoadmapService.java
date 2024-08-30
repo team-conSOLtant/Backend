@@ -488,9 +488,9 @@ public class RoadmapService {
     }
 
 
-    public ChatbotFeedbackResponseDto feedback(RoadmapGraphResponseDto roadmapGraphResponseDto, String prompt){
+    public ChatbotFeedbackResponseDto feedback(Long id, RoadmapGraphResponseDto roadmapGraphResponseDto, String prompt){
         return ChatbotFeedbackResponseDto.builder()
-                .feedback(restTemplateUtil.ChatbotFeedback(roadmapGraphResponseDto, prompt))
+                .feedback(restTemplateUtil.ChatbotFeedback(id, roadmapGraphResponseDto, prompt))
                 .build();
     }
 }

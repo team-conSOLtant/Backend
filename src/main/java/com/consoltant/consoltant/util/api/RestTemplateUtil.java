@@ -1,7 +1,13 @@
 package com.consoltant.consoltant.util.api;
 
 
+import com.consoltant.consoltant.domain.bank.service.BankService;
+import com.consoltant.consoltant.domain.portfolio.entity.Portfolio;
+import com.consoltant.consoltant.domain.portfolio.service.PortfolioModuleService;
+import com.consoltant.consoltant.domain.roadmap.dto.RoadmapGraphData;
 import com.consoltant.consoltant.domain.roadmap.dto.RoadmapGraphResponseDto;
+import com.consoltant.consoltant.domain.user.entity.User;
+import com.consoltant.consoltant.domain.user.repository.UserRepository;
 import com.consoltant.consoltant.global.exception.BadRequestException;
 import com.consoltant.consoltant.util.api.dto.auth.checkauthcode.CheckAuthCodeResponseDto;
 import com.consoltant.consoltant.util.api.dto.chatbot.ChatbotRequestDto;
@@ -37,6 +43,7 @@ import com.consoltant.consoltant.util.api.global.response.RECResponse;
 import com.consoltant.consoltant.util.api.dto.demanddeposit.createdemanddepositaccount.CreateDemandDepositAccountResponseDto;
 import com.consoltant.consoltant.util.api.dto.member.createmember.CreateMemberResponseDto;
 import com.consoltant.consoltant.util.api.global.header.RequestHeader;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,12 +53,11 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Component
 @Slf4j
@@ -71,6 +77,10 @@ public class RestTemplateUtil {
     private String geminiApiUrl;
     @Value("${gemini.api.key}")
     private String geminiApiKey;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private PortfolioModuleService portfolioModuleService;
 
     //정수형 UUID 생성
     private static String generateNumericUUID() {
@@ -1001,24 +1011,74 @@ public class RestTemplateUtil {
     }
     
     //챗봇 피드백
-    public String ChatbotFeedback(RoadmapGraphResponseDto roadmapGraphResponseDto, String prompt){
+    public String ChatbotFeedback(Long userId, RoadmapGraphResponseDto roadmapGraphResponseDto, String question){
 
         log.info("금융 로드맵 피드백 API");
-        ChatbotRequestDto chatbotRequestDto = new ChatbotRequestDto(prompt);
 
-        // Gemini에 요청 전송
-        String requestUrl = geminiApiUrl + "?key=" + geminiApiKey;
+        User user = userRepository.findById(userId).orElseThrow(()->new BadRequestException("존재하지 않는 사용자입니다."));
+        Portfolio portfolio = portfolioModuleService.findByUserId(userId).orElseThrow(()->new BadRequestException("존재하지 않는 사용자입니다."));
 
+        List<InquireLoanProductResponseDto> loanProductResponseDtoList = inquireLoanProductList();
+        List<InquireSavingProductsResponseDto> inquireSavingProductsResponseDtoList = inquireSavingProducts();
+        List<InquireDepositProductsResponseDto> inquireDepositProductsResponseDtoList = inquireDepositProducts();
 
-        HttpEntity<Object> entity = new HttpEntity<>(chatbotRequestDto);
+        try{
+            // Gemini에 요청 전
+            String requestUrl = geminiApiUrl + "?key=" + geminiApiKey;
 
-        ResponseEntity<ChatbotResponseDto> response
-                = restTemplate.exchange(
-                requestUrl, HttpMethod.POST, entity,
-                new ParameterizedTypeReference<>(){}
-        );
+            List<RoadmapGraphData> roadmapData = roadmapGraphResponseDto.getData();
 
-        return response.getBody().getCandidates().get(0).getContent().getParts().get(0).getText().toString();
+            // ObjectMapper 인스턴스 생성
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            // DTO를 JSON 문자열로 변환
+            String roadmapDataString = objectMapper.writeValueAsString(roadmapData);
+            log.info("DTO 변환 -> {}", roadmapDataString);
+
+            String loanList = objectMapper.writeValueAsString(loanProductResponseDtoList);
+            String savingList = objectMapper.writeValueAsString(inquireSavingProductsResponseDtoList);
+            String depositList = objectMapper.writeValueAsString(inquireDepositProductsResponseDtoList);
+
+            String prompt = "";
+
+            prompt += "아래는 금융 상품 정보야 ";
+            prompt += loanList + " ";
+            prompt += savingList + " ";
+            prompt += depositList + " ";
+            
+            prompt += "아래는 내 현재 자산 로드맵이야 ";
+            prompt += roadmapDataString + " ";
+            prompt += "지금 내 목표는 ";
+
+            switch (portfolio.getFinanceKeyword()){
+                case BIG_HAPPINESS -> prompt+="10년에 5억 모으기야 ";
+                case MIDDLE_HAPPINESS -> prompt+="5년에 3억 모으기야 ";
+                case SMALL_HAPPINESS ->  prompt+="1년에 1000만원 모으기야 ";
+            }
+
+            prompt += "현재 내 로드맵을 보고 가능성을 평가하고 피드백을 해줘. ";
+            prompt += "만약 추천하고 싶은 상품이 있다면 상품 정보와 함께 시기를 같이 추천해줘. ";
+            prompt += "목표 기간이 1년인 경우에는 대출 상품을 절대 추천하면 안돼 ";
+            prompt += "불필요한 문장과 기호를 지워줘 줄바꿈은 \n으로 표현해줘 ";
+            prompt += "명령조가 아닌 설명하는 식의 부드러운 말투를 사용해 ";
+
+            log.info(prompt);
+
+            ChatbotRequestDto chatbotRequestDto = new ChatbotRequestDto(prompt);
+
+            HttpEntity<Object> entity = new HttpEntity<>(chatbotRequestDto);
+
+            ResponseEntity<ChatbotResponseDto> response
+                    = restTemplate.exchange(
+                    requestUrl, HttpMethod.POST, entity,
+                    new ParameterizedTypeReference<>(){}
+            );
+
+            return response.getBody().getCandidates().get(0).getContent().getParts().get(0).getText().toString();
+        }catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
 }
