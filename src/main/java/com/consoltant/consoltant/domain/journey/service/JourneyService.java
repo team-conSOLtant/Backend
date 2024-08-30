@@ -120,28 +120,42 @@ public class JourneyService {
                             .toList();
 
 
-            Long demandDepositValue = journeyList.stream()
-                            .filter(s->s.getProductType()== ProductType.DEMAND_DEPOSIT)
-                            .mapToLong(JourneyResponseDto::getBalance)
-                            .sum();
-            Long depositValue = journeyList.stream()
+            List<JourneyResponseDto>demandDepositList = journeyList.stream()
+                    .filter(s->s.getProductType()== ProductType.DEMAND_DEPOSIT)
+                    .sorted(Comparator.comparing(JourneyResponseDto::getStartDate).reversed())
+                    .toList();
+
+            Long demandDepositValue = (demandDepositList.isEmpty() ? 0L : demandDepositList.get(0).getBalance());
+
+
+            List<JourneyResponseDto>depositList = journeyList.stream()
                     .filter(s->s.getProductType()== ProductType.DEPOSIT)
-                    .mapToLong(JourneyResponseDto::getBalance)
-                    .sum();
-            Long savingValue = journeyList.stream()
+                    .sorted(Comparator.comparing(JourneyResponseDto::getStartDate).reversed())
+                    .toList();
+
+            Long depositValue = (depositList.isEmpty() ? 0L : depositList.get(0).getBalance());
+
+
+
+            List <JourneyResponseDto>savingList = journeyList.stream()
                     .filter(s->s.getProductType()== ProductType.SAVING)
-                    .mapToLong(JourneyResponseDto::getBalance)
-                    .sum();
-            Long loanValue = journeyList.stream()
+                    .sorted(Comparator.comparing(JourneyResponseDto::getStartDate).reversed())
+                    .toList();
+
+            Long savingValue = (savingList.isEmpty() ? 0L : savingList.get(0).getBalance());
+
+
+           List<JourneyResponseDto> loanlist = journeyList.stream()
                     .filter(s->s.getProductType()== ProductType.LOAN)
-                    .mapToLong(JourneyResponseDto::getBalance)
-                    .sum();
+                    .sorted(Comparator.comparing(JourneyResponseDto::getStartDate).reversed())
+                    .toList();
+            Long loanValue = (loanlist.isEmpty() ? 0L : loanlist.get(0).getBalance());
 
             Long totalAssetValue = demandDepositValue + depositValue + savingValue + loanValue;
 
             Long demandDeposit = (long) ((totalAssetValue > 0L ? demandDepositValue.doubleValue()/totalAssetValue.doubleValue() : 0.0) * 100);
             Long saving = (long) ((totalAssetValue > 0L ? savingValue.doubleValue()/totalAssetValue.doubleValue() : 0.0) * 100);
-            Long loan = (long) ((totalAssetValue > 0L ? depositValue.doubleValue()/totalAssetValue.doubleValue() : 0.0) * 100);
+            Long loan = (long) ((totalAssetValue > 0L ? loanValue.doubleValue()/totalAssetValue.doubleValue() : 0.0) * 100);
             Long deposit = 100 - demandDeposit - saving - loan;
 
             // Long deposit = (long) ((totalAssetValue > 0L ? loanValue.doubleValue()/totalAssetValue.doubleValue() : 0.0) * 100);

@@ -105,11 +105,19 @@ public class RoadmapService {
 
         List<Journey> jourenyList = journeyModuleService.findAllByUserId(userId);
 
-        if(jourenyList != null){
+//        Integer startAge = jourenyList.get(0).getAge();
+//        Integer presentAge = jourenyList.get(jourenyList.size()-1).getAge();
+//
+//        Long startAsset = jourenyList.stream()
+//                .filter(s->s.getAge()==startAge)
+//                .mapToLong(Journey::getBalance)
+//                .sum();
+//
+//        Long presentAsset = jourenyList.stream()
+//                .filter(s->s.getAge()==presentAge)
+//                .mapToLong(Journey::getBalance)
+//                .sum();
 
-        }
-        Long startAsset = jourenyList.get(0).getBalance();
-        Long presentAsset = jourenyList.get(jourenyList.size()-1).getBalance();
         Portfolio portfolio = portfolioModuleService.findByUserId(userId).orElseThrow(()->new BadRequestException("존재하지 않는 포트폴리오입니다."));
 
         List<Journey> journeyList = journeyRepository.findAllByUserId(userId);
@@ -168,8 +176,8 @@ public class RoadmapService {
             }
         }
 
-        userInfo.setStartAsset(startAsset);
-        userInfo.setPresentAsset(presentAsset);
+        userInfo.setStartAsset(roadmapGraphResponseDto.getData().get(0).getTotalAssetValue());
+        userInfo.setPresentAsset(roadmapGraphResponseDto.getData().get(roadmapGraphResponseDto.getData().size()-1).getTotalAssetValue());
         userInfo.setName(user.getName());
         userInfo.setBirthDate(user.getBirthDate());
         userInfo.setCorporateName(user.getCorporateName());
