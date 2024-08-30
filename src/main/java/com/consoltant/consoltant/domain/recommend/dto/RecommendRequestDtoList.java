@@ -8,5 +8,5 @@ import java.util.List;
 @Getter
 @Setter
 public class RecommendRequestDtoList {
-    List<RecommendRequestDto> recommendRequestDtoList;
+    List<RecommendRequestDto> recommend;
 }
