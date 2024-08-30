@@ -47,6 +47,8 @@ public class PortfolioElasticService {
 
         if (request.getKeyword() != null && !request.getKeyword().isEmpty()) {
             criteria = criteria.matches(request.getKeyword());
+        }else {
+            criteria = new Criteria(); // 전체 검색
         }
 
         if (request.getIsEmployed() != null) {
