@@ -1,10 +1,14 @@
 package com.consoltant.consoltant.util.api.dto.loan.inquireloanproduct;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class InquireLoanProductResponseDto {
     private String accountTypeUniqueNo;
     private String bankCode;
@@ -26,4 +30,28 @@ public class InquireLoanProductResponseDto {
     private String endDate;
     private Long balance;
     private Integer age;
+
+    // 복사 생성자
+    public InquireLoanProductResponseDto(InquireLoanProductResponseDto source) {
+        this.accountTypeUniqueNo = source.accountTypeUniqueNo;
+        this.bankCode = source.bankCode;
+        this.bankName = source.bankName;
+        this.ratingUniqueNo = source.ratingUniqueNo;
+        this.accountName = source.accountName;
+        this.loanPeriod = source.loanPeriod;
+        this.minLoanBalance = source.minLoanBalance;
+        this.maxLoanBalance = source.maxLoanBalance;
+        this.interestRate = source.interestRate;
+        this.accountDescription = source.accountDescription;
+        this.accountTypeCode = source.accountTypeCode;
+        this.accountTypeName = source.accountTypeName;
+        this.loanTypeCode = source.loanTypeCode;
+        this.loanTypeName = source.loanTypeName;
+        this.repaymentMethodTypeCode = source.repaymentMethodTypeCode;
+        this.repaymentMethodTypeName = source.repaymentMethodTypeName;
+        this.startDate = source.startDate;
+        this.endDate = source.endDate;
+        this.balance = source.balance;
+        this.age = source.age;
+    }
 }
