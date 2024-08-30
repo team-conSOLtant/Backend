@@ -130,7 +130,7 @@ public class UserService{
 
             user.addAcademyInfo(university, createUserAcademyRequestDto, calculatedTotalGpa, calculatedMajorGpa, totalCredit);
 
-            portfolioModuleService.findByUserId(user.getId()).orElseThrow().setGpa(totalGpa,majorGpa); //포폴에도 학점 동기화
+            portfolioModuleService.findByUserId(user.getId()).orElseThrow().setGpa(calculatedTotalGpa,calculatedMajorGpa); //포폴에도 학점 동기화
         }
         else{
             user.addAcademyInfo(university, createUserAcademyRequestDto, 0.0, 0.0, 0);
