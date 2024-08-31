@@ -1,6 +1,7 @@
 package com.consoltant.consoltant.domain.bestroadmap.service;
 
 import com.consoltant.consoltant.domain.bestroadmap.dto.BestRoadmapResponseDto;
+import com.consoltant.consoltant.domain.bestroadmap.entity.BestRoadmap;
 import com.consoltant.consoltant.domain.bestroadmap.mapper.BestRoadmapMapper;
 import com.consoltant.consoltant.domain.bestroadmap.repository.BestRoadmapRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ public class BestRoadmapModuleService {
     }
 
     public Integer findUserAge(Long id){
-        return bestRoadmapRepository.findByUserId(id).get().getAge();
+
+        return bestRoadmapRepository.findAllByUserId(id).stream().findAny().get().get(0).getAge();
     }
 }

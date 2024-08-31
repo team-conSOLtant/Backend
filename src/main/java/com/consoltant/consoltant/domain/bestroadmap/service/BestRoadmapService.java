@@ -64,102 +64,205 @@ public class BestRoadmapService {
 
         Map<Standard,PriorityQueue<Info>> bestRoadmapStandard = new HashMap<>();
 
-        for(User user : userList){
+//        for(User user : userList){
+//
+//            //기준
+//            //연봉
+//            Integer salary = user.getSalary();
+//
+//            //초기 자산 취준 ~ 30대 기준
+//            Long startAsset = 0L;
+//
+//            List<Journey> journeyList = journeyModuleService.findAllByUserId(user.getId())
+//                    .stream()
+//                    .sorted(Comparator.comparing(Journey::getAge))
+//                    .toList();
+//
+//            for(Journey journey : journeyList){
+//                if(journey.getJourneyType() == JourneyType.THIRTIES){
+//                    startAsset += journeyList.get(0).getBalance();
+//                }
+//            }
+//
+//            //금융 키워드
+//            Portfolio portfolio = portfolioModuleService.findByUserId(user.getId()).orElseThrow(()->new BadRequestException("존재하지 앟는 포트폴리오입니다."));
+//            FinanceKeyword financeKeyword = portfolio.getFinanceKeyword();
+//
+//            //기준
+//            Standard standard = new Standard(financeKeyword,salary,startAsset);
+//
+//            List<RoadmapGraphData> graph = roadmapService.makeRoadmap(user.getId()).getData();
+//
+//            PriorityQueue<Pair<Standard,Integer>> pq = new PriorityQueue<>(Collections.reverseOrder());
+//
+//            //자산 증가량
+//            Long asset = 0L;
+//            Integer age = 0;
+//
+//            if(financeKeyword == FinanceKeyword.SMALL_HAPPINESS){
+//
+//                for(int i = 1; i<graph.size();i++) {
+//                    //소확행인 경우 대출 제외
+//                    //차이
+//                    Long temp = (graph.get(i).getTotalAssetValue() - graph.get(i).getLoanAssetValue())
+//                            - (graph.get(i-1).getTotalAssetValue() - graph.get(i-1).getLoanAssetValue());
+//
+//                    if(temp>asset) {
+//                        asset = temp;
+//                        age = graph.get(i-1).getAge();
+//                    }
+//
+//                    //새로 바뀌는 경우
+//                    if(i==graph.size()-1 || graph.get(i+1).getJourneyType() != graph.get(i+1).getJourneyType()){
+//                        bestRoadmapStandard.putIfAbsent(standard, new PriorityQueue<>());
+//                        //기준 (키워드, 월급, 초기 자산)에 해당하는 자산 증가량과 당시의 나이를 PQ에 저장
+//                        bestRoadmapStandard.get(standard).add(new Info(user.getId(),asset,age,graph.get(i).getJourneyType()));
+//                    }
+//                }
+//
+//            }
+//            else if(financeKeyword==FinanceKeyword.MIDDLE_HAPPINESS){
+//                for(int i = 5; i<graph.size();i++) {
+//                    //차이
+//                    Long temp = graph.get(i).getTotalAssetValue() - graph.get(i-5).getTotalAssetValue();
+//
+//                    if(temp>asset) {
+//                        asset = temp;
+//                        age = graph.get(i-5).getAge();
+//                    }
+//
+//                    //새로 바뀌는 경우
+//                    if(i==graph.size()-1 || graph.get(i+1).getJourneyType() != graph.get(i+1).getJourneyType()){
+//                        bestRoadmapStandard.putIfAbsent(standard, new PriorityQueue<>());
+//                        //기준 (키워드, 월급, 초기 자산)에 해당하는 자산 증가량과 당시의 나이를 PQ에 저장
+//                        bestRoadmapStandard.get(standard).add(new Info(user.getId(),asset,age,graph.get(i).getJourneyType()));
+//                    }
+//                }
+//
+//            }
+//            else {
+//                for(int i = 10; i<graph.size();i++) {
+//                    //차이
+//                    Long temp = graph.get(i).getTotalAssetValue() - graph.get(i-10).getTotalAssetValue();
+//
+//                    if(temp>asset) {
+//                        asset = temp;
+//                        age = graph.get(i-10).getAge();
+//                    }
+//
+//                    //새로 바뀌는 경우
+//                    if(i==graph.size()-1 || graph.get(i+1).getJourneyType() != graph.get(i+1).getJourneyType()){
+//                        bestRoadmapStandard.putIfAbsent(standard, new PriorityQueue<>());
+//                        //기준 (키워드, 월급, 초기 자산)에 해당하는 자산 증가량과 당시의 나이를 PQ에 저장
+//
+//                        bestRoadmapStandard.get(standard).add(new Info(user.getId(),asset,age,graph.get(i).getJourneyType()));
+//                    }
+//                }
+//            }
+//
+//        }
 
-            //기준
-            //연봉
-            Integer salary = user.getSalary();
+        for (int i = 0; i < userList.size(); i++) {
+            User user = userList.get(i);
 
-            //초기 자산 취준 ~ 30대 기준
-            Long startAsset = 0L;
+            try {
+                // 기준
+                // 연봉
+                Integer salary = user.getSalary();
 
-            List<Journey> journeyList = journeyModuleService.findAllByUserId(user.getId())
-                    .stream()
-                    .sorted(Comparator.comparing(Journey::getAge))
-                    .toList();
+                // 초기 자산 취준 ~ 30대 기준
+                Long startAsset = 0L;
 
-            for(Journey journey : journeyList){
-                if(journey.getJourneyType() == JourneyType.THIRTIES){
-                    startAsset += journeyList.get(0).getBalance();
+                List<Journey> journeyList = journeyModuleService.findAllByUserId(user.getId())
+                        .stream()
+                        .sorted(Comparator.comparing(Journey::getAge))
+                        .toList();
+
+                for (Journey journey : journeyList) {
+                    if (journey.getJourneyType() == JourneyType.THIRTIES) {
+                        startAsset += journeyList.get(0).getBalance();
+                    }
                 }
-            }
 
-            //금융 키워드
-            Portfolio portfolio = portfolioModuleService.findByUserId(user.getId()).orElseThrow(()->new BadRequestException("존재하지 앟는 포트폴리오입니다."));
-            FinanceKeyword financeKeyword = portfolio.getFinanceKeyword();
+                // 금융 키워드
+                Portfolio portfolio = portfolioModuleService.findByUserId(user.getId())
+                        .orElseThrow(() -> new BadRequestException("존재하지 않는 포트폴리오입니다."));
+                FinanceKeyword financeKeyword = portfolio.getFinanceKeyword();
 
-            //기준
-            Standard standard = new Standard(financeKeyword,salary,startAsset);
-            
-            List<RoadmapGraphData> graph = roadmapService.makeRoadmap(user.getId()).getData();
+                // 기준
+                Standard standard = new Standard(financeKeyword, salary, startAsset);
 
-            PriorityQueue<Pair<Standard,Integer>> pq = new PriorityQueue<>(Collections.reverseOrder());
-            
-            //자산 증가량
-            Long asset = 0L;
-            Integer age = 0;
+                List<RoadmapGraphData> graph = roadmapService.makeRoadmap(user.getId()).getData();
 
-            if(financeKeyword == FinanceKeyword.SMALL_HAPPINESS){
+                PriorityQueue<Pair<Standard, Integer>> pq = new PriorityQueue<>(Collections.reverseOrder());
 
-                for(int i = 1; i<graph.size();i++) {
-                    //소확행인 경우 대출 제외
-                    //차이
-                    Long temp = (graph.get(i).getTotalAssetValue() - graph.get(i).getLoanAssetValue())
-                            - (graph.get(i-1).getTotalAssetValue() - graph.get(i-1).getLoanAssetValue());
+                // 자산 증가량
+                Long asset = 0L;
+                Integer age = 0;
 
-                    if(temp>asset) {
-                        asset = temp;
-                        age = graph.get(i-1).getAge();
-                    }
-                    
-                    //새로 바뀌는 경우
-                    if(i==graph.size()-1 || graph.get(i+1).getJourneyType() != graph.get(i+1).getJourneyType()){
-                        bestRoadmapStandard.putIfAbsent(standard, new PriorityQueue<>());
-                        //기준 (키워드, 월급, 초기 자산)에 해당하는 자산 증가량과 당시의 나이를 PQ에 저장
-                        bestRoadmapStandard.get(standard).add(new Info(user.getId(),asset,age,graph.get(i).getJourneyType()));
-                    }
-                }
+                if (financeKeyword == FinanceKeyword.SMALL_HAPPINESS) {
+                    for (int j = 1; j < graph.size(); j++) {
+                        // 소확행인 경우 대출 제외
+                        // 차이
+                        Long temp = (graph.get(j).getTotalAssetValue() - graph.get(j).getLoanAssetValue())
+                                - (graph.get(j - 1).getTotalAssetValue() - graph.get(j - 1).getLoanAssetValue());
 
-            }
-            else if(financeKeyword==FinanceKeyword.MIDDLE_HAPPINESS){
-                for(int i = 5; i<graph.size();i++) {
-                    //차이
-                    Long temp = graph.get(i).getTotalAssetValue() - graph.get(i-5).getTotalAssetValue();
+                        if (temp > asset) {
+                            asset = temp;
+                            age = graph.get(j - 1).getAge();
+                        }
 
-                    if(temp>asset) {
-                        asset = temp;
-                        age = graph.get(i-5).getAge();
+                        // 새로 바뀌는 경우
+                        if (j == graph.size() - 1 || graph.get(j + 1).getJourneyType() != graph.get(j + 1).getJourneyType()) {
+                            bestRoadmapStandard.putIfAbsent(standard, new PriorityQueue<>());
+                            // 기준 (키워드, 월급, 초기 자산)에 해당하는 자산 증가량과 당시의 나이를 PQ에 저장
+                            bestRoadmapStandard.get(standard).add(new Info(user.getId(), asset, age, graph.get(j).getJourneyType()));
+                        }
                     }
 
-                    //새로 바뀌는 경우
-                    if(i==graph.size()-1 || graph.get(i+1).getJourneyType() != graph.get(i+1).getJourneyType()){
-                        bestRoadmapStandard.putIfAbsent(standard, new PriorityQueue<>());
-                        //기준 (키워드, 월급, 초기 자산)에 해당하는 자산 증가량과 당시의 나이를 PQ에 저장
-                        bestRoadmapStandard.get(standard).add(new Info(user.getId(),asset,age,graph.get(i).getJourneyType()));
+                } else if (financeKeyword == FinanceKeyword.MIDDLE_HAPPINESS) {
+                    for (int j = 5; j < graph.size(); j++) {
+                        // 차이
+                        Long temp = graph.get(j).getTotalAssetValue() - graph.get(j - 5).getTotalAssetValue();
+
+                        if (temp > asset) {
+                            asset = temp;
+                            age = graph.get(j - 5).getAge();
+                        }
+
+                        // 새로 바뀌는 경우
+                        if (j == graph.size() - 1 || graph.get(j + 1).getJourneyType() != graph.get(j + 1).getJourneyType()) {
+                            bestRoadmapStandard.putIfAbsent(standard, new PriorityQueue<>());
+                            // 기준 (키워드, 월급, 초기 자산)에 해당하는 자산 증가량과 당시의 나이를 PQ에 저장
+                            bestRoadmapStandard.get(standard).add(new Info(user.getId(), asset, age, graph.get(j).getJourneyType()));
+                        }
                     }
-                }
 
-            }
-            else {
-                for(int i = 10; i<graph.size();i++) {
-                    //차이
-                    Long temp = graph.get(i).getTotalAssetValue() - graph.get(i-10).getTotalAssetValue();
+                } else {
+                    for (int j = 10; j < graph.size(); j++) {
+                        // 차이
+                        Long temp = graph.get(j).getTotalAssetValue() - graph.get(j - 10).getTotalAssetValue();
 
-                    if(temp>asset) {
-                        asset = temp;
-                        age = graph.get(i-10).getAge();
-                    }
+                        if (temp > asset) {
+                            asset = temp;
+                            age = graph.get(j - 10).getAge();
+                        }
 
-                    //새로 바뀌는 경우
-                    if(i==graph.size()-1 || graph.get(i+1).getJourneyType() != graph.get(i+1).getJourneyType()){
-                        bestRoadmapStandard.putIfAbsent(standard, new PriorityQueue<>());
-                        //기준 (키워드, 월급, 초기 자산)에 해당하는 자산 증가량과 당시의 나이를 PQ에 저장
-
-                        bestRoadmapStandard.get(standard).add(new Info(user.getId(),asset,age,graph.get(i).getJourneyType()));
+                        // 새로 바뀌는 경우
+                        if (j == graph.size() - 1 || graph.get(j + 1).getJourneyType() != graph.get(j + 1).getJourneyType()) {
+                            bestRoadmapStandard.putIfAbsent(standard, new PriorityQueue<>());
+                            // 기준 (키워드, 월급, 초기 자산)에 해당하는 자산 증가량과 당시의 나이를 PQ에 저장
+                            bestRoadmapStandard.get(standard).add(new Info(user.getId(), asset, age, graph.get(j).getJourneyType()));
+                        }
                     }
                 }
-            }
 
+            } catch (Exception e) {
+                // 예외가 발생해도 루프는 계속 진행됩니다.
+                log.info("에러 사용자 아이디 -> {}",user.getId());
+
+                //e.printStackTrace(); // 예외 로그 출력
+            }
         }
 
         //TODO 저장 전에 기존 로드맵 삭제해야하는데 이건 어떡할까요?
