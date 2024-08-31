@@ -24,6 +24,7 @@ import com.consoltant.consoltant.domain.matching.entity.Matching;
 import com.consoltant.consoltant.domain.matching.service.MatchingModuleService;
 import com.consoltant.consoltant.domain.notification.entity.Notification;
 import com.consoltant.consoltant.domain.notification.service.NotificationModuleService;
+import com.consoltant.consoltant.domain.portfolio.dto.PortfolioOtherUserResponseDto;
 import com.consoltant.consoltant.domain.portfolio.dto.PortfolioRequestDto;
 import com.consoltant.consoltant.domain.portfolio.dto.PortfolioResponseDto;
 import com.consoltant.consoltant.domain.portfolio.dto.PortfolioSaveAllRequestDto;
@@ -39,7 +40,8 @@ import com.consoltant.consoltant.domain.projectuser.dto.ProjectUserRequestDto;
 import com.consoltant.consoltant.domain.projectuser.entity.ProjectUser;
 import com.consoltant.consoltant.domain.projectuser.mapper.ProjectUserMapper;
 import com.consoltant.consoltant.domain.projectuser.service.ProjectUserModuleService;
-import com.consoltant.consoltant.domain.projectuser.service.ProjectUserService;
+import com.consoltant.consoltant.domain.university.dto.UniversityResponseDto;
+import com.consoltant.consoltant.domain.university.repository.UniversityRepository;
 import com.consoltant.consoltant.domain.user.entity.User;
 import com.consoltant.consoltant.domain.user.repository.UserRepository;
 import com.consoltant.consoltant.domain.user.service.UserService;
@@ -77,9 +79,9 @@ public class PortfolioService {
     private final CertificationModuleService certificationModuleService;
     private final CareerModuleService careerModuleService;
     private final ProjectModuleService projectModuleService;
-    private final ProjectUserService projectUserService;
     private final ProjectUserModuleService projectUserModuleService;
     private final UserService userService;
+    private final UniversityRepository universityRepository;
 
     private final PortfolioMapper portfolioMapper;
     private final ActivityMapper activityMapper;
@@ -94,10 +96,11 @@ public class PortfolioService {
 
     private final UserRepository userRepository;
 
-    public PortfolioResponseDto findById(Long id) throws IOException {
+    public PortfolioOtherUserResponseDto findById(Long id) throws IOException {
         Portfolio portfolio = portfolioModuleService.findById(id);
         PortfolioResponseDto portfolioResponseDto = portfolioMapper.toPortfolioResponseDto(
             portfolio);
+        PortfolioOtherUserResponseDto portfolioOtherUserResponseDto = new PortfolioOtherUserResponseDto();
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Long loginUserId = userService.getUserId(email);
         portfolioResponseDto.setIsMine(portfolio.getUser().getId().equals(loginUserId));
@@ -107,7 +110,22 @@ public class PortfolioService {
             String base64EncodedString = Base64.getEncoder().encodeToString(bytes); //인코딩
             portfolioResponseDto.setImageUrl(base64EncodedString); //thumbnail에 인코딩 정보 넣어주기
         }
-        return portfolioResponseDto;
+        User user = userRepository.findById(portfolio.getUser().getId()).orElseThrow();
+        portfolioOtherUserResponseDto.updateFromDto(portfolioResponseDto);
+        portfolioOtherUserResponseDto.setUserName(user.getName());
+        portfolioOtherUserResponseDto.setBirthDate(user.getBirthDate());
+        portfolioOtherUserResponseDto.setMajor(user.getMajor());
+        portfolioOtherUserResponseDto.setPhoneNumber(user.getPhoneNumber());
+
+        UniversityResponseDto universityResponseDto = new UniversityResponseDto(
+            user.getUniversity().getId(),
+            user.getUniversity().getName(),
+            user.getUniversity().getUniversityCode(),
+            user.getUniversity().getIsDeleted()
+        );
+        portfolioOtherUserResponseDto.setUniversity(universityResponseDto);
+
+        return portfolioOtherUserResponseDto;
     }
 
     @Transactional

@@ -25,6 +25,11 @@ public class FollowController {
 
     private final FollowService followService;
 
+    @GetMapping("/following/list")
+    public BaseSuccessResponse<List<FollowResponseDto>> findAllByUserIdToResponse(@RequestParam Long userId){
+        return new BaseSuccessResponse<>(followService.findAllByUserIdToResponse(userId));
+    }
+
     // 유저 ID로 팔로잉 조회
     @GetMapping("/following")
     public BaseSuccessResponse<List<PortfolioSearchResponseDto>> findFollowings(@RequestParam Long userId){
