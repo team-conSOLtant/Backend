@@ -406,7 +406,7 @@ public class RoadmapService {
                 }
 
                 //원금 이자 상환
-                int month = 10 * 12;
+                int month = 10;
                 long loanAsset = inquireLoanProductResponseDto.getBalance();
                 long interest = (long) (loanAsset*inquireLoanProductResponseDto.getInterestRate()/100);
                 
@@ -450,7 +450,7 @@ public class RoadmapService {
                 }
 
                 //원금 이자 상환
-                int month = 10*12;
+                int month = 10;
                 long loanAsset = preRecommendDto.getBalance();
                 long interest = (long) (loanAsset*preRecommendDto.getInterestRate()/100);
 
@@ -502,7 +502,7 @@ public class RoadmapService {
                         }
 
                         //원금 이자 상환
-                        int month = 10 * 12;
+                        int month = 10;
                         long loanAsset = recommendResponseDto.getBalance();
                         long interest = (long) (loanAsset*recommendResponseDto.getProductInfo().getInterest()/100);
 
