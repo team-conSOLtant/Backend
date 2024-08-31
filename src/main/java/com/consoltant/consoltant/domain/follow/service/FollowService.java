@@ -39,6 +39,13 @@ public class FollowService {
     private final CareerModuleService careerModuleService;
     private final UserRepository userRepository;
 
+    //팔로우 팔로잉 조회용
+    public List<FollowResponseDto> findAllByUserIdToResponse(Long userId){
+        return followModuleService.findAllByUserId(userId).stream()
+            .map(followMapper::toFollowResponseDto)
+            .toList();
+    }
+
     // 유저 ID로 팔로잉 리스트 조회
     public List<PortfolioSearchResponseDto> findAllByUserId(Long userId){
 
