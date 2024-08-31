@@ -1,11 +1,12 @@
 package com.consoltant.consoltant.domain.university.dto;
 
-import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class UniversityResponseDto {
 
     private Long id;

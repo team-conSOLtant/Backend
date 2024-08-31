@@ -1,6 +1,7 @@
 package com.consoltant.consoltant.domain.portfolio.controller;
 
 import com.consoltant.consoltant.domain.portfolio.dto.ImageUploadRequest;
+import com.consoltant.consoltant.domain.portfolio.dto.PortfolioOtherUserResponseDto;
 import com.consoltant.consoltant.domain.portfolio.dto.PortfolioRequestDto;
 import com.consoltant.consoltant.domain.portfolio.dto.PortfolioResponseDto;
 import com.consoltant.consoltant.domain.portfolio.dto.PortfolioSaveAllRequestDto;
@@ -34,7 +35,7 @@ public class PortfolioController {
     private final PortfolioElasticService portfolioElasticService;
 
     @GetMapping("/{id}")
-    public BaseSuccessResponse<PortfolioResponseDto> findById(@PathVariable Long id)
+    public BaseSuccessResponse<PortfolioOtherUserResponseDto> findById(@PathVariable Long id)
         throws IOException {
         return new BaseSuccessResponse<>(portfolioService.findById(id));
     }
