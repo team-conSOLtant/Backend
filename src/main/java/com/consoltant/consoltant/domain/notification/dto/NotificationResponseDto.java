@@ -10,6 +10,7 @@ public class NotificationResponseDto {
 
     private Long id;
     private Long userId;
+    private Long seniorUserId;
     private NotificationType notificationType;
     private String content;
     private Boolean isRead;
