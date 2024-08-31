@@ -11,6 +11,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -20,9 +24,17 @@ public class RoadmapModuleService {
     private final UserRepository userRepository;
 
     public Long findRoadmapUserId(Long userId){
-        Roadmap roadmap = roadmapRepository.findByUserId(userId).orElse(null);
+        List<Roadmap> roadmapList = roadmapRepository.findAllByUserId(userId).get();
 
-        return (roadmap==null?null:roadmap.getRoadmapUser().getId());
+        if(!roadmapList.isEmpty()){}
+        roadmapList.sort(new Comparator<Roadmap>() {
+            @Override
+            public int compare(Roadmap o1, Roadmap o2) {
+                return o2.getId().compareTo(o1.getId());
+            }
+        });
+
+        return (roadmapList.isEmpty()?null:roadmapList.get(0).getId());
     }
 
     @Transactional
