@@ -191,7 +191,7 @@ public class RoadmapService {
     }
 
     // 예상 로드맵 생성
-    public ExpectRoadmapGraphResponseDto makeExpectedRoadmap(Long userId, ExpectProductList preRecommend){
+    public ExpectRoadmapGraphResponseDto makeExpectedRoadmap(Long userId, ExpectProductList preRecommend, Integer recommendUserAge){
 
         User user = userRepository.findById(userId).orElseThrow(()->new BadRequestException("존재하지 않는 사용자입니다."));
         FinanceKeyword financeKeyword = portfolioModuleService.findByUserId(userId).orElseThrow((()->new BadRequestException("존재하지 않는 사용자입니다."))).getFinanceKeyword();
@@ -221,10 +221,8 @@ public class RoadmapService {
                 .filter(s->s.getProductType()== ProductType.LOAN)
                 .toList();
 
-
-
-
         //넣기 상품
+        log.info("추천받은 사용자 나이 -> {}", recommendUserAge);
         List<PreRecommendDto> depositPreRecommendList = new ArrayList<>();
         List<PreRecommendDto> savingPreRecommendList = new ArrayList<>();
         List<PreRecommendDto> loanPreRecommendList = new ArrayList<>();
@@ -234,6 +232,47 @@ public class RoadmapService {
             savingPreRecommendList.addAll(preRecommend.getSaving());
             loanPreRecommendList.addAll(preRecommend.getLoan());
         }
+
+        //날짜 수정
+        for(PreRecommendDto preRecommendDto: depositPreRecommendList){
+            int year = LocalDate.now().getYear() + preRecommendDto.getAge() - recommendUserAge;
+
+            String startDate = Integer.toString(year) + "01" + "01";
+            String endDate = Integer.toString(year) + "12" + "31";
+            log.info("startDate -> {}", startDate);
+            log.info("endDate -> {}", endDate);
+
+
+            preRecommendDto.setStartDate(startDate);
+            preRecommendDto.setEndDate(endDate);
+
+        }
+        for(PreRecommendDto preRecommendDto: savingPreRecommendList){
+            int year = LocalDate.now().getYear() + preRecommendDto.getAge() - recommendUserAge;
+            log.info("startDate -> {}", year);
+
+            String startDate = Integer.toString(year) + "01" + "01";
+            String endDate = Integer.toString(year) + "12" + "31";
+
+            log.info("startDate -> {}", startDate);
+            log.info("endDate -> {}", endDate);
+
+            preRecommendDto.setStartDate(startDate);
+            preRecommendDto.setEndDate(endDate);
+        }
+        for(PreRecommendDto preRecommendDto: loanPreRecommendList){
+            int year = LocalDate.now().getYear() + preRecommendDto.getAge() - recommendUserAge;
+
+            String startDate = Integer.toString(year) + "01" + "01";
+            String endDate = Integer.toString(year) + "12" + "31";
+
+            log.info("startDate -> {}", startDate);
+            log.info("endDate -> {}", endDate);
+
+            preRecommendDto.setStartDate(startDate);
+            preRecommendDto.setEndDate(endDate);
+        }
+        
 
         log.info("넣기 예금 개수 -> {}",depositPreRecommendList.size());
         log.info("넣기 적금 개수 -> {}",savingPreRecommendList.size());
@@ -380,7 +419,7 @@ public class RoadmapService {
                 inquireLoanProductResponseDto.setBalance(loanAssetValue);
             }
             
-            //담기 상품
+            //넣기 상품
             for(PreRecommendDto preRecommendDto: depositPreRecommendList){
                 //예금 이자 조회
                 long depositAsset = preRecommendDto.getBalance();
@@ -423,7 +462,6 @@ public class RoadmapService {
 
                 preRecommendDto.setBalance(loanAssetValue);
             }
-
             
             //추천 상품
             for (RecommendResponseDto recommendResponseDto:
@@ -464,7 +502,7 @@ public class RoadmapService {
                         }
 
                         //원금 이자 상환
-                        int month = recommendResponseDto.getEndDate().getYear() - recommendResponseDto.getStartDate().getYear();
+                        int month = 10 * 12;
                         long loanAsset = recommendResponseDto.getBalance();
                         long interest = (long) (loanAsset*recommendResponseDto.getProductInfo().getInterest()/100);
 
