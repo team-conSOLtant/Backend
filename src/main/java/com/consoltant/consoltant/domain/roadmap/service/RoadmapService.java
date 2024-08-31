@@ -101,6 +101,7 @@ public class RoadmapService {
     //로드맵 그래프 생성
     public RoadmapGraphResponseDto makeRoadmap(Long userId){
 
+        log.info("그래프 생성 사용자 아이디 -> {}", userId);
         User user = userRepository.findById(userId).orElseThrow(()->new BadRequestException("존재하지 않는 사용자입니다."));
 
         List<Journey> jourenyList = journeyModuleService.findAllByUserId(userId);

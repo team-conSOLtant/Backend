@@ -34,7 +34,7 @@ public class RoadmapModuleService {
             }
         });
 
-        return (roadmapList.isEmpty()?null:roadmapList.get(0).getId());
+        return (roadmapList.isEmpty()?null:roadmapList.get(0).getUser().getId());
     }
 
     @Transactional
