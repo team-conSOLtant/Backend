@@ -14,4 +14,5 @@ public interface BestRoadmapRepository extends JpaRepository<BestRoadmap,Long> {
     Optional<BestRoadmap> findByUserId(Long userId);
     Optional<List<BestRoadmap>> findAllByFinanceKeyword(FinanceKeyword financeKeyword);
     Optional<List<BestRoadmap>> findAllByFinanceKeywordAndJourneyType(FinanceKeyword financeKeyword, JourneyType journeyType);
+    Optional<List<BestRoadmap>>findAllByUserId(Long userId);
 }

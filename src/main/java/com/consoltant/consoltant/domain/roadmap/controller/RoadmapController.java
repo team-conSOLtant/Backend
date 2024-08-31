@@ -42,8 +42,13 @@ public class RoadmapController {
         //모든 유저와 로드맵 매칭
         //TODO 본인은 누구랑 매칭됨?
 
-        for (Long userId : userIdList) {
-            roadmapService.matchingRoadmap(userId);
+        for(int i=0;i<userIdList.size();i++){
+            try{
+                roadmapService.matchingRoadmap(userIdList.get(i));
+            }catch (Exception e){
+                log.info("매칭 에러 사용자 아아디 -> {}",userIdList.get(i));
+            }
+
         }
 
         return new BaseSuccessResponse<>(null);
