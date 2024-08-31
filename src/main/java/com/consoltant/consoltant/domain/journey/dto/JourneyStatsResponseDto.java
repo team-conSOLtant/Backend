@@ -38,4 +38,13 @@ public class JourneyStatsResponseDto {
     private Long savingsValue;
     //대출 금액
     private Long loanValue;
+
+    //수시입출금 개수
+    private Integer demandDepositCount;
+    //예금 비율
+    private Integer depositCount;
+    //적금 비율
+    private Integer savingsCount;
+    //대출 비율
+    private Integer loanCount;
 }

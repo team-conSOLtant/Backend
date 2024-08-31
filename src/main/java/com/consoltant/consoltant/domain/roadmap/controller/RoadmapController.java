@@ -1,5 +1,6 @@
 package com.consoltant.consoltant.domain.roadmap.controller;
 
+import com.consoltant.consoltant.domain.bestroadmap.service.BestRoadmapModuleService;
 import com.consoltant.consoltant.domain.bestroadmap.service.BestRoadmapService;
 import com.consoltant.consoltant.domain.roadmap.dto.*;
 import com.consoltant.consoltant.domain.roadmap.service.RoadmapModuleService;
@@ -26,6 +27,7 @@ public class RoadmapController {
     private final RoadmapModuleService roadmapModuleService;
     private final BestRoadmapService bestRoadmapService;
     private final UserRepository userRepository;
+    private final BestRoadmapModuleService bestRoadmapModuleService;
 
     //연봉 별 모범 로드맵 생성 및 추천
     @GetMapping("/generate")
@@ -74,8 +76,9 @@ public class RoadmapController {
         log.info("예상 로드맵 API");
 
         Long id = userService.getUserId(SecurityContextHolder.getContext().getAuthentication().getName());
+        Integer age = bestRoadmapModuleService.findUserAge(id);
 
-        return new BaseSuccessResponse<>(roadmapService.makeExpectedRoadmap(id, expectRoadmapRequestDto.getProduct()));
+        return new BaseSuccessResponse<>(roadmapService.makeExpectedRoadmap(id, expectRoadmapRequestDto.getProduct(), age));
     }
 
     //마이 로드맵

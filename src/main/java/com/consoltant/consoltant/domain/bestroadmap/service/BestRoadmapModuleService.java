@@ -19,4 +19,8 @@ public class BestRoadmapModuleService {
     public List<BestRoadmapResponseDto> findAll(){
         return bestRoadmapMapper.toBestRoadmapResponseDtoList(bestRoadmapRepository.findAll());
     }
+
+    public Integer findUserAge(Long id){
+        return bestRoadmapRepository.findByUserId(id).get().getAge();
+    }
 }

@@ -214,92 +214,14 @@ public class JourneyService {
                     .loanValue(loanValue)
                     .savingsValue(savingValue)
                     .totalAssetValue(totalAssetValue)
+                    .depositCount(depositList.size())
+                    .demandDepositCount(demandDepositList.size())
+                    .loanCount(loanlist.size())
+                    .savingsCount(savingList.size())
                     .build();
 
             productStatsList.add(journeyStatsResponseDto);
         }
-
-        /*
-        //사용자 현재 여정 저장
-        InquireMyCreditRatingResponseDto inquireMyCreditRatingResponseDto = restTemplateUtil.inquireMyCreditRating(userKey);
-
-        Long totalAssetValue = inquireMyCreditRatingResponseDto.getTotalAssetValue();
-        Long demandDepositValue = inquireMyCreditRatingResponseDto.getDemandDepositAssetValue();
-
-        Long savingValue = restTemplateUtil.inquireSavingInfoList(userKey).stream()
-                .mapToLong(InquireSavingInfoResponseDto::getDepositBalance)
-                .sum();
-
-        Long depositValue = inquireMyCreditRatingResponseDto.getDepositSavingsAssetValue() - savingValue;
-
-        Long loanValue = restTemplateUtil.inquireLoanAccountList(userKey).stream()
-                .mapToLong(InquireLoanAccountResponseDto::getLoanBalance)
-                .sum();
-
-
-        Double demandDeposit = (totalAssetValue > 0L ? demandDepositValue.doubleValue()/totalAssetValue.doubleValue() : 0.0) * 100;
-        Double saving = (totalAssetValue > 0L ? savingValue.doubleValue()/totalAssetValue.doubleValue() : 0.0) * 100;
-        Double loan = (totalAssetValue > 0L ? depositValue.doubleValue()/totalAssetValue.doubleValue() : 0.0) * 100;
-        Double deposit = (totalAssetValue > 0L ? loanValue.doubleValue()/totalAssetValue.doubleValue() : 0.0) * 100;
-
-
-        String HEX;
-        String RGBA = switch (user.getCurrentJourneyType()) {
-            case FRESHMAN -> {
-                HEX = "#005DF9";
-                yield "rgba(0, 93, 249, 0.3)";
-            }
-            case SOPHOMORE -> {
-                HEX = "#59ABE1";
-                yield "rgba(89, 171, 225, 0.3)";
-            }
-            case JUNIOR -> {
-                HEX = "#5AAEC4";
-                yield "rgba(90, 174, 196, 0.3)";
-            }
-            case SENIOR -> {
-                HEX = "#5AC4BD";
-                yield "rgba(90, 196, 189, 0.3)";
-            }
-            case THIRTIES -> {
-                HEX = "#34C759";
-                yield "rgba(52, 199, 89, 0.3)";
-            }
-            case FORTIES -> {
-                HEX = "#9ECB4F";
-                yield "rgba(158, 203, 79, 0.3)";
-            }
-            case FIFTIES -> {
-                HEX = "#F7CE46";
-                yield "rgba(247, 206, 70, 0.3)";
-            }
-            case RETIRED -> {
-                HEX = "#F19A37";
-                yield "rgba(241, 154, 55, 0.3)";
-            }
-        };
-
-        JourneyStatsResponseDto journeyStatsResponseDto = JourneyStatsResponseDto.builder()
-                .accountType(accountType)
-                .accountName(accountName)
-                .journeyType(user.getCurrentJourneyType())
-                .journeyTypeName(user.getCurrentJourneyType().getValue())
-                .HEX(HEX)
-                .RGBA(RGBA)
-                .loan(loan)
-                .totalAssetValue(totalAssetValue)
-                .demandDeposit(demandDeposit)
-                .deposit(deposit)
-                .savings(saving)
-                .demandDepositValue(demandDepositValue)
-                .depositValue(depositValue)
-                .loanValue(loanValue)
-                .savingsValue(savingValue)
-                .totalAssetValue(totalAssetValue)
-                .build();
-
-        productStatsList.add(journeyStatsResponseDto);
-        */
 
         return productStatsList;
     }
