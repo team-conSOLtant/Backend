@@ -4,6 +4,7 @@ import com.consoltant.consoltant.domain.notification.dto.NotificationRequestDto;
 import com.consoltant.consoltant.domain.notification.dto.NotificationResponseDto;
 import com.consoltant.consoltant.domain.notification.entity.Notification;
 import com.consoltant.consoltant.domain.notification.mapper.NotificationMapper;
+import com.consoltant.consoltant.domain.portfolio.service.PortfolioModuleService;
 import com.consoltant.consoltant.domain.user.entity.User;
 import com.consoltant.consoltant.domain.user.repository.UserRepository;
 import java.util.List;
@@ -18,6 +19,7 @@ public class NotificationService {
     private final NotificationModuleService notificationModuleService;
     private final UserRepository userRepository;
     private final NotificationMapper notificationMapper;
+    private final PortfolioModuleService portfolioModuleService;
 
     // 단일 조회
     public NotificationResponseDto findById(Long id) {
@@ -67,7 +69,13 @@ public class NotificationService {
         if(notification == null){
             return null;
         }
-        return notificationMapper.toNotificationResponseDto(notificationModuleService.findTopByNotificationTypeAndUserIdOrderByIdDesc(userId).orElse(null));
+        Long seniorPortfolioId = Long.parseLong(notification.getContent().split(",")[1]);
+
+        NotificationResponseDto notificationResponseDto = notificationMapper.toNotificationResponseDto(
+            notificationModuleService.findTopByNotificationTypeAndUserIdOrderByIdDesc(userId)
+                .orElse(null));
+        notificationResponseDto.setSeniorUserId(portfolioModuleService.findById(seniorPortfolioId).getUser().getId());
+        return notificationResponseDto;
     }
 
     public List<NotificationResponseDto> findAllByNotificationTypeAndUserIdAndIsReadFalse(Long userId){
