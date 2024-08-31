@@ -178,29 +178,91 @@ public class RecommendService {
         List<InquireSavingProductsResponseDto> savingInfoList = restTemplateUtil.inquireSavingProducts();
         List<InquireLoanProductResponseDto> loanProductList = restTemplateUtil.inquireLoanProductList();
 
+        List<InquireDepositProductsResponseDto> depositProductsResponseDtos = restTemplateUtil.inquireDepositProducts();
+        List<InquireSavingProductsResponseDto> savingProductsResponseDtos = restTemplateUtil.inquireSavingProducts();
+        List<InquireLoanProductResponseDto> loanProductResponseDtos = restTemplateUtil.inquireLoanProductList();
+
         //상품 상세정보 가져오기
         for(RecommendResponseDto recommendResponseDto : recommendResponseDtoList){
             switch (recommendResponseDto.getProductType()){
-                case DEMAND_DEPOSIT -> {recommendResponseDto.setProductInfo(
+                case DEMAND_DEPOSIT -> {
+                    recommendResponseDto.setProductInfo(
                         productMapper.toProductInfo(demandDepositList.stream()
                                 .filter(s-> Objects.equals(s.getAccountTypeUniqueNo(), recommendResponseDto.getAccountTypeUniqueNo()))
                                 .findFirst().orElse(null))
-                );}
-                case DEPOSIT -> {recommendResponseDto.setProductInfo(
+                    );
+                }
+                case DEPOSIT -> {
+                    recommendResponseDto.setProductInfo(
                         productMapper.toProductInfo(depositInfoList.stream()
                                 .filter(s-> Objects.equals(s.getAccountTypeUniqueNo(), recommendResponseDto.getAccountTypeUniqueNo()))
                                 .findFirst().orElse(null))
-                );}
+                    );
+                    depositProductsResponseDtos.stream()
+                            .filter(s-> Objects.equals(s.getAccountTypeUniqueNo(), recommendResponseDto.getAccountTypeUniqueNo()))
+                            .findFirst()
+                            .ifPresent(savingProductsResponseDto->{
+                                recommendResponseDto.setMaxSubscriptionBalance(
+                                        savingProductsResponseDto.getMaxSubscriptionBalance()
+                                );
+                                recommendResponseDto.setMinSubscriptionBalance(
+                                        savingProductsResponseDto.getMinSubscriptionBalance()
+                                );
+                                recommendResponseDto.setAccountDescription(
+                                        savingProductsResponseDto.getAccountDescription()
+                                );
+
+                                recommendResponseDto.setInterestRate(
+                                        savingProductsResponseDto.getInterestRate()
+                                );
+                                recommendResponseDto.setSubscriptionPeriod(
+                                        savingProductsResponseDto.getSubscriptionPeriod()
+                                );
+                            });
+                }
                 case SAVING -> {recommendResponseDto.setProductInfo(
                         productMapper.toProductInfo(savingInfoList.stream()
                                 .filter(s-> Objects.equals(s.getAccountTypeUniqueNo(), recommendResponseDto.getAccountTypeUniqueNo()))
                                 .findFirst().orElse(null))
-                );}
+                );
+                    savingProductsResponseDtos.stream()
+                            .filter(s-> Objects.equals(s.getAccountTypeUniqueNo(), recommendResponseDto.getAccountTypeUniqueNo()))
+                            .findFirst()
+                            .ifPresent(savingProductsResponseDto->{
+                                recommendResponseDto.setMaxSubscriptionBalance(
+                                        savingProductsResponseDto.getMaxSubscriptionBalance()
+                                );
+                                recommendResponseDto.setMinSubscriptionBalance(
+                                        savingProductsResponseDto.getMinSubscriptionBalance()
+                                );
+                                recommendResponseDto.setAccountDescription(
+                                        savingProductsResponseDto.getAccountDescription()
+                                );
+
+                                recommendResponseDto.setInterestRate(
+                                        savingProductsResponseDto.getInterestRate()
+                                );
+                                recommendResponseDto.setSubscriptionPeriod(
+                                        savingProductsResponseDto.getSubscriptionPeriod()
+                                );
+                            });
+                }
                 case LOAN -> {recommendResponseDto.setProductInfo(
                         productMapper.toProductInfo(loanProductList.stream()
                                 .filter(s-> Objects.equals(s.getAccountTypeUniqueNo(), recommendResponseDto.getAccountTypeUniqueNo()))
                                 .findFirst().orElse(null))
-                );}
+                );
+                    loanProductResponseDtos.stream()
+                        .filter(s-> Objects.equals(s.getAccountTypeUniqueNo(), recommendResponseDto.getAccountTypeUniqueNo()))
+                        .findFirst()
+                        .ifPresent(savingProductsResponseDto->{
+                            recommendResponseDto.setAccountDescription(
+                                    savingProductsResponseDto.getAccountDescription()
+                            );
+                            recommendResponseDto.setInterestRate(
+                                    savingProductsResponseDto.getInterestRate()
+                            );
+                        });}
             }
         }
 
