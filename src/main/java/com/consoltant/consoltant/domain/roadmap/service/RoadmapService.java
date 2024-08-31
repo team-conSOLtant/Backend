@@ -322,7 +322,7 @@ public class RoadmapService {
         //대출 -= 대출 상환액
         List<InquireLoanProductResponseDto> loanProductsList = new ArrayList<>(
                 roadmapGraphResponseDto.getProduct().getLoan().stream()
-                        .filter(s -> Integer.parseInt(s.getEndDate().substring(0, 4)) >= LocalDate.now().getYear())
+                        .filter(s -> Integer.parseInt(s.getStartDate().substring(0, 4)) <= LocalDate.now().getYear())
                         .sorted(Comparator.comparing(InquireLoanProductResponseDto::getAge))
                         .sorted(Comparator.comparing(InquireLoanProductResponseDto::getStartDate))
                         .toList()
@@ -396,9 +396,10 @@ public class RoadmapService {
             //대출은 시작해에만 자산에 추가
             for(InquireLoanProductResponseDto inquireLoanProductResponseDto:
                     loanProductsList.stream()
-                            .filter(s->Integer.parseInt(s.getStartDate().substring(0,4)) <= finalYear && finalYear <= Integer.parseInt(s.getEndDate().substring(0,4)) )
                             .toList()
             ){
+
+                log.info(inquireLoanProductResponseDto.toString());
 
                 // 현재 대출을 받은 연도인 경우
                 if(Integer.parseInt(inquireLoanProductResponseDto.getStartDate().substring(0,4)) == finalYear){
