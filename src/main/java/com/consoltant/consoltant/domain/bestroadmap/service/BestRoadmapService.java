@@ -289,6 +289,7 @@ public class BestRoadmapService {
     // 베스트 로드맵 찾기
     public Long findBestRoadmap(Long id) {
 
+        log.info("베스트 로드맵 사용자 아이디 -> {}", id);
         User user = userRepository.findById(id).orElseThrow(()->new BadRequestException("존재하지 앟는 사용자입니다."));
         Portfolio portfolio = portfolioModuleService.findByUserId(id).orElseThrow(()->new BadRequestException("존재하지 앟는 포트폴리오입니다."));
 

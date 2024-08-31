@@ -64,7 +64,7 @@ public class RoadmapController {
         log.info("사용자 id -> {} ",id);
 
         Long roadmapUserId = roadmapModuleService.findRoadmapUserId(id);
-        log.info("사용자 아이디-> {}", roadmapUserId);
+        log.info("모범 로드맵 사용자 아이디-> {}", roadmapUserId);
         //로드맵이 할당되지 않은 경우 새로 찾아서 할당
         if(roadmapUserId == null){
             roadmapUserId = bestRoadmapService.findBestRoadmap(id);
