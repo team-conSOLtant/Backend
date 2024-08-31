@@ -406,7 +406,7 @@ public class RoadmapService {
                 }
 
                 //원금 이자 상환
-                int month = Integer.parseInt(inquireLoanProductResponseDto.getEndDate().substring(0,4)) - Integer.parseInt(inquireLoanProductResponseDto.getStartDate().substring(0,4));
+                int month = 10 * 12;
                 long loanAsset = inquireLoanProductResponseDto.getBalance();
                 long interest = (long) (loanAsset*inquireLoanProductResponseDto.getInterestRate()/100);
                 
