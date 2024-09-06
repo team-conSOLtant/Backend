@@ -44,7 +44,7 @@
 <br />
 
 ## 📌주요 기능
-- [포트폴리오 추천 시스템](https://github.com/team-conSOLtant/Backend/edit/master/README.md#%ED%8F%AC%ED%8A%B8%ED%8F%B4%EB%A6%AC%EC%98%A4-%EC%B6%94%EC%B2%9C-%EC%8B%9C%EC%8A%A4%ED%85%9C)
+- [포트폴리오 추천 시스템]()
 
 <br />
 
@@ -74,12 +74,12 @@
 <p align = "center">
 	<img width=600 src="https://github.com/user-attachments/assets/772753cb-8651-4647-ae4b-60823f660bda">
 
-### 문제 상황
+#### 문제 상황
 
 - 포트폴리오 데이터를 **DB**와 **Elastic Search(ES)**에 동기화하기 위해 전체 데이터를 저장할 때 **ES**에도 함께 저장하도록 구현한 상황. 그러나 일부 데이터를 **DB** 내에서 직접 수정할 때, **ES**에 그 수정 내용을 반영할 수 있는 방법이 없어 데이터의 불일치가 발생할 가능성이 있음.
 - 또한, 대규모 데이터가 들어올 경우 실시간 반영을 위한 처리도 필요함. 이를 해결하기 위해 **Logstash**를 활용한 스케줄링 방식으로 **DB**와 **ES**의 동기화를 고려하고 있음.
 
-### 해결 방안
+#### 해결 방안
 
 1. **DB에 `updated_at` 칼럼 추가**:
     - 데이터가 수정될 때마다 `updated_at` 칼럼을 자동으로 갱신하여 변경된 데이터를 추적할 수 있도록 DB 구조를 수정.
