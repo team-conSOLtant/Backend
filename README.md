@@ -15,7 +15,7 @@
 
 ## **📄프로젝트 구조**
 
-![구조도](https://github.com/user-attachments/assets/29c7115c-953b-4d08-b1a8-640075ea7ba7)
+![구조도](https://github.com/user-attachments/assets/419aa979-48b3-4e02-9165-4ca80f839260)
 
 ---
 
